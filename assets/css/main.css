@@ -1016,8 +1016,9 @@ html, body { overflow-x: clip; }
   .foot-main > .foot-brand .fb-line { max-inline-size: 340px; }
 }
 
-/* Desktop density: render the whole page at 90% so it no longer reads as zoomed in */
-@media (min-width: 1024px) { html { zoom: .9; } }
+/* Density: laptops with display scaling (125-200%) report ~900-1100px, so scale down from 768px up */
+@media (min-width: 768px) { html { zoom: .88; } }
+@media (min-width: 900px) { html { zoom: .82; } }
 
 /* Header: a quieter "by Talent360" next to the Mawared mark */
 .lockup .mm-by { font-size: .72rem; gap: 5px; }
