@@ -1217,3 +1217,9 @@ html[lang="ar"] body { line-height: 1.85; }
 .sc-pick-txt small { font-size: .92rem; color: var(--text-muted, #46536F); line-height: 1.5; }
 .sc-body[hidden], .sc-bulk[hidden] { display: none !important; }
 @media (max-width: 700px) { .sc-pick { grid-template-columns: minmax(0, 1fr); } }
+
+/* Tools: 7 cards, so the last one (the salary calculator) spans the full row as a wide card */
+@media (min-width: 640px) {
+  .tool-grid > .tool-card:last-child:nth-child(odd) { flex-basis: 100%; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto; column-gap: 24px; align-items: center; }
+  .tool-grid > .tool-card:last-child:nth-child(odd) .btn { grid-column: 2; grid-row: 1 / span 3; margin: 0; align-self: center; }
+}
