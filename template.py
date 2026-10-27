@@ -65,8 +65,8 @@ def _render(lang, mode):
         return '<a class="%s" href="%s" data-cta="%s"%s>%s%s</a>' % (cls, href, key, f, e(label), (" " + ARROW) if arrow else "")
 
     def head(label, h, answer, hid, center=False, extra=""):
-        return ('<div class="section-head%s"><span class="label">%s</span><h2 id="%s">%s%s</h2><hr class="rule" aria-hidden="true"><p class="answer">%s</p></div>'
-                % (" center" if center else "", e(label), hid, e(h), extra, e(answer)))
+        return ('<div class="section-head%s"><span class="label">%s</span><h2 id="%s">%s%s</h2><hr class="rule" aria-hidden="true">%s</div>'
+                % (" center" if center else "", e(label), hid, e(h), extra, ('<p class="answer">%s</p>' % e(answer)) if answer else ""))
 
     lockup = ('<div class="lockup"><a class="mm-logo" href="https://talent-360.me" aria-label="%s" target="_blank" rel="noopener"><img class="logo-light" src="%s" alt="%s" width="86" height="44">' + by_t360 + '</a>'
               '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
@@ -150,7 +150,7 @@ def _render(lang, mode):
     stat_cards = "".join('<li class="stat-card" style="--x:%.3f%%;--y:%.3f%%"><strong><bdi>%s</bdi></strong><span>%s</span></li>' % (x / 14.4, y / 8.1, e(n), e(l)) for (n, l), (x, y) in zip(L["stats"], boxes))
 
     alt_links = '<link rel="alternate" hreflang="ar-SA" href="%sar/"><link rel="alternate" hreflang="en-SA" href="%sen/"><link rel="alternate" hreflang="x-default" href="%sar/">' % (BASE, BASE, BASE)
-    fonts = "family=Almarai:wght@300;400;700;800" if rtl else "family=Montserrat:wght@400;500;600;700&family=Unbounded:wght@400;500;600"
+    fonts = "family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700" if rtl else "family=Montserrat:wght@400;500;600;700&family=Unbounded:wght@400;500;600"
     hero_img = A + "img/hero-top-1600.webp"
     metric_aside = "من 0 إلى 25" if rtl else "0 → 25"
 
