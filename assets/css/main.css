@@ -125,7 +125,7 @@ html[data-review="true"] .pending { display: inline-block; background: var(--pen
 .main-nav a { display: inline-flex; align-items: center; min-block-size: 44px; padding-inline: 11px; color: var(--heading); text-decoration: none; font-weight: 700; font-size: .92rem; white-space: nowrap; border-radius: 10px; }
 html[lang="en"] .main-nav a { font-weight: 600; }
 .main-nav a:hover { color: var(--accent-ink); background: rgba(31,201,177,.1); }
-
+@media (min-width: 1240px) { .main-nav { display: block; } }
 .header-actions { display: flex; align-items: center; gap: 6px; }
 .icon-btn { inline-size: 44px; block-size: 44px; display: inline-grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--heading); cursor: pointer; text-decoration: none; font: 700 .9rem var(--font-body); }
 .header-cta { display: none; }
@@ -983,19 +983,8 @@ html, body { overflow-x: clip; }
   .foot-brand .edd-chip img, .foot-logos .edd-chip img { block-size: 52px !important; }
 }
 .lockup { flex: none; }
-/* Non-mobile navigation stays above the hero. A second header row avoids
-   squeezing the co-brand lockup and links on smaller laptops and tablets. */
-@media (min-width: 768px) {
-  .header-inner { flex-wrap: wrap; column-gap: 20px; row-gap: 0; }
-  .main-nav { display: block; order: 3; flex: 1 0 100%; min-inline-size: 0; border-block-start: 1px solid var(--line); }
-  .main-nav ul { justify-content: center; flex-wrap: wrap; }
-  .main-nav a { padding-inline: 10px; font-size: .88rem; }
-}
-@media (min-width: 1360px) {
-  .header-inner { flex-wrap: nowrap; }
-  .main-nav { order: 0; flex: 0 1 auto; border-block-start: 0; }
-  .main-nav a { padding-inline: 8px; }
-}
+@media (min-width: 1240px) { .main-nav { display: none; } }
+@media (min-width: 1360px) { .main-nav { display: block; } .main-nav a { padding-inline: 8px; font-size: .88rem; } }
 @media (max-width: 700px) { .lockup .edd-chip img { block-size: 30px !important; } }
 @media (max-width: 700px) { .lockup .mm-by img { block-size: 20px !important; } }
 #salcalc-sec .salcalc { margin-block-start: 0; }
@@ -1362,9 +1351,9 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
   html[lang="en"] .bk-step h3, html[lang="en"] .bk-step legend { font-size: .95rem !important; }
 }
 
-/* Side menu is mobile-only, matching the inline navigation breakpoint. */
+/* Side menu: a hamburger opens a drawer wherever the inline nav is hidden */
 .menu-btn { display: inline-grid; }
-@media (min-width: 768px) { .menu-btn, .drawer { display: none; } }
+@media (min-width: 1360px) { .menu-btn { display: none; } }
 .drawer[hidden] { display: none; }
 .drawer { position: fixed; inset: 0; z-index: 200; }
 .drawer-scrim { position: absolute; inset: 0; background: rgba(14,24,60,.45); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
