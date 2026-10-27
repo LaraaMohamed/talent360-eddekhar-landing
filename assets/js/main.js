@@ -1,6 +1,6 @@
 /* Talent360 × Eddekhar landing page behaviour.
-   No dependencies. Works without the booking API (falls back to locally
-   generated slots and a clearly labelled preview confirmation). */
+   No dependencies. Works without the booking API: slots are generated locally
+   and requests are relayed to the team inbox through FormSubmit. */
 (function () {
   "use strict";
 
@@ -27,6 +27,23 @@
     window.dataLayer.push(payload);
     if (CFG.debug) console.log("[track]", payload);
   }
+
+  /* ---------- Form relay: works on static hosting (GitHub Pages) ----------
+     When the booking API isn't reachable, submissions go to FormSubmit, which
+     emails them to the team inbox. The inbox owner must click FormSubmit's
+     one-time activation email before anything is delivered. */
+  var RELAY = CFG.formEndpoint || "";
+  function relay(subject, fields, autoresponse) {
+    if (!RELAY) return Promise.resolve(false);
+    var body = Object.assign({ _subject: subject, _template: "table", _captcha: "false",
+      language: LANG, page: location.href, referrer: document.referrer || "" }, fields);
+    if (fields.email) body._replyto = fields.email;
+    if (autoresponse) body._autoresponse = autoresponse;
+    return fetch(RELAY, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return r.ok && String(j.success) === "true"; }); })
+      .catch(function () { return false; });
+  }
+  function utmText(u) { return Object.keys(u || {}).map(function (k) { return k + "=" + u[k]; }).join(", "); }
 
   /* ---------- UTM capture (stored for the session, sent with the booking) ---------- */
   var utm = {};
@@ -359,8 +376,15 @@
         }
         if (err && err.error === "personal_email") { errEl.textContent = T.emailPersonal; submitBtn.textContent = T.submit; validate(); return; }
         if (err && err.error) { errEl.textContent = T.genericError; submitBtn.textContent = T.submit; validate(); return; }
-        // No backend reachable: preview mode
-        confirmed(s, { id: "preview", meetUrl: null, preview: true }, true);
+        // No booking API (static hosting): send the request to the team inbox
+        var when = fmtDay(s.start, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " " + fmtTime(s.start, false) + " " + T.riyadhShort;
+        relay("New HR Health Check booking (Eddekhar): " + payload.company, {
+          type: "Booking request", name: payload.name, email: payload.email, company: payload.company,
+          focus: T.focus[payload.focus] || payload.focus, requested_time: when, start_utc: payload.start, utm: utmText(utm), _honey: payload.website
+        }, T.eventDetails + "\n" + when).then(function (ok) {
+          if (!ok) { errEl.textContent = T.genericError; submitBtn.textContent = T.submit; validate(); return; }
+          confirmed(s, { id: "relay", meetUrl: null, relay: true, who: payload }, true);
+        });
       });
   });
 
@@ -380,13 +404,13 @@
     var icsUrl = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
     var meet = res.meetUrl
       ? '<a href="' + res.meetUrl + '" rel="noopener">' + res.meetUrl.replace(/^https?:\/\//, "") + "</a>"
-      : T.meetByEmail;
+      : (res.relay ? T.meetByTeam : T.meetByEmail);
 
     var box = document.getElementById("booker");
     box.innerHTML =
       '<div class="confirm" tabindex="-1" id="bk-confirm">' +
       '<div class="ok"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>' +
-      "<h3>" + T.confirmedTitle + "</h3>" +
+      "<h3>" + (res.relay ? T.bookReceived : T.confirmedTitle) + "</h3>" +
       
       "<dl><dt>" + T.date + "</dt><dd>" + fmtDay(s.start, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + "</dd>" +
       "<dt>" + T.time + "</dt><dd>" + fmtTime(s.start, false) + " – " + fmtTime(s.end, false) + " " + T.riyadhShort + "</dd>" +
@@ -406,8 +430,11 @@
       var v = document.getElementById("bk-phone").value.trim();
       var msg = document.getElementById("phone-msg");
       if (!/^\+?[0-9\s-]{8,16}$/.test(v)) { msg.style.color = ""; msg.textContent = T.phoneInvalid; return; }
-      fetch(API + "/booking/" + encodeURIComponent(res.id) + "/phone", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: v, token: res.token }) })
-        .catch(function () {}).then(function () { msg.style.color = "var(--accent-ink)"; msg.textContent = T.phoneSaved; });
+      var saving = res.relay
+        ? relay("Phone for booking: " + res.who.company, { type: "Phone number", name: res.who.name, email: res.who.email, company: res.who.company, phone: v })
+        : fetch(API + "/booking/" + encodeURIComponent(res.id) + "/phone", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: v, token: res.token }) })
+            .then(function (r) { return r.ok; }, function () { return false; });
+      saving.then(function (ok) { msg.style.color = ok ? "var(--accent-ink)" : ""; msg.textContent = ok ? T.phoneSaved : T.genericError; });
     });
   }
 
@@ -419,6 +446,7 @@
      Social insurance: Law 148/2019, employee share 11% of the insured wage,
      insured wage limits from 1/1/2026: min 2,700, max 16,700 EGP.
      Income tax: Law 91/2005 as amended, 2026 brackets, 20,000 EGP exemption. */
+  var GUIDE_FILES = { labour_law_eg: 1, labour_law_sa: 1 }; // PDFs hosted in assets/files/<tool>-<lang>.pdf
   var afterGate = {}; // tool -> action to run once the visitor has given an email
   var sc = document.getElementById("salcalc");
   if (sc) {
@@ -622,19 +650,38 @@
       gateMsg.style.color = "";
       if (est !== "ok") { gateMsg.textContent = emailMsg(est); return; }
       store("session", "t360_email", email);
+      var tool = gateForm.tool.value, title = gateTitle.textContent, after = afterGate[tool];
+      var file = GUIDE_FILES[tool] ? new URL("../assets/files/" + tool + "-" + LANG + ".pdf", location.href).href : "";
+      var btn = gateForm.querySelector('button[type="submit"]'); if (btn) btn.disabled = true;
       fetch(API + "/lead-magnet", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, tool: gateForm.tool.value, lang: LANG, utm: utm, website: gateForm.website.value }) })
-        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j, offline: r.status === 404 || r.status === 405 }; }); },
+        body: JSON.stringify({ email: email, tool: tool, lang: LANG, utm: utm, website: gateForm.website.value }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j, offline: !r.ok && !j.error }; }); },
               function () { return { offline: true }; })
         .then(function (res) {
-          var tool = gateForm.tool.value, after = afterGate[tool];
-          if (!res.offline && !res.ok) {
+          if (!res.offline) return res;
+          // No API (static hosting): tell the team by email instead
+          return relay("Lead magnet request (Eddekhar): " + title, {
+            type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value
+          }, file ? title + "\n" + file : "").then(function (ok) { return { ok: ok, relayed: true }; });
+        })
+        .then(function (res) {
+          if (btn) btn.disabled = false;
+          // Files we host are handed over straight away, whatever happened to the notification
+          if (!res.ok && !file && !after) {
             gateMsg.textContent = res.j && res.j.error === "personal_email" ? T.emailPersonal : T.gateFail; return;
           }
-          track("lead_magnet_requested", { tool: tool, preview: !!res.offline });
-          if (after) after();
+          track("lead_magnet_requested", { tool: tool, relayed: !!res.relayed, notified: !!res.ok });
           gateMsg.style.color = "var(--accent-ink)";
-          gateMsg.textContent = after ? T.bulkSent : T.gateSent;
+          if (after) { after(); gateMsg.textContent = T.bulkSent; return; }
+          if (file) {
+            var a = document.createElement("a"); a.href = file; a.download = tool + "-" + LANG + ".pdf";
+            document.body.appendChild(a); a.click(); a.remove();
+            gateMsg.innerHTML = "";
+            gateMsg.appendChild(document.createTextNode(T.guideDl + " "));
+            var link = document.createElement("a"); link.href = file; link.target = "_blank"; link.rel = "noopener"; link.textContent = T.guideDlLink;
+            gateMsg.appendChild(link); return;
+          }
+          gateMsg.textContent = T.gateSent;
         });
     });
   }

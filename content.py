@@ -229,7 +229,7 @@ C["ar"] = dict(
         addGoogle="أضف إلى Google Calendar", addIcs="أضف إلى التقويم (ics)",
         phoneLabel="رقم الجوال (اختياري، لتذكيرك بالموعد)", phoneSave="حفظ", phoneInvalid="أدخل رقمًا صحيحًا.", phoneSaved="تم الحفظ. شكرًا لك.",
         unlockedTitle="فُتحت لك الأدوات المجانية:", unlockedItems=["دليل مقارنة الـ Offshoring بالكيان الخاص (PDF)", "حاسبات الموارد البشرية الكاملة", "قوالب الأوصاف الوظيفية وقوائم المراجعة"],
-        sar="ريال", emailInvalid="أدخل بريدًا صحيحًا.", emailPersonal="استخدم بريد شركتك، لا نقبل البريد الشخصي مثل Gmail أو Hotmail أو Outlook.", gateFail="تعذّر الإرسال الآن. حاول مرة أخرى أو راسلنا على info@talent-360.me.", gatePreview="هذه نسخة معاينة: لم يُرسل أي بريد لأن خدمة الإرسال لم تُربط بعد.", gateSent="تم استلام طلبك. سيصلك الملف على بريد شركتك خلال دقائق.", bulkSent="تم. بدأ تحميل الكشف على جهازك.",
+        sar="ريال", emailInvalid="أدخل بريدًا صحيحًا.", emailPersonal="استخدم بريد شركتك، لا نقبل البريد الشخصي مثل Gmail أو Hotmail أو Outlook.", gateFail="تعذّر الإرسال الآن. حاول مرة أخرى أو راسلنا على info@talent-360.me.", gateSent="وصل طلبك إلى فريق موارد ومهارات، وسنرسل الملف إلى بريد شركتك خلال يوم عمل.", guideDl="تم. بدأ تنزيل الدليل على جهازك.", guideDlLink="إن لم يبدأ التنزيل، اضغط هنا", bookReceived="وصل طلب حجزك", meetByTeam="يرسله لك فريقنا مع دعوة التقويم خلال يوم عمل", bulkSent="تم. بدأ تحميل الكشف على جهازك.",
     ),
 )
 
@@ -458,7 +458,7 @@ C["en"] = dict(
         addGoogle="Add to Google Calendar", addIcs="Add to calendar (.ics)",
         phoneLabel="Mobile number (optional, for a reminder)", phoneSave="Save", phoneInvalid="Please enter a valid number.", phoneSaved="Saved. Thank you.",
         unlockedTitle="Your free tools are unlocked:", unlockedItems=["Offshoring vs own entity comparison guide (PDF)", "The full HR calculators", "Job profile templates and HR checklists"],
-        sar="SAR", emailInvalid="Please enter a valid email.", emailPersonal="Please use your company email. Personal addresses such as Gmail, Hotmail or Outlook aren't accepted.", gateFail="We couldn't send it right now. Please try again or email info@talent-360.me.", gatePreview="This is a preview: no email was sent because the sending service isn't connected yet.", gateSent="Request received. The file will reach your company inbox within minutes.", bulkSent="Done. Your sheet is downloading now.",
+        sar="SAR", emailInvalid="Please enter a valid email.", emailPersonal="Please use your company email. Personal addresses such as Gmail, Hotmail or Outlook aren't accepted.", gateFail="We couldn't send it right now. Please try again or email info@talent-360.me.", gateSent="Your request reached the Talent360 team. We'll send the file to your company inbox within one working day.", guideDl="Done. Your guide is downloading now.", guideDlLink="If the download didn't start, click here", bookReceived="Your booking request is in", meetByTeam="Our team sends it with the calendar invite within one working day", bulkSent="Done. Your sheet is downloading now.",
     ),
 )
 

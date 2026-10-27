@@ -159,7 +159,7 @@ def _render(lang, mode):
 <link rel="preload" as="image" href="{hero_img}" imagesrcset="{A}img/hero-top-900.webp 900w, {hero_img} 1600w" imagesizes="100vw" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{fonts}&display=swap">
-<link rel="stylesheet" href="{A}css/main.css?v=202610270740">
+<link rel="stylesheet" href="{A}css/main.css?v=202610270758">
 <script type="application/ld+json">{jsonld(lang, L, url)}</script>
 </head>
 <body>
@@ -522,8 +522,8 @@ def _render(lang, mode):
 </dialog>
 
 <script type="application/json" id="i18n">{json.dumps(L['js'], ensure_ascii=False)}</script>
-<script>window.T360_CONFIG = {{ apiBase: "/api", debug: false }};</script>
-<script src="{A}js/main.js?v=202610270740" defer></script>
+<script>window.T360_CONFIG = {{ apiBase: "/api", formEndpoint: "https://formsubmit.co/ajax/info@talent-360.me", debug: false }};</script>
+<script src="{A}js/main.js?v=202610270758" defer></script>
 </body>
 </html>
 """
