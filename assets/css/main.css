@@ -1023,3 +1023,14 @@ html, body { overflow-x: clip; }
 .lockup .mm-by { font-size: .72rem; gap: 5px; }
 .lockup .mm-by img { block-size: 15px !important; }
 @media (max-width: 700px) { .lockup .mm-by { font-size: .62rem; } .lockup .mm-by img { block-size: 11px !important; } }
+
+/* Header: tiny "by Talent360" stacked right under the Mawared mark */
+.lockup .mm-logo { flex-direction: column !important; align-items: center !important; gap: 2px !important; }
+.lockup .mm-logo > img { block-size: 38px !important; }
+.lockup .mm-by { border: 0 !important; padding: 0 !important; block-size: auto !important; font-size: .55rem !important; gap: 3px !important; color: var(--text-muted); }
+.lockup .mm-by img { block-size: 9px !important; }
+@media (max-width: 700px) {
+  .lockup .mm-logo > img { block-size: 30px !important; }
+  .lockup .mm-by { font-size: .5rem !important; }
+  .lockup .mm-by img { block-size: 8px !important; }
+}
