@@ -10,8 +10,7 @@
  *   POST /api/booking/:id/phone           add the optional phone after confirmation
  *   GET  /api/booking/:id/cancel?token=   cancel (link in the confirmation email)
  *   GET  /api/booking/:id/reschedule?token=  redirects to the page with the booking id
- *   POST /api/lead-magnet                 emails a company-email verification link for a gated file
- *   GET  /api/download?t=                 verifies the link, then starts the download
+ *   POST /api/lead-magnet                 emails the guide to the company inbox, with a thank-you and a CTA
  */
 "use strict";
 
@@ -107,7 +106,7 @@ if (smtp) smtp.verify().then(() => console.log("[mail] SMTP ready as", env.SMTP_
 // With no SMTP, mail goes out through the Apps Script bridge from business-growth@'s Gmail.
 const mailer = smtp || (GAS ? { sendMail: (m) => {
   const a = (m.attachments || [])[0];
-  return gas("mail", { to: m.to, subject: m.subject, text: m.text, replyTo: m.replyTo, fromName: "Talent360",
+  return gas("mail", { to: m.to, subject: m.subject, text: m.text, html: m.html, replyTo: m.replyTo, fromName: "Talent360",
     attachment: a ? { name: a.filename, type: "application/pdf", data: require("fs").readFileSync(a.path).toString("base64") } : null });
 } } : null);
 function fmt(date, lang) {
@@ -115,16 +114,25 @@ function fmt(date, lang) {
 }
 async function sendConfirmation(b) {
   if (!mailer) return;
-  const when = fmt(new Date(b.start), b.lang);
+  const ar = b.lang === "ar", when = fmt(new Date(b.start), b.lang);
   const cancel = `${env.PUBLIC_BASE_URL}/api/booking/${b.id}/cancel?token=${b.token}`;
   const resched = `${env.PUBLIC_BASE_URL}/api/booking/${b.id}/reschedule?token=${b.token}`;
-  const ar = `تم تأكيد جلستك المجانية مع موارد ومهارات\n\nالموعد: ${when} (بتوقيت الرياض)\nرابط الاجتماع: ${b.meetUrl || "يُرسل لاحقًا"}${env.CONSULTANT_NAME_AR ? "\nالمستشار: " + env.CONSULTANT_NAME_AR : ""}\nخصم إدخار 10% مطبق تلقائيًا.\n\nإعادة الجدولة: ${resched}\nالإلغاء: ${cancel}`;
-  const en = `Your free session with Talent360 is confirmed\n\nWhen: ${when} (Riyadh time)\nMeeting link: ${b.meetUrl || "to follow"}${env.CONSULTANT_NAME_EN ? "\nConsultant: " + env.CONSULTANT_NAME_EN : ""}\n10% Eddekhar discount applied automatically.\n\nReschedule: ${resched}\nCancel: ${cancel}`;
-  await mailer.sendMail({
-    from: FROM, to: b.email,
-    subject: b.lang === "ar" ? "تأكيد جلسة الفحص المجاني | موارد ومهارات × إدخار" : "Your free HR check is booked | Talent360 × Eddekhar",
-    text: b.lang === "ar" ? ar + "\n\n— — —\n\n" + en : en + "\n\n— — —\n\n" + ar,
+  const meet = b.meetUrl ? `<a href="${esc(b.meetUrl)}" style="color:#168C7C">${esc(b.meetUrl)}</a>` : esc(ar ? "يصلك مع دعوة التقويم" : "Sent with your calendar invite");
+  const consultant = ar ? env.CONSULTANT_NAME_AR : env.CONSULTANT_NAME_EN;
+  const html = emailHtml(b.lang, {
+    title: ar ? `شكرًا ${b.name}، تم تأكيد جلستك` : `Thank you ${b.name}, your session is confirmed`,
+    paras: ar ? ["يسعدنا لقاؤك. ستراجع مع مستشارنا وضع شركتك في 30 دقيقة، وتستلم بعدها ثلاث أولويات مكتوبة وقائمة أسعارك بخصم إدخار."]
+              : ["We look forward to meeting you. In 30 minutes you'll review your company's situation with our consultant, then receive three written priorities and your price list with the Eddekhar discount."],
+    rows: [[ar ? "الموعد" : "When", esc(when) + (ar ? " (بتوقيت الرياض)" : " (Riyadh time)")], [ar ? "الفحص" : "Check", esc(b.focusLabel)], [ar ? "رابط الاجتماع" : "Meeting link", meet]]
+      .concat(consultant ? [[ar ? "المستشار" : "Consultant", esc(consultant)]] : []),
+    note: ar ? `تحتاج تغيير الموعد؟ <a href="${resched}" style="color:#168C7C">أعد الجدولة</a> أو <a href="${cancel}" style="color:#168C7C">ألغِ الحجز</a>.`
+             : `Need to change it? <a href="${resched}" style="color:#168C7C">Reschedule</a> or <a href="${cancel}" style="color:#168C7C">cancel</a>.`,
+    cta: ar ? "تعرّف على خدماتنا" : "Explore our services", ctaUrl: `${env.PUBLIC_BASE_URL}/${b.lang}/#help`,
   });
+  const text = ar ? `تم تأكيد جلستك المجانية مع موارد ومهارات\n\nالموعد: ${when} (بتوقيت الرياض)\nرابط الاجتماع: ${b.meetUrl || "يصلك مع دعوة التقويم"}\nخصم إدخار 10% مطبق تلقائيًا.\n\nإعادة الجدولة: ${resched}\nالإلغاء: ${cancel}`
+                  : `Your free session with Talent360 is confirmed\n\nWhen: ${when} (Riyadh time)\nMeeting link: ${b.meetUrl || "sent with your calendar invite"}\n10% Eddekhar discount applied automatically.\n\nReschedule: ${resched}\nCancel: ${cancel}`;
+  await mailer.sendMail({ from: FROM, to: b.email, replyTo: TEAM,
+    subject: ar ? "تم تأكيد جلستك المجانية | موارد ومهارات × إدخار" : "Your free HR check is confirmed | Talent360 × Eddekhar", text, html });
   // Reminders: Google Calendar sends the invite reminders (24h email + 1h popup) set on the event below.
 }
 async function notifyTeam(b) {
@@ -152,68 +160,81 @@ const LEAD_TITLES = {
   labour_law_sa: ["دليل نظام العمل السعودي بعد تعديلات 2025", "Saudi Labour Law after the 2025 amendments"],
   benefits_eg: ["دليل مزايا الموظفين في مصر 2026", "Employee benefits in Egypt, 2026"],
 };
-/* Lead magnets: the visitor gets an email from business-growth@ with a link that verifies the company
-   address; opening it unlocks the download (and tells the team + CRM about a verified lead). */
-const LINK_DAYS = 7;
+/* ---------- Branded HTML email (table layout, inline styles, works in Gmail and Outlook) ---------- */
+const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+function emailHtml(lang, o) {
+  const ar = lang === "ar", dir = ar ? "rtl" : "ltr", al = ar ? "right" : "left";
+  const base = env.PUBLIC_BASE_URL || "https://talent360-eddekhar.onrender.com";
+  const font = ar ? "Tahoma,Arial,sans-serif" : "Arial,Helvetica,sans-serif";
+  const rows = (o.rows || []).map(([k, v]) => `<tr><td style="padding:9px 14px;border-bottom:1px solid #EDF2F6;color:#5A6785;font-size:14px;width:38%">${esc(k)}</td><td style="padding:9px 14px;border-bottom:1px solid #EDF2F6;color:#0E183C;font-weight:bold;font-size:14px">${v}</td></tr>`).join("");
+  return `<!doctype html><html lang="${lang}" dir="${dir}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#EEF6F6">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EEF6F6"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" dir="${dir}" style="max-width:600px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden;font-family:${font};text-align:${al}">
+ <tr><td style="background:#0E183C;padding:22px 28px"><img src="${base}/assets/img/brand/mawared-mark-white.png" alt="${ar ? "موارد ومهارات" : "Talent360"}" height="40" style="display:block;height:40px;border:0"></td></tr>
+ <tr><td style="background:#1FC9B1;height:4px;line-height:4px;font-size:0">&nbsp;</td></tr>
+ <tr><td style="padding:30px 28px 8px"><h1 style="margin:0 0 12px;font-size:22px;line-height:1.4;color:#0E183C">${esc(o.title)}</h1>
+  ${o.paras.map((x) => `<p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#26324D">${x}</p>`).join("")}</td></tr>
+ ${rows ? `<tr><td style="padding:4px 28px 14px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #DCE7EE;border-radius:12px;border-collapse:separate">${rows}</table></td></tr>` : ""}
+ ${o.note ? `<tr><td style="padding:0 28px 14px"><div style="background:#E3F6F3;border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.7;color:#0E183C">${o.note}</div></td></tr>` : ""}
+ <tr><td style="padding:6px 28px 26px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#4E7A3D;border-radius:14px"><tr><td style="padding:18px 20px;color:#ffffff">
+  <div style="font-size:26px;font-weight:bold;line-height:1">10%</div>
+  <div style="font-size:14px;line-height:1.6;margin:6px 0 14px">${ar ? "خصم على كل خدمات موارد ومهارات لعملاء إدخار، يُطبَّق تلقائيًا." : "Off every Talent360 service for Eddekhar clients, applied automatically."}</div>
+  <a href="${o.ctaUrl}" style="display:inline-block;background:#1FC9B1;color:#0E183C;font-weight:bold;font-size:15px;text-decoration:none;padding:12px 24px;border-radius:999px">${esc(o.cta)}</a>
+ </td></tr></table></td></tr>
+ <tr><td style="padding:18px 28px;background:#F6FAFC;border-top:1px solid #E3EBF1;font-size:12px;line-height:1.8;color:#5A6785">
+  ${ar ? "فريق موارد ومهارات" : "The Talent360 team"} · <a href="mailto:business-growth@talent-360.me" style="color:#168C7C">business-growth@talent-360.me</a> · <span dir="ltr">+966 592060727</span><br>
+  ${ar ? "الرياض · القاهرة" : "Riyadh · Cairo"} · <a href="https://talent-360.me" style="color:#168C7C">talent-360.me</a><br>
+  ${ar ? "بالشراكة مع إدخار" : "In partnership with Eddekhar"}
+ </td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+/* Lead magnets: the guide goes straight to the company inbox as an attachment, with a thank-you and a CTA.
+   Only the inbox owner receives it, so the company address is verified by delivery. */
 function leadFile(tool, lang) {
   const path = require("path"), fs = require("fs");
   return [tool + "-" + lang + ".pdf", tool + ".pdf"].map((f) => path.join(__dirname, "files", f)).find((f) => fs.existsSync(f)) || null;
 }
-function leadToken(o) {
-  const p = Buffer.from(JSON.stringify(o)).toString("base64url");
-  return p + "." + sign("lead:" + p);
+// Until a mailbox is connected, the page hands the guide over directly through a short-lived signed link.
+function guideLink(tool, lang) {
+  const p = Buffer.from(JSON.stringify({ t: tool, l: lang, x: Date.now() + 3600000 })).toString("base64url");
+  return "/api/guide?t=" + p + "." + sign("guide:" + p);
 }
-function readLeadToken(t) {
-  const [p, sig] = String(t || "").split(".");
-  if (!p || !sig || !verify("lead:" + p, sig)) return null;
+function readGuideLink(tok) {
+  const [p, sig] = String(tok || "").split(".");
+  if (!p || !sig || !verify("guide:" + p, sig)) return null;
   try { const o = JSON.parse(Buffer.from(p, "base64url").toString()); return o.x > Date.now() ? o : null; } catch (e) { return null; }
 }
 async function sendLeadMagnet(body) {
   const tool = String(body.tool || "").replace(/[^\w-]/g, "");
-  const lang = body.lang === "en" ? "en" : "ar";
-  const title = (LEAD_TITLES[tool] || [tool, tool])[lang === "ar" ? 0 : 1];
+  const lang = body.lang === "en" ? "en" : "ar", ar = lang === "ar";
+  const title = (LEAD_TITLES[tool] || [tool, tool])[ar ? 0 : 1];
   const email = String(body.email).trim().slice(0, 160);
-  console.log("[lead-magnet] requested", tool, email);
-  if (!mailer) return false;
-  const t = leadToken({ e: email, t: tool, l: lang, u: body.utm || {}, x: Date.now() + LINK_DAYS * 86400000 });
-  const link = `${env.PUBLIC_BASE_URL}/api/download?t=${t}`;
-  const text = lang === "ar"
-    ? `مرحبًا،\n\nطلبت من موقع موارد ومهارات: ${title}.\nأكّد بريد شركتك من الرابط التالي، وسيبدأ التنزيل مباشرة:\n\n${link}\n\nالرابط صالح لمدة ${LINK_DAYS} أيام. إذا لم تطلب هذا الملف، تجاهل الرسالة.\n\nفريق موارد ومهارات\nbusiness-growth@talent-360.me`
-    : `Hello,\n\nYou requested "${title}" from Talent360.\nConfirm your company email with the link below and your download starts straight away:\n\n${link}\n\nThe link works for ${LINK_DAYS} days. If you didn't ask for this, just ignore this email.\n\nThe Talent360 team\nbusiness-growth@talent-360.me`;
-  await mailer.sendMail({ from: FROM, to: email, replyTo: TEAM,
-    subject: lang === "ar" ? `أكّد بريدك لتنزيل: ${title}` : `Confirm your email to download: ${title}`, text });
-  return true;
-}
-const verifiedLeads = new Set();
-async function leadVerified(o) {
-  const key = o.e + "|" + o.t;
-  if (verifiedLeads.has(key)) return;
-  verifiedLeads.add(key);
-  const title = (LEAD_TITLES[o.t] || [o.t, o.t])[o.l === "ar" ? 0 : 1];
-  const crm = { source: "eddekhar_landing", tags: ["Eddekhar referral", "lead_magnet:" + o.t, "lang:" + o.l, "email_verified"], email: o.e, utm: o.u,
-    note: `Eddekhar referral. Verified their company email and downloaded "${title}" from the landing page.` };
+  const file = leadFile(tool, lang);
+  console.log("[lead-magnet]", tool, email, file ? "file" : "no-file");
+  const crm = { source: "eddekhar_landing", tags: ["Eddekhar referral", "lead_magnet:" + tool, "lang:" + lang], email, utm: body.utm,
+    note: `Eddekhar referral. Requested "${title}" from the landing page${file ? "; the guide was emailed to their company inbox" : ""}.` };
   if (env.CRM_WEBHOOK_URL) fetch(env.CRM_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (env.CRM_API_KEY || "") }, body: JSON.stringify(crm) }).catch((e) => console.error("[crm]", e.message));
   else console.log("[crm stub]", JSON.stringify(crm));
-  if (mailer) mailer.sendMail({ from: FROM, to: TEAM, replyTo: o.e, subject: `[Eddekhar lead] ${o.e} verified and downloaded: ${title}`,
-    text: `${o.e} verified their company email and downloaded "${title}" (${o.t}) from the Eddekhar landing page (${o.l}).` + (leadFile(o.t, o.l) ? "" : "\nNo file is configured for this tool yet: please send it by hand.") })
+  if (!mailer) return { sent: false, download: file ? guideLink(tool, lang) : null };
+  const book = `${env.PUBLIC_BASE_URL}/${lang}/#book`;
+  const html = emailHtml(lang, {
+    title: ar ? "شكرًا لاهتمامك، دليلك مرفق" : "Thank you, your guide is attached",
+    paras: file ? (ar
+      ? [`يسعدنا أن نرسل لك <b>${esc(title)}</b> مرفقًا بهذه الرسالة.`, "أعددنا الدليل ليكون مرجعًا عمليًا لصاحب العمل: الأحكام بأرقام المواد، وأمثلة محسوبة، وقائمة تحقق تراجع بها وضع شركتك.", "وإذا أردت أن نطبّق ما فيه على شركتك تحديدًا، يراجع معك أحد مستشارينا العقود والرواتب والتأمينات في جلسة مجانية مدتها 30 دقيقة، وتخرج منها بثلاث أولويات مكتوبة."]
+      : [`We're pleased to send you <b>${esc(title)}</b>, attached to this email.`, "It is built as a practical employer reference: rules with their article numbers, worked examples and a checklist to review where your company stands.", "If you'd like to apply it to your company, one of our consultants will review your contracts, payroll and insurance with you in a free 30-minute session, and you'll leave with three written priorities."])
+      : (ar ? [`شكرًا لطلبك <b>${esc(title)}</b>.`, "سيرسله لك فريقنا خلال يوم عمل واحد."] : [`Thank you for requesting <b>${esc(title)}</b>.`, "Our team will send it to you within one working day."]),
+    cta: ar ? "احجز فحصك المجاني" : "Book your free HR check", ctaUrl: book,
+  });
+  const text = ar ? `شكرًا لاهتمامك. مرفق لك: ${title}.\n\nاحجز فحصك المجاني (30 دقيقة) مع خصم إدخار 10%: ${book}\n\nفريق موارد ومهارات\nbusiness-growth@talent-360.me`
+                  : `Thank you for your interest. Attached: ${title}.\n\nBook your free 30-minute HR check, with the 10% Eddekhar discount: ${book}\n\nThe Talent360 team\nbusiness-growth@talent-360.me`;
+  await mailer.sendMail({ from: FROM, to: email, replyTo: TEAM, subject: ar ? `${title} | موارد ومهارات` : `${title} | Talent360`, text, html,
+    attachments: file ? [{ filename: require("path").basename(file), path: file }] : [] });
+  mailer.sendMail({ from: FROM, to: TEAM, replyTo: email, subject: `[Eddekhar lead] ${title} sent to ${email}`,
+    text: `${email} requested "${title}" (${tool}) from the Eddekhar landing page (${lang}).` + (file ? " The guide was emailed to them." : "\nNo file is configured for this tool yet: please send it by hand.") })
     .catch((e) => console.error("[mail] team", e.message));
-}
-function downloadPage(o, ok) {
-  const ar = !o || o.l !== "en";
-  const title = o ? (LEAD_TITLES[o.t] || [o.t, o.t])[ar ? 0 : 1] : "";
-  const has = o && leadFile(o.t, o.l);
-  const fileUrl = o ? "/api/download/file?t=" + encodeURIComponent(leadToken(o)) : "";
-  const back = `${env.PUBLIC_BASE_URL || ""}/${ar ? "ar" : "en"}/`;
-  const msg = !ok ? (ar ? ["انتهت صلاحية الرابط", "اطلب الملف مرة أخرى من الموقع وسنرسل لك رابطًا جديدًا."] : ["This link has expired", "Request the file again on the site and we'll send you a new link."])
-    : has ? (ar ? ["تم تأكيد بريدك", `بدأ تنزيل «${title}». إن لم يبدأ، اضغط الزر.`] : ["Your email is confirmed", `"${title}" is downloading. If it didn't start, use the button.`])
-    : (ar ? ["تم تأكيد بريدك", `سيرسل لك فريقنا «${title}» خلال يوم عمل.`] : ["Your email is confirmed", `Our team will send you "${title}" within one working day.`]);
-  const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  return `<!doctype html><html lang="${ar ? "ar" : "en"}" dir="${ar ? "rtl" : "ltr"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${esc(msg[0])}</title>
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:${ar ? "Almarai," : ""}Montserrat,system-ui,sans-serif;background:linear-gradient(160deg,#F3FBFA,#DDEFF1);color:#26324D}
-.c{background:#fff;border-radius:24px;padding:36px 32px;max-width:440px;margin:16px;text-align:center;box-shadow:0 24px 50px -28px rgba(14,24,60,.35)}h1{color:#0E183C;font-size:1.5rem;margin:0 0 10px}p{line-height:1.7;margin:0 0 22px}
-a.b{display:inline-block;background:#1FC9B1;color:#0E183C;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:999px;margin:4px}a.s{background:none;color:#168C7C}</style></head>
-<body><div class="c"><h1>${esc(msg[0])}</h1><p>${esc(msg[1])}</p>${ok && has ? `<a class="b" href="${fileUrl}">${ar ? "تنزيل الملف" : "Download"}</a>` : ""}<a class="b s" href="${back}">${ar ? "العودة إلى الموقع" : "Back to the site"}</a></div>
-${ok && has ? `<script>setTimeout(function(){location.href=${JSON.stringify(fileUrl)}},600)</script>` : ""}</body></html>`;
+  return { sent: true };
 }
 
 /* ---------- CRM (Talent360 CRM on Railway) ---------- */
@@ -357,15 +378,9 @@ http.createServer(async (req, res) => {
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();
     }
-    if (req.method === "GET" && url.pathname === "/api/download") {
-      const o = readLeadToken(url.searchParams.get("t"));
-      if (o) await leadVerified(o);
-      res.writeHead(o ? 200 : 410, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
-      return res.end(downloadPage(o, !!o));
-    }
-    if (req.method === "GET" && url.pathname === "/api/download/file") {
-      const o = readLeadToken(url.searchParams.get("t")); const f = o && leadFile(o.t, o.l);
-      if (!f) { res.writeHead(410, { "Content-Type": "text/html; charset=utf-8" }); return res.end(downloadPage(o, false)); }
+    if (req.method === "GET" && url.pathname === "/api/guide") {
+      const o = readGuideLink(url.searchParams.get("t")); const f = o && leadFile(o.t, o.l);
+      if (!f) return send(res, 410, { error: "expired" });
       res.writeHead(200, { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="${require("path").basename(f)}"`, "Cache-Control": "no-store" });
       return require("fs").createReadStream(f).pipe(res);
     }
@@ -377,8 +392,8 @@ http.createServer(async (req, res) => {
       if (body.website) return send(res, 200, { ok: true });
       if (rateLimited(ip, 10) || !emailRe.test(String(body.email || ""))) return send(res, 400, { error: "invalid" });
       if (isPersonal(body.email)) return send(res, 400, { error: "personal_email" });
-      const sent = await sendLeadMagnet(body);
-      return send(res, 200, { ok: true, sent, mailed: !!mailer });
+      const r = await sendLeadMagnet(body);
+      return send(res, 200, Object.assign({ ok: true, mailed: !!mailer }, r));
     }
     if (req.method === "GET" || req.method === "HEAD") return serveStatic(url.pathname, res);
     send(res, 404, { error: "not_found" });

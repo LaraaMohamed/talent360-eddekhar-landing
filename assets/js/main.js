@@ -366,7 +366,7 @@
     return relay("New HR Health Check booking (Eddekhar): " + payload.company, {
       type: "Booking request", name: payload.name, email: payload.email, company: payload.company,
       focus: T.focus[payload.focus] || payload.focus, requested_time: when, start_utc: payload.start, utm: utmText(utm), _honey: payload.website
-    }, T.eventDetails + "\n" + when);
+    }); // no FormSubmit auto-reply to the client: their confirmation comes from business-growth@ once the mailbox is connected
   }
 
   function icsDate(d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); }
@@ -639,6 +639,13 @@
         .then(function (res) {
           if (res.j && res.j.error) return res;
           if (!res.offline && res.ok && res.j && (res.j.sent || after)) return res;
+          // No mailbox connected yet: hand the guide over on the page, and still tell the team
+          if (!res.offline && res.ok && res.j && res.j.download) {
+            var a = document.createElement("a"); a.href = res.j.download; a.download = "";
+            document.body.appendChild(a); a.click(); a.remove();
+            relay("Lead magnet request (Eddekhar): " + title, { type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value });
+            return { ok: true, j: res.j, downloaded: true };
+          }
           // No API or no mailbox connected yet: tell the team by email instead, and they follow up by hand
           return relay("Lead magnet request (Eddekhar): " + title, {
             type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value
@@ -653,7 +660,7 @@
           gateMsg.style.color = "var(--accent-ink)";
           if (after) { after(); gateMsg.textContent = T.bulkSent; return; }
           // The file unlocks only from the link in the confirmation email (company email verified)
-          gateMsg.textContent = res.j && res.j.sent ? T.gateVerify.replace("{email}", email) : T.gateSent;
+          gateMsg.textContent = res.downloaded ? T.guideThanks : res.j && res.j.sent ? T.gateVerify.replace("{email}", email) : T.gateSent;
         });
     });
   }
