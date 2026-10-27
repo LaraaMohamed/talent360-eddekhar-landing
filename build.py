@@ -38,8 +38,10 @@ CLIENTS = [  # (file, name, needs naming approval)
     ("magnetic", "Magnetic", True), ("omq", "OMQ", True), ("elite", "Elite", False),
     ("kayangulf", "Kayan Gulf", False),
     ("impetus", "Impetus Strategy", False), ("probuilder", "Probuilder", False),
+    ("ase", "ASE", False), ("meexpo", "MEEXPO", False), ("walaplus", "WalaPlus", False), ("arweqah", "Arweqah", False),
+    ("alkandi", "Mohammed Al Kandi Group", False), ("wsad", "WSAD", False), ("mrsool", "Mrsool", False),
 ]
-CLIENT_SIZES = {"alinma": (309, 120), "techstrike": (360, 62), "sifi": (190, 120), "magnetic": (252, 120), "mohasby": (308, 120), "holouly": (360, 80), "omq": (144, 120), "elite": (104, 120), "amanah": (126, 120), "kayangulf": (225, 120), "impetus": (183, 80), "probuilder": (111, 120)}
+CLIENT_SIZES = {"alinma": (309, 120), "techstrike": (360, 62), "sifi": (190, 120), "magnetic": (252, 120), "mohasby": (308, 120), "holouly": (360, 80), "omq": (144, 120), "elite": (104, 120), "amanah": (126, 120), "kayangulf": (225, 120), "impetus": (183, 80), "probuilder": (111, 120), "ase": (228, 80), "meexpo": (198, 80), "walaplus": (193, 80), "arweqah": (109, 80), "alkandi": (125, 80), "wsad": (105, 80), "mrsool": (175, 80)}
 
 
 def pending(L, label=None):
