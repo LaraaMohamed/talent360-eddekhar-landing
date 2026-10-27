@@ -1,7 +1,7 @@
 /* Talent 360 × Eddekhar landing page — v2, built on the Talent 360 Company Profile 2026 theme.
    Profile tokens (sampled from the PDF): mint gradient #E8F9F8 → #BFDEDF, navy #0E183C,
    teal #1FC9B1 / #1CA592 / #168C7C / #55C8C3, slate teal #367D7A, cream cards #E3F6F3,
-   warm white cards #FFFFFF. Type: Almarai (AR), Unbounded headings + Montserrat body (EN).
+   warm white cards #FFFFFF. Type: IBM Plex Sans Arabic (AR), Plus Jakarta Sans (EN).
    Eddekhar green appears only on the 10% offer and tick marks. */
 
 :root {
@@ -39,15 +39,15 @@
   --pending-bg: #BFEDE5;
   --pending-text: #0E183C;
 
-  --font-body: "Almarai", "IBM Plex Sans Arabic", system-ui, Tahoma, sans-serif;
-  --font-head: "Almarai", "IBM Plex Sans Arabic", system-ui, Tahoma, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", system-ui, Tahoma, sans-serif;
+  --font-head: "IBM Plex Sans Arabic", system-ui, Tahoma, sans-serif;
   --gutter: 20px;
   --max: 1200px;
   color-scheme: light;
 }
 html[lang="en"] {
-  --font-body: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-head: "Unbounded", "Montserrat", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-head: "Plus Jakarta Sans", "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -59,7 +59,7 @@ img { height: auto; }
 a { color: var(--accent-ink); text-underline-offset: 3px; }
 h1, h2, h3, h4 { font-family: var(--font-head); color: var(--heading); margin: 0 0 .5em; line-height: 1.35; font-weight: 800; }
 html[lang="en"] h1, html[lang="en"] h2 { font-weight: 500; line-height: 1.2; letter-spacing: -.01em; }
-html[lang="en"] h3 { font-family: "Montserrat", sans-serif; font-weight: 700; }
+html[lang="en"] h3 { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; }
 h1 { font-size: clamp(1.9rem, 1.2rem + 3vw, 3.4rem); }
 h2 { font-size: clamp(1.55rem, 1.15rem + 1.7vw, 2.5rem); }
 h3 { font-size: 1.2rem; }
@@ -151,7 +151,7 @@ html[lang="en"] .tagline { font-weight: 700; }
 @media (max-width: 700px) { .hero-stage { margin-block-start: 18px; } .hero-photo { aspect-ratio: 880 / 510; } }
 .offer-panel { display: flex; align-items: center; gap: 14px; text-align: start; background: linear-gradient(150deg, var(--e-green) 0%, var(--e-green-deep) 100%); color: #fff; border-radius: 20px; padding: 16px 20px; box-shadow: 0 22px 40px -18px rgba(74,114,57,.8); }
 .offer-panel .big { flex: none; font: 800 2.9rem/1 var(--font-body); letter-spacing: -.02em; }
-html[lang="en"] .offer-panel .big { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 2.5rem; }
+html[lang="en"] .offer-panel .big { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 600; font-size: 2.5rem; }
 .offer-panel .lbl { display: block; font-weight: 700; font-size: 1.02rem; }
 .offer-panel small { display: block; font-size: .86rem; opacity: .95; }
 .hero-stage .offer-panel { position: absolute; inset-block-end: 5%; inset-inline-start: 3%; max-inline-size: 290px; }
@@ -339,7 +339,7 @@ html[lang="en"] .value-line p { font-weight: 500; }
 .cream .circle svg { inline-size: 40px; block-size: 40px; }
 .cream .free { align-self: flex-start; font-size: .78rem; font-weight: 700; color: #fff; background: var(--e-green); border-radius: 999px; padding: 3px 12px; margin-block-end: 10px; }
 .cream h3 { font-size: 1.45rem; margin-block-end: 4px; }
-html[lang="en"] .cream h3 { font-family: "Unbounded", sans-serif; font-weight: 500; }
+html[lang="en"] .cream h3 { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 500; }
 .cream h4 { font: 800 1.05rem var(--font-body); color: var(--heading); margin: 14px 0 8px; }
 .cream ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .cream li { display: flex; gap: 10px; align-items: flex-start; }
@@ -725,7 +725,7 @@ dialog.gate-modal::backdrop { background: rgba(14,24,60,.55); }
 .edd-band p { margin: 0; color: var(--text-muted); max-inline-size: 640px; }
 .edd-band-offer { display: flex; align-items: center; gap: 18px; }
 .edd-band-big { font: 800 3rem/1 var(--font-body); color: var(--e-green); letter-spacing: -.02em; }
-html[lang="en"] .edd-band-big { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 2.6rem; }
+html[lang="en"] .edd-band-big { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 600; font-size: 2.6rem; }
 .btn-edd { background: var(--e-green); color: #fff; box-shadow: 0 14px 28px -12px rgba(74,114,57,.6); }
 .btn-edd:hover { background: var(--e-green-deep); }
 .btn-edd .ico-dir { color: #fff; }
@@ -1049,3 +1049,11 @@ html, body { overflow-x: clip; }
 section { padding-block: 44px; }
 @media (min-width: 1024px) { section { padding-block: 64px; } }
 .section-head { margin-block-end: 28px; }
+
+/* Hero: the 10% Eddekhar card leads the row */
+.floats .fc.fc-offer { background: linear-gradient(140deg, #7FAE6A 0%, #4E7A3D 100%) !important; border: 0; box-shadow: 0 22px 44px -18px rgba(78,122,61,.75); transform: translateY(-6px); position: relative; }
+.floats .fc.fc-offer::after { content: attr(data-badge); position: absolute; inset-block-start: -11px; inset-inline-end: 16px; background: #FFF5CB; color: #3F6531; font: 700 .72rem/1 var(--font-body); padding: 6px 10px; border-radius: 999px; box-shadow: 0 6px 14px -8px rgba(0,0,0,.35); }
+.floats .fc.fc-offer .fc-ico { background: rgba(255,255,255,.18) !important; color: #fff; }
+.floats .fc.fc-offer strong { color: #fff !important; font-size: 2.3rem !important; font-weight: 700 !important; }
+.floats .fc.fc-offer small { color: rgba(255,255,255,.92) !important; font-weight: 600; }
+.hl-offer { direction: ltr; unicode-bidi: isolate; background: #7FAE6A; color: #fff; font-weight: 700; padding: 1px 8px; border-radius: 8px; white-space: nowrap; }
