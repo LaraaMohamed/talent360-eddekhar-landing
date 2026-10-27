@@ -279,6 +279,7 @@ def _render(lang, mode):
   <div class="booking-grid">
    <div class="booker" id="booker">
     <form id="booking-form" novalidate>
+     <div class="bk-col bk-when">
      <fieldset class="bk-step"><legend><h3><span class="step-n">1</span>{e(L['step1'])}</h3></legend><div class="chips">{chips}</div></fieldset>
      <fieldset class="bk-step"><legend><h3><span class="step-n">2</span>{e(L['step2'])}</h3></legend>
       <div class="tz-row"><strong id="bk-tz-label">{e(L['tz_riyadh'])}</strong><button type="button" id="bk-tz">{e(L['show_local'])}</button></div>
@@ -289,6 +290,8 @@ def _render(lang, mode):
       <p class="slots-title" id="bk-slots-title"></p>
       <div class="slots" id="bk-slots" role="group" aria-label="{e(L['slots_label'])}" aria-live="polite"></div>
      </fieldset>
+     </div>
+     <div class="bk-col bk-who">
      <fieldset class="bk-step"><legend><h3><span class="step-n">3</span>{e(L['step3'])}</h3></legend>
       <p class="summary-line" id="bk-summary" hidden aria-live="polite"></p>
       <div class="fields">
@@ -302,6 +305,7 @@ def _render(lang, mode):
      <button class="btn btn-primary btn-block" id="bk-submit" type="submit" disabled>{e(L['submit'])}</button>
      <p class="form-error" id="bk-error" role="alert"></p>
      <p class="privacy">{ICO['lock'].replace('<svg ', '<svg width="18" height="18" style="flex:none;margin-top:3px" ')}<span>{e(L['privacy_line'])}</span></p>
+     </div>
     </form>
    </div>
    <aside class="booking-aside">
