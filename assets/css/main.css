@@ -1508,3 +1508,13 @@ html[lang="en"] .hero-stage .sub { max-width: 800px; max-inline-size: 800px; }
 /* Service cards: clear space between cards, enough for the number badges that hang below each card */
 .tiles { gap: 52px 28px !important; }
 @media (max-width: 700px) { .tiles { gap: 16px !important; } }
+
+/* Logo strip on phones: edge to edge, square corners, taller band with bigger logos */
+@media (max-width: 700px) {
+  .trusted .logo-panel { margin-inline: 0 !important; border-radius: 0 !important; border-inline: 0 !important; padding: 22px 0 !important; }
+  .trusted .marquee-track { gap: 40px !important; }
+  .trusted .logo-tile { block-size: 64px !important; }
+  .trusted .logo-tile img { max-block-size: 44px !important; max-inline-size: 120px !important; }
+  .trusted .logo-tile img[src*="amanah"] { max-block-size: 52px !important; block-size: 52px !important; }
+  .trusted .marquee { mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+}
