@@ -1,7 +1,7 @@
 /* Talent 360 × Eddekhar landing page — v2, built on the Talent 360 Company Profile 2026 theme.
    Profile tokens (sampled from the PDF): mint gradient #E8F9F8 → #BFDEDF, navy #0E183C,
    teal #1FC9B1 / #1CA592 / #168C7C / #55C8C3, slate teal #367D7A, cream cards #E3F6F3,
-   warm white cards #FFFFFF. Type: Almarai (AR), Unbounded headings + Montserrat body (EN).
+   warm white cards #FFFFFF. Type: IBM Plex Sans Arabic (AR), Unbounded headings + Montserrat body (EN).
    Eddekhar green appears only on the 10% offer and tick marks. */
 
 :root {
@@ -39,8 +39,8 @@
   --pending-bg: #BFEDE5;
   --pending-text: #0E183C;
 
-  --font-body: "Almarai", "IBM Plex Sans Arabic", system-ui, Tahoma, sans-serif;
-  --font-head: "Almarai", "IBM Plex Sans Arabic", system-ui, Tahoma, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Almarai", system-ui, Tahoma, sans-serif;
+  --font-head: "IBM Plex Sans Arabic", "Almarai", system-ui, Tahoma, sans-serif;
   --gutter: 20px;
   --max: 1200px;
   color-scheme: light;
