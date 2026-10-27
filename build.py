@@ -40,8 +40,9 @@ CLIENTS = [  # (file, name, needs naming approval)
     ("impetus", "Impetus Strategy", False), ("probuilder", "Probuilder", False),
     ("ase", "ASE", False), ("walaplus", "WalaPlus", False), ("mrsool", "Mrsool", False),
     ("meexpo", "MEEXPO", False), ("wsad", "WSAD", False),
+    ("madkhol", "Madkhol", False),
 ]
-CLIENT_SIZES = {"alinma": (309, 120), "techstrike": (360, 62), "sifi": (387, 120), "magnetic": (252, 120), "mohasby": (308, 120), "holouly": (360, 80), "omq": (144, 120), "elite": (104, 120), "amanah": (126, 120), "kayangulf": (225, 120), "impetus": (183, 80), "probuilder": (111, 120), "ase": (375, 120), "walaplus": (310, 120), "mrsool": (597, 120), "meexpo": (299, 120), "wsad": (156, 120)}
+CLIENT_SIZES = {"alinma": (309, 120), "techstrike": (360, 62), "sifi": (387, 120), "magnetic": (252, 120), "mohasby": (308, 120), "holouly": (360, 80), "omq": (144, 120), "elite": (104, 120), "amanah": (126, 120), "kayangulf": (225, 120), "impetus": (183, 80), "probuilder": (111, 120), "ase": (375, 120), "walaplus": (310, 120), "mrsool": (597, 120), "madkhol": (585, 120), "meexpo": (299, 120), "wsad": (156, 120)}
 
 
 def pending(L, label=None):
