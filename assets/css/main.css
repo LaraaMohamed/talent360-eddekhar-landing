@@ -1015,3 +1015,6 @@ html, body { overflow-x: clip; }
   .foot-main .foot-col > * { max-inline-size: none; }
   .foot-main > .foot-brand .fb-line { max-inline-size: 340px; }
 }
+
+/* Desktop density: render the whole page at 90% so it no longer reads as zoomed in */
+@media (min-width: 1024px) { html { zoom: .9; } }
