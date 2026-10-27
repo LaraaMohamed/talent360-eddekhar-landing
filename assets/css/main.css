@@ -1210,3 +1210,16 @@ html[lang="ar"] body { line-height: 1.85; }
   .hero-stage .hero-photo { object-position: 50% 42%; }
 }
 @media (min-width: 900px) { .sc-form { position: sticky; inset-block-start: 96px; } }
+
+/* Salary calculator: two choice cards (one employee / whole team) open the matching calculator */
+.sc-pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-block: 8px 24px; }
+.sc-pick-card { display: flex; align-items: center; gap: 16px; padding: 20px 22px; text-align: start; font: inherit; color: var(--heading); background: #fff; border: 2px solid rgba(14,24,60,.1); border-radius: 18px; cursor: pointer; box-shadow: 0 10px 26px -20px rgba(14,24,60,.45); transition: border-color .2s, box-shadow .2s, transform .2s; }
+.sc-pick-card:hover { border-color: var(--teal, #1FC9B1); transform: translateY(-2px); }
+.sc-pick-card:focus-visible { outline: 3px solid var(--teal, #1FC9B1); outline-offset: 2px; }
+.sc-pick-card[aria-expanded="true"] { border-color: var(--teal, #1FC9B1); box-shadow: 0 0 0 4px rgba(31,201,177,.15), 0 14px 30px -20px rgba(14,24,60,.5); }
+.sc-pick-ico { flex: none; display: grid; place-items: center; inline-size: 52px; block-size: 52px; border-radius: 14px; background: rgba(31,201,177,.14); color: var(--accent-ink, #168C7C); }
+.sc-pick-txt { display: flex; flex-direction: column; gap: 4px; }
+.sc-pick-txt b { font-size: 1.15rem; }
+.sc-pick-txt small { font-size: .92rem; color: var(--text-muted, #46536F); line-height: 1.5; }
+.sc-body[hidden], .sc-bulk[hidden] { display: none !important; }
+@media (max-width: 700px) { .sc-pick { grid-template-columns: minmax(0, 1fr); } }

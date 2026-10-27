@@ -423,6 +423,20 @@
   if (DAYS.length) { state.day = 0; renderDays(); loadSlots(); }
   validate();
 
+  /* ---------- Salary calculator: choose one employee or the whole team ---------- */
+  var pickBtns = document.querySelectorAll("[data-scpick]");
+  function openPick(which, scroll) {
+    pickBtns.forEach(function (b) {
+      var on = b.getAttribute("data-scpick") === which;
+      b.setAttribute("aria-expanded", String(on));
+      var panel = document.getElementById(b.getAttribute("aria-controls"));
+      if (panel) panel.hidden = !on;
+      if (on && panel && scroll) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    track("tool_used", { tool: "salary_calc", action: "pick_" + which });
+  }
+  pickBtns.forEach(function (b) { b.addEventListener("click", function () { openPick(b.getAttribute("data-scpick"), true); }); });
+
   /* ---------- Egypt salary calculator: Gross <-> Net (2026) ----------
      Social insurance: Law 148/2019, employee share 11% of the insured wage,
      insured wage limits from 1/1/2026: min 2,700, max 16,700 EGP.

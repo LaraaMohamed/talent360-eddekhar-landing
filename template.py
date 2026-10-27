@@ -389,7 +389,11 @@ def _render(lang, mode):
     <h3 id="salcalc-h">{e(L['sc_h'])} <span dir="ltr">{e(L['sc_h2'])}</span></h3>
     <p>{e(L['sc_sub'])}</p>
    </div>
-   <div class="sc-body">
+   <div class="sc-pick" role="group" aria-label="{e(L['sc_pick_label'])}">
+    <button type="button" class="sc-pick-card" data-scpick="one" aria-expanded="false" aria-controls="sc-one"><span class="sc-pick-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span><span class="sc-pick-txt"><b>{e(L['sc_pick_one_t'])}</b><small>{e(L['sc_pick_one_d'])}</small></span></button>
+    <button type="button" class="sc-pick-card" data-scpick="team" aria-expanded="false" aria-controls="sc-bulk"><span class="sc-pick-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/><circle cx="17.5" cy="7.5" r="2.8"/><path d="M17 12.6c2.9.3 5 2.7 5 5.6"/></svg></span><span class="sc-pick-txt"><b>{e(L['sc_pick_team_t'])}</b><small>{e(L['sc_pick_team_d'])}</small></span></button>
+   </div>
+   <div class="sc-body" id="sc-one" hidden>
     <div class="sc-form">
      <div class="sc-seg" role="group" aria-label="{e(L['sc_h'])}"><button type="button" data-scmode="g2n" aria-pressed="true" dir="ltr">{e(L['sc_g2n'])}</button><button type="button" data-scmode="n2g" aria-pressed="false" dir="ltr">{e(L['sc_n2g'])}</button></div>
      <label class="sc-label" for="sc-amount" id="sc-amount-label" data-g="{e(L['sc_in_gross'])}" data-n="{e(L['sc_in_net'])}">{e(L['sc_in_gross'])}</label>
@@ -432,7 +436,7 @@ def _render(lang, mode):
      </div>
     </div>
    </div>
-   <div class="sc-bulk" id="sc-bulk">
+   <div class="sc-bulk" id="sc-bulk" hidden>
     <div class="sc-bulk-head"><span class="sc-kicker">{e(L['sc_bulk_kicker'])}</span><h4 id="scbulk-h">{e(L['sc_bulk_h'])}</h4><p>{e(L['sc_bulk_p'])}</p></div>
     <div class="sc-bulk-body">
      <div class="sc-bulk-in">
