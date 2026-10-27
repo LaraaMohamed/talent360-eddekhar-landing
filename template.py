@@ -218,8 +218,8 @@ def _render(lang, mode):
 <!-- Trusted by: the profile's white client panel -->
 <section class="trusted alt" aria-labelledby="trusted-h">
  <div class="container">
+  <h2 id="trusted-h">{e(L['trusted_h'])}</h2><hr class="rule" aria-hidden="true">
   <div class="logo-panel">
-   <h2 id="trusted-h">{e(L['trusted_h'])}</h2><hr class="rule" aria-hidden="true">
    <div class="marquee"><ul class="marquee-track" role="list">{tiles_html(False)}{tiles_html(True)}</ul></div>
   </div>
  </div>

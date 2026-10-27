@@ -1254,3 +1254,17 @@ html[lang="ar"] body { line-height: 1.85; }
 .site-header { inset-block-start: var(--ann-h); }
 html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
 @media (min-width: 900px) { .sc-form { inset-block-start: calc(96px + var(--ann-h)); } }
+
+/* Hero photo runs on under the four cards (desktop and tablet), so the cards sit on the photo instead of at its edge */
+@media (min-width: 701px) {
+  .hero { --hero-ext: clamp(64px, 6vw, 88px); }
+  .hero-stage { min-block-size: calc(clamp(540px, 44vw, 700px) + var(--hero-ext)); padding-block-end: var(--hero-ext); }
+  .floats { margin-block-start: calc(-1 * (var(--hero-ext) + 56px)); }
+}
+
+/* Clients: title sits on the page background above a slim white logo band */
+.trusted { padding-block: clamp(40px, 5vw, 64px) clamp(32px, 4vw, 48px); }
+.trusted h2 { padding-inline: 16px; }
+.trusted .rule { margin-block: 12px 22px; }
+.trusted .logo-panel { padding: 18px 0; }
+@media (max-width: 700px) { .trusted .logo-panel { padding: 12px 0; } }
