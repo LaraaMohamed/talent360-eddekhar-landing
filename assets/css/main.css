@@ -1530,3 +1530,10 @@ html[lang="en"] .hero-stage .sub { max-width: 800px; max-inline-size: 800px; }
   .hero-stage .hero-ctas { margin-block-start: 36px !important; gap: 22px; }
   .hero-stage .hero-ctas .btn-lg { font-size: clamp(1.05rem, .8rem + .45vw, 1.35rem); padding: 22px 52px; }
 }
+
+/* Horizontal nav on every laptop/desktop; the side menu is for phones and tablets only */
+@media (min-width: 1024px) {
+  .main-nav { display: block !important; }
+  .main-nav a { padding-inline: 8px; font-size: .9rem; }
+  .menu-btn { display: none !important; }
+}
