@@ -42,9 +42,25 @@ function calendarClient() {
   return google.calendar({ version: "v3", auth });
 }
 const cal = calendarClient();
+
+/* ---------- Google Apps Script bridge (preferred): runs inside business-growth@'s own account ----------
+   See backend/apps-script/. Set APPS_SCRIPT_URL + APPS_SCRIPT_SECRET; then no service account or SMTP is needed. */
+const GAS = env.APPS_SCRIPT_URL || "";
+async function gas(action, payload) {
+  const r = await fetch(GAS, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, redirect: "follow",
+    body: JSON.stringify(Object.assign({ action, key: env.APPS_SCRIPT_SECRET || "" }, payload)) });
+  const text = await r.text();
+  let j; try { j = JSON.parse(text); } catch (e) { throw new Error("apps script: non-JSON reply (" + r.status + "): " + text.slice(0, 160)); }
+  if (j.error) throw new Error("apps script: " + j.error);
+  return j;
+}
+let gasStatus = GAS ? "checking" : "not configured";
+if (GAS) gas("ping", {}).then((j) => { gasStatus = "ok as " + j.account; console.log("[apps-script]", gasStatus); })
+  .catch((e) => { gasStatus = e.message; console.error("[apps-script]", e.message); });
 const CAL_ID = env.CONSULTANT_CALENDAR_ID || "primary";
 
 async function busyBetween(timeMin, timeMax) {
+  if (!cal && GAS) return (await gas("busy", { timeMin, timeMax })).busy || [];
   if (!cal) return []; // stub mode: everything free
   const r = await cal.freebusy.query({ requestBody: { timeMin, timeMax, timeZone: TZ, items: [{ id: CAL_ID }] } });
   return (r.data.calendars[CAL_ID] && r.data.calendars[CAL_ID].busy) || [];
@@ -82,8 +98,14 @@ function sign(id) { return crypto.createHmac("sha256", env.LINK_SECRET || "dev-s
 function verify(id, token) { const a = Buffer.from(sign(id)); const b = Buffer.from(String(token || "")); return a.length === b.length && crypto.timingSafeEqual(a, b); }
 
 /* ---------- Email (bilingual) ---------- */
-const mailer = env.SMTP_HOST && env.SMTP_PASS ? nodemailer.createTransport({ host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 587), secure: Number(env.SMTP_PORT) === 465, auth: { user: env.SMTP_USER || BG, pass: env.SMTP_PASS } }) : null;
-if (mailer) mailer.verify().then(() => console.log("[mail] SMTP ready as", env.SMTP_USER || BG)).catch((e) => console.error("[mail] SMTP login failed:", e.message));
+const smtp = env.SMTP_HOST && env.SMTP_PASS ? nodemailer.createTransport({ host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 587), secure: Number(env.SMTP_PORT) === 465, auth: { user: env.SMTP_USER || BG, pass: env.SMTP_PASS } }) : null;
+if (smtp) smtp.verify().then(() => console.log("[mail] SMTP ready as", env.SMTP_USER || BG)).catch((e) => console.error("[mail] SMTP login failed:", e.message));
+// With no SMTP, mail goes out through the Apps Script bridge from business-growth@'s Gmail.
+const mailer = smtp || (GAS ? { sendMail: (m) => {
+  const a = (m.attachments || [])[0];
+  return gas("mail", { to: m.to, subject: m.subject, text: m.text, replyTo: m.replyTo, fromName: "Talent360",
+    attachment: a ? { name: a.filename, type: "application/pdf", data: require("fs").readFileSync(a.path).toString("base64") } : null });
+} } : null);
 function fmt(date, lang) {
   return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-GB", { timeZone: TZ, dateStyle: "full", timeStyle: "short" }).format(date);
 }
@@ -109,7 +131,7 @@ async function notifyTeam(b) {
     text: [`New booking from the Eddekhar landing page.`, ``,
       `When: ${fmt(new Date(b.start), "en")} (Riyadh time)`, `Focus: ${b.focusLabel}`,
       `Name: ${b.name}`, `Company: ${b.company}`, `Email: ${b.email}`, `Language: ${b.lang}`,
-      `Meet: ${b.meetUrl || (cal ? "not created" : "calendar not connected: send an invite by hand")}`,
+      `Meet: ${b.meetUrl || (cal || GAS ? "not created" : "calendar not connected: send an invite by hand")}`,
       `UTM: ${Object.entries(b.utm || {}).map(([k, v]) => k + "=" + v).join(", ") || "none"}`].join("\n"),
   });
 }
@@ -231,11 +253,16 @@ async function book(body, ip) {
       });
       b.eventId = ev.data.id;
       b.meetUrl = ev.data.hangoutLink || null;
+    } else if (GAS) {
+      const ev = await gas("event", { summary: `${FOCUS[focus]} · ${company} (Eddekhar)`,
+        description: `Eddekhar referral. ${name}, ${company}. Language: ${lang}. 10% discount applies.`,
+        start: b.start, end: b.end, attendee: email, requestId: id });
+      b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
     }
     bookings.set(id, b);
     const sent = await Promise.allSettled([sendConfirmation(b), notifyTeam(b), pushToCrm(b)]);
     sent.forEach((r, i) => { if (r.status === "rejected") console.error(["[mail] confirmation", "[mail] team", "[crm]"][i], r.reason && r.reason.message); });
-    return [200, { id, token: b.token, meetUrl: b.meetUrl || null, calendar: !!cal, mailed: !!mailer }];
+    return [200, { id, token: b.token, meetUrl: b.meetUrl || null, calendar: !!(cal || GAS), mailed: !!mailer }];
   } finally { locks.delete(key); }
 }
 
@@ -291,12 +318,13 @@ http.createServer(async (req, res) => {
       const b = bookings.get(m[1]);
       if (!b || !verify(b.id, url.searchParams.get("token"))) return send(res, 404, { error: "not_found" });
       if (cal && b.eventId) await cal.events.delete({ calendarId: CAL_ID, eventId: b.eventId, sendUpdates: "all" });
+      else if (GAS && b.eventId) await gas("cancel", { eventId: b.eventId });
       bookings.delete(b.id);
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();
     }
     if (req.method === "GET" && url.pathname === "/api/health") {
-      return send(res, 200, { calendar: !!cal, calendarOwner: CAL_OWNER, mail: !!mailer, mailFrom: FROM, team: TEAM });
+      return send(res, 200, { calendar: !!(cal || GAS), mail: !!mailer, appsScript: gasStatus, calendarOwner: CAL_OWNER, mailFrom: FROM, team: TEAM });
     }
     if (req.method === "POST" && url.pathname === "/api/lead-magnet") {
       const body = await readJson(req);
@@ -312,4 +340,4 @@ http.createServer(async (req, res) => {
     console.error(err);
     send(res, 500, { error: "server_error" });
   }
-}).listen(PORT, () => console.log("site + booking api on :" + PORT + (cal ? "" : " (stub mode: no Google credentials)")));
+}).listen(PORT, () => console.log("site + booking api on :" + PORT + (cal || GAS ? "" : " (stub mode: no Google credentials)")));

@@ -13,6 +13,12 @@ services:
         value: business-growth@talent-360.me
       - key: MAIL_FROM
         value: Talent360 <business-growth@talent-360.me>
+      # Calendar + Gmail through business-growth@'s own Google account (backend/apps-script/README.md)
+      - key: APPS_SCRIPT_URL
+        sync: false
+      - key: APPS_SCRIPT_SECRET
+        sync: false
+      # Optional alternatives to the Apps Script bridge: Gmail SMTP and a Workspace service account
       - key: SMTP_HOST
         value: smtp.gmail.com
       - key: SMTP_PORT
