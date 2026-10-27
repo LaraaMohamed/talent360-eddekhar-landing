@@ -1055,7 +1055,7 @@ section { padding-block: 44px; }
 .floats .fc.fc-offer .fc-ico { background: rgba(255,255,255,.16) !important; color: #fff; }
 .floats .fc.fc-offer strong { color: #fff !important; }
 .floats .fc.fc-offer small { color: rgba(255,255,255,.9) !important; }
-.hl-offer { direction: ltr; unicode-bidi: isolate; background: #7FAE6A; color: #fff; font-weight: 700; padding: 1px 8px; border-radius: 8px; white-space: nowrap; }
+.hl-offer { direction: ltr; unicode-bidi: isolate; background: none; color: #5FE3CF; font-weight: 800; padding: 0; }
 
 /* Profile type, tuned: Unbounded Medium headings + Montserrat body (EN); Almarai with lighter heading weight (AR) */
 html[lang="en"] h1, html[lang="en"] h2, html[lang="en"] .hero h1 { font-family: "Unbounded", "Montserrat", sans-serif; font-weight: 500 !important; letter-spacing: -.015em; line-height: 1.18; }
