@@ -1468,3 +1468,27 @@ html[lang="en"] .hs-num { font-weight: 600; }
 /* Hero fills the first screen (below the announcement bar and header). --hero-fill is set by main.js
    from the real header height and page zoom, so it is exact on every device. */
 .hero-stage { min-block-size: var(--hero-fill, calc(100svh - 120px)) !important; display: grid; align-content: center; }
+
+/* Mobile pass (both languages): compact service cards without overlapping badges, full-width loading text,
+   smaller partner logo, tighter steps and checklist */
+.slot-empty { grid-column: 1 / -1; }
+@media (max-width: 700px) {
+  .tile { display: grid !important; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "ico title" "text text" "more more"; column-gap: 12px; row-gap: 8px; align-items: center; padding: 16px !important; }
+  .tile .tile-ico { grid-area: ico; align-self: center; margin: 0 !important; inline-size: 40px !important; block-size: 40px !important; }
+  .tile .tile-ico svg { inline-size: 22px; block-size: 22px; }
+  .tile h3 { grid-area: title; margin: 0 !important; font-size: 1rem !important; line-height: 1.4; }
+  .tile p { grid-area: text; margin: 0 !important; }
+  .tile .more { grid-area: more; margin: 2px 0 0 !important; }
+  .tile .num { display: none !important; }
+  .tiles { gap: 12px !important; }
+  .edd-band-logo img { block-size: 40px !important; }
+  .stats-foot .answer { font-size: .92rem !important; line-height: 1.75; }
+  .steps { gap: 18px !important; }
+  .step-dot { inline-size: 64px !important; block-size: 64px !important; margin-bottom: 8px !important; transform: none !important; }
+  .step-dot svg { inline-size: 26px; block-size: 26px; }
+  .step h3 { margin: 0 0 4px; }
+  .bars { gap: 10px !important; }
+  .bars li { font-size: .95rem !important; font-weight: 600; }
+  html[lang="en"] .bars li { font-size: .88rem !important; }
+}
+@media (max-width: 899px) { .slide-stats { margin-block-start: 16px !important; } .slide-cubes { inline-size: min(200px, 50%) !important; } }
