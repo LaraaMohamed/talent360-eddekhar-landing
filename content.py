@@ -213,7 +213,7 @@ C["ar"] = dict(
     gate_email="بريد العمل (بريد الشركة)", gate_send="أرسل", gate_close="إغلاق",
     gate_note="قد يتواصل معك فريق موارد ومهارات بخصوص طلبك. نعالج بياناتك وفق نظام حماية البيانات الشخصية (PDPL).",
     js=dict(
-        themeDark="تفعيل الوضع الداكن", themeLight="تفعيل الوضع الفاتح",
+        
         marqueePause="إيقاف الحركة", marqueePlay="تشغيل الحركة",
         prevWeek="الأيام السابقة", nextWeek="الأيام التالية", slotsFor="المواعيد المتاحة",
         loading="جارٍ تحميل الأوقات…", noSlots="لا توجد أوقات متاحة في هذا اليوم. جرّب يومًا آخر.", taken="محجوز",
@@ -442,7 +442,7 @@ C["en"] = dict(
     gate_email="Work email (company domain)", gate_send="Send", gate_close="Close",
     gate_note="The Talent360 team may follow up about your request. We process your data under Saudi Arabia's PDPL.",
     js=dict(
-        themeDark="Switch to dark theme", themeLight="Switch to light theme",
+        
         marqueePause="Pause motion", marqueePlay="Play motion",
         prevWeek="Earlier days", nextWeek="Later days", slotsFor="Available times",
         loading="Loading times…", noSlots="No times left on this day. Please try another day.", taken="taken",

@@ -44,7 +44,7 @@ def _render(lang, mode):
     edd_logo = A + "img/brand/eddekhar-%s.svg" % lang
     t360 = A + "img/brand/mawared-mark.webp"
     t360w = A + "img/brand/mawared-mark-white.webp"
-    by_t360 = ('<span class="mm-by" dir="ltr"><span>by</span><img class="logo-light" src="' + A + 'img/brand/talent360-lockup.png" alt="Talent360" width="124" height="20"><img class="logo-dark" src="' + A + 'img/brand/talent360-lockup-white.png" alt="" width="124" height="20"></span>')
+    by_t360 = ('<span class="mm-by" dir="ltr"><span>by</span><img class="logo-light" src="' + A + 'img/brand/talent360-lockup.png" alt="Talent360" width="124" height="20"></span>')
     privacy = PRIVACY_URL
 
     def cta(label, key, cls="btn btn-primary", href="#book", focus=None, arrow=True):
@@ -55,9 +55,9 @@ def _render(lang, mode):
         return ('<div class="section-head%s"><span class="label">%s</span><h2 id="%s">%s%s</h2><hr class="rule" aria-hidden="true"><p class="answer">%s</p></div>'
                 % (" center" if center else "", e(label), hid, e(h), extra, e(answer)))
 
-    lockup = ('<div class="lockup"><a class="mm-logo" href="https://talent-360.me" aria-label="%s" target="_blank" rel="noopener"><img class="logo-light" src="%s" alt="%s" width="86" height="44"><img class="logo-dark" src="%s" alt="" width="86" height="44">' + by_t360 + '</a>'
+    lockup = ('<div class="lockup"><a class="mm-logo" href="https://talent-360.me" aria-label="%s" target="_blank" rel="noopener"><img class="logo-light" src="%s" alt="%s" width="86" height="44">' + by_t360 + '</a>'
               '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
-              '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), t360w, e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
+              '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
 
     def tiles_html(hidden):
         out = []
@@ -155,11 +155,11 @@ def _render(lang, mode):
 <meta property="og:url" content="{url}"><meta property="og:image" content="{BASE}assets/img/cover-1600.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{A}img/brand/talent360-logo.png">
-<script>try{{var t=localStorage.getItem('t360_theme');if(t)document.documentElement.setAttribute('data-theme',t)}}catch(e){{}}</script>
+<meta name="color-scheme" content="light">
 <link rel="preload" as="image" href="{hero_img}" imagesrcset="{A}img/hero-top-900.webp 900w, {hero_img} 1600w" imagesizes="100vw" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{fonts}&display=swap">
-<link rel="stylesheet" href="{A}css/main.css?v=202610270803">
+<link rel="stylesheet" href="{A}css/main.css?v=202610270804">
 <script type="application/ld+json">{jsonld(lang, L, url)}</script>
 </head>
 <body>
@@ -172,7 +172,6 @@ def _render(lang, mode):
   <nav class="main-nav" aria-label="{e(L['nav_label'])}"><ul>{''.join('<li><a href="%s">%s</a></li>' % (h, e(t)) for h, t in L['nav'])}</ul></nav>
   <div class="header-actions">
    <a class="icon-btn" href="{other_href}" hreflang="{C[other]['hreflang']}" lang="{other}" data-lang-link aria-label="{e(L['other_lang_label'])}">{e(L['other_lang'])}</a>
-   <button class="icon-btn" id="theme-toggle" type="button" aria-pressed="false" aria-label="theme"></button>
    {cta(L['header_cta'], 'header', 'btn btn-primary btn-sm header-cta', arrow=False)}
   </div>
  </div>
@@ -476,7 +475,7 @@ def _render(lang, mode):
  <div class="container">
   <div class="foot-main">
   <div class="foot-brand">
-   <a class="fb-t360" href="https://talent-360.me" target="_blank" rel="noopener"><img class="logo-light" src="{t360}" alt="{e(L['t360_alt'])}" width="156" height="80" loading="lazy"><img class="logo-dark" src="{t360w}" alt="" width="156" height="80" loading="lazy">{by_t360}</a>
+   <a class="fb-t360" href="https://talent-360.me" target="_blank" rel="noopener"><img class="logo-light" src="{t360}" alt="{e(L['t360_alt'])}" width="156" height="80" loading="lazy">{by_t360}</a>
    <span class="fb-x" aria-hidden="true">×</span>
    <a class="edd-chip" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="138" height="44" loading="lazy"></a>
    <p class="fb-line">{e(L['foot_line'])}</p>
@@ -523,7 +522,7 @@ def _render(lang, mode):
 
 <script type="application/json" id="i18n">{json.dumps(L['js'], ensure_ascii=False)}</script>
 <script>window.T360_CONFIG = {{ apiBase: "/api", formEndpoint: "https://formsubmit.co/ajax/{TEAM_INBOX}", debug: false }};</script>
-<script src="{A}js/main.js?v=202610270803" defer></script>
+<script src="{A}js/main.js?v=202610270804" defer></script>
 </body>
 </html>
 """
