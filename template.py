@@ -72,7 +72,8 @@ def _render(lang, mode):
               '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
               '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
 
-    PNG_CLIENTS = {"alkendi", "madkhol", "meexpo", "wsad", "mrsool", "ase", "walaplus", "sifi", "kayangulf", "impetus", "probuilder"}
+    PNG_CLIENTS = {"mohasby-en", "alkendi", "madkhol", "meexpo", "wsad", "mrsool", "ase", "walaplus", "sifi", "kayangulf", "impetus", "probuilder"}
+    EN_CLIENT_VARIANT = {"mohasby"}   # logos that have a separate English-page file (name-en.png)
     AR_CLIENT_NAMES = {"alinma": "مصرف الإنماء", "amanah": "أمانة منطقة الرياض", "probuilder": "البناء المحترف للمقاولات", "ase": "الشركة العربية لهندسة النظم", "walaplus": "ولاء بلس", "mrsool": "مرسول", "wsad": "وساد", "madkhol": "مدخول", "alkendi": "مجموعة محمد الكندي القابضة"}
 
     def tiles_html(hidden):
@@ -82,6 +83,8 @@ def _render(lang, mode):
             if f is None:
                 out.append('<li class="logo-tile missing"%s>%s</li>' % (ah, L["amanah_missing"].replace("\n", "<br>")))
                 continue
+            if not rtl and f in EN_CLIENT_VARIANT:
+                f = f + "-en"
             w, h = CLIENT_SIZES[f]
             out.append('<li class="logo-tile"%s%s><img src="%simg/clients/%s.%s" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">%s</li>'
                        % (ah, "" if hidden else ' tabindex="0"', A, f, "png" if f in PNG_CLIENTS else "webp", "" if hidden else e(AR_CLIENT_NAMES.get(f, name) if rtl else name), w, h,
