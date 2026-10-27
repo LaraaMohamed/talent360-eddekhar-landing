@@ -1278,11 +1278,11 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
   .section-head { margin-block-end: 18px; }
   .section-head h2, h2 { font-size: 1.32rem !important; line-height: 1.45; }
   .section-head .rule { margin-block: 8px 10px; }
-  .section-head .answer { font-size: .9rem; line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .section-head .answer { font-size: .9rem; line-height: 1.7; }
   h3 { font-size: 1.02rem; }
   .hero-stage h1 { font-size: 1.62rem !important; line-height: 1.45; }
   .hero-stage .tagline { font-size: .95rem; }
-  .hero-stage .sub { display: none; }
+  .hero-stage .sub { display: block; font-size: .92rem; line-height: 1.7; margin-block: 6px 18px; }
   .hero-stage .hero-copy { padding-block: 28px 64px; }
   .btn-lg { padding-block: 13px; font-size: .95rem; }
 
@@ -1299,7 +1299,6 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
   .slide-stats { margin-block-start: 14px !important; gap: 8px !important; }
   .slide .stat-card { padding: 12px 8px !important; }
   .slide .stat-card strong { font-size: 1.4rem !important; }
-  .stats-foot .answer { display: none; }
   .stats-slide { padding-block: 32px !important; }
 
   /* Services: compact cards, two-line descriptions */
@@ -1307,7 +1306,7 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
   .tile { padding: 16px 16px 18px !important; min-block-size: 0 !important; }
   .tile .tile-ico { inline-size: 38px; block-size: 38px; }
   .tile h3 { margin-block: 10px 6px; }
-  .tile p, .tool-card p { font-size: .86rem; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-block: 0 8px; }
+  .tile p, .tool-card p { font-size: .86rem; line-height: 1.65; margin-block: 0 8px; }
   .tile .more { font-size: .85rem; }
 
   /* Packages */
