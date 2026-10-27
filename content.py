@@ -128,7 +128,7 @@ C["ar"] = dict(
     tools_answer="جرّب الأدوات مباشرة وشاهد النتيجة الرئيسية دون تسجيل. إذا أردت التقرير التفصيلي بصيغة PDF، نرسله إلى بريدك. وكلها متاحة لك بعد حجز الفحص المجاني.",
     tools=[
         ("compare_pdf", "دليل · محدّث 2026", "مقارنة الـ Offshoring بالكيان الخاص في مصر", "12 محورًا تقارن فريق موارد ومهارات بالكيان الخاص وصاحب العمل المسجل، مع تكاليف التوظيف 2026 ومثال محسوب. PDF من 5 صفحات."),
-        ("hcm_calc", "حاسبة", "HCM أم موظف موارد بشرية داخلي؟", "على مستوى أخصائي ومدير ومدير إدارة."),
+        ("hcm_guide", "دليل · محدّث 2026", "إدارة الموارد البشرية بالكامل أم موظف داخلي؟", "مقارنة بندًا ببند، ومن يفعل ماذا في كل وظيفة، وعلامات أن شركتك تجاوزت الحلول المؤقتة. 7 صفحات."),
         ("labour_law_eg", "دليل · محدّث 2026", "دليل قانون العمل المصري الجديد 14/2025", "العقود والساعات والإجازات والأجور والتأديب وإنهاء الخدمة، بأرقام المواد وأمثلة محسوبة. PDF من 11 صفحة."),
         ("benefits_eg", "دليل · محدّث 2026", "دليل مزايا الموظفين في مصر 2026", "الحد الأدنى للأجر، والتأمينات والضريبة، وأمثلة رواتب، وتكلفة صاحب العمل، وخطوات بناء الباقة. PDF من 9 صفحات."),
         ("labour_law_sa", "دليل · محدّث 2026", "دليل نظام العمل السعودي بعد تعديلات 2025", "التجربة والإشعار ونهاية الخدمة والإجازات والتأمينات بأرقام المواد، مع تحديثات قوى والتوطين لعام 2026. PDF من 9 صفحات."),
@@ -353,7 +353,7 @@ C["en"] = dict(
     tools_answer="Try the tools directly and see the headline result without signing up. If you want the detailed PDF report, we email it to you. All of them are unlocked once you book your free check.",
     tools=[
         ("compare_pdf", "Guide · Updated 2026", "Offshoring vs your own Egypt entity", "12 pillars comparing a Talent360 team, your own entity and an EOR, with 2026 employment costs and a worked example. 6-page PDF."),
-        ("hcm_calc", "Calculator", "HCM vs an in-house HR hire", "At officer, manager and director level."),
+        ("hcm_guide", "Guide · Updated 2026", "HCM vs an in-house HR hire", "A side-by-side comparison, who does what in every HR function, and the signs you have outgrown ad-hoc HR. 7 pages."),
         ("labour_law_eg", "Guide · Updated 2026", "Egypt's new Labour Law 14/2025: employer guide", "Contracts, hours, leave, pay, discipline and ending employment, with article numbers and worked examples. 11-page PDF."),
         ("benefits_eg", "Guide · Updated 2026", "Employee benefits in Egypt, 2026", "Minimum wage, insurance and tax, worked payslips, employer cost and how to build a package. 9-page PDF."),
         ("labour_law_sa", "Guide · Updated 2026", "Saudi Labour Law after the 2025 amendments", "Probation, notice, end of service, leave and GOSI with article numbers, plus the 2026 Qiwa and Saudization updates. 9-page PDF."),

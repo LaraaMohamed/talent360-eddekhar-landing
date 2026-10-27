@@ -159,6 +159,7 @@ const LEAD_TITLES = {
   labour_law_eg: ["دليل قانون العمل المصري الجديد 14/2025", "Egypt's new Labour Law 14/2025: employer guide"],
   labour_law_sa: ["دليل نظام العمل السعودي بعد تعديلات 2025", "Saudi Labour Law after the 2025 amendments"],
   benefits_eg: ["دليل مزايا الموظفين في مصر 2026", "Employee benefits in Egypt, 2026"],
+  hcm_guide: ["إدارة الموارد البشرية بالكامل أم موظف داخلي؟", "HCM vs an in-house HR hire"],
 };
 /* ---------- Branded HTML email (table layout, inline styles, works in Gmail and Outlook) ---------- */
 const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);

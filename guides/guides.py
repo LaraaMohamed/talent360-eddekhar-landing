@@ -6,11 +6,11 @@ and sa_labour.py; the layout in kit.py.
 Re-check every figure against the law text and the year's decisions before each edition.
 """
 import os
-import kit, eg_labour, eg_benefits, sa_labour, compare_eg, elite_case
+import kit, eg_labour, eg_benefits, sa_labour, compare_eg, elite_case, hcm_compare
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 GUIDES = {"labour_law_eg": eg_labour.GUIDE, "benefits_eg": eg_benefits.GUIDE, "labour_law_sa": sa_labour.GUIDE,
-          "compare_pdf": compare_eg.GUIDE, "elite_case_pdf": elite_case.GUIDE}
+          "compare_pdf": compare_eg.GUIDE, "elite_case_pdf": elite_case.GUIDE, "hcm_guide": hcm_compare.GUIDE}
 
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
