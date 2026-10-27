@@ -141,7 +141,7 @@ ROOT_REDIRECT = """<!doctype html>
 <link rel="canonical" href="{base}ar/">
 <link rel="alternate" hreflang="ar-SA" href="{base}ar/"><link rel="alternate" hreflang="en-SA" href="{base}en/"><link rel="alternate" hreflang="x-default" href="{base}ar/">
 <meta name="robots" content="noindex, follow">
-<script>var l="ar";try{{l=localStorage.getItem("t360_lang")||"ar"}}catch(e){{}}location.replace((l==="en"?"en/":"ar/")+location.search);</script>
+<script>location.replace("ar/"+location.search);</script>
 <meta http-equiv="refresh" content="0; url=ar/">
 </head><body style="background:#FFFFFF"><p><a href="ar/">العربية</a> · <a href="en/">English</a></p></body></html>
 """
