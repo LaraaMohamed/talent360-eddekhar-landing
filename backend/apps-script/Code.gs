@@ -59,10 +59,11 @@ function createEvent(b) {
   return { eventId: ev.id, meetUrl: ev.hangoutLink || null };
 }
 
-// Plain-text email from this mailbox, optional PDF attachment (base64).
+// Email from this mailbox: HTML with a plain-text fallback, optional PDF attachment (base64).
 function mail(b) {
   var opts = { name: b.fromName || "Talent360" };
   if (b.replyTo) opts.replyTo = b.replyTo;
+  if (b.html) opts.htmlBody = b.html;
   if (b.attachment) opts.attachments = [Utilities.newBlob(Utilities.base64Decode(b.attachment.data), b.attachment.type || "application/pdf", b.attachment.name)];
   GmailApp.sendEmail(b.to, b.subject, b.text, opts);
   return { ok: true };
