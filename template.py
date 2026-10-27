@@ -145,7 +145,7 @@ def _render(lang, mode):
     stat_cards = "".join('<li class="stat-card" style="--x:%.3f%%;--y:%.3f%%"><strong><bdi>%s</bdi></strong><span>%s</span></li>' % (x / 14.4, y / 8.1, e(n), e(l)) for (n, l), (x, y) in zip(L["stats"], boxes))
 
     alt_links = '<link rel="alternate" hreflang="ar-SA" href="%sar/"><link rel="alternate" hreflang="en-SA" href="%sen/"><link rel="alternate" hreflang="x-default" href="%sar/">' % (BASE, BASE, BASE)
-    fonts = "family=Almarai:wght@400;700;800" if rtl else "family=Montserrat:wght@400;500;600;700;800&family=Unbounded:wght@400;500;600"
+    fonts = "family=IBM+Plex+Sans+Arabic:wght@400;500;600;700" if rtl else "family=Plus+Jakarta+Sans:wght@400;500;600;700;800"
     hero_img = A + "img/hero-top-1600.webp"
     metric_aside = "من 0 إلى 25" if rtl else "0 → 25"
 
@@ -196,12 +196,12 @@ def _render(lang, mode):
   <div class="container hero-copy">
    <h1 id="h1">{e(L['h1']).replace(e(L['h1_hl']), '<span class="hl">%s</span>' % e(L['h1_hl']))}</h1>
    <p class="tagline">{e(L['tagline'])}</p>
-   <p class="sub">{e(L['hero_sub'])}</p>
+   <p class="sub">{e(L['hero_sub']).replace('10%', '<mark class="hl-offer">10%</mark>', 1)}</p>
    <div class="hero-ctas">{cta(L['cta_primary'], 'hero_primary', 'btn btn-primary btn-lg', focus='hr')}{cta(L['cta_secondary'], 'hero_secondary', 'btn btn-glass btn-lg', href='#compare', arrow=False)}</div>
   </div>
  </div>
  <div class="container floats">
-   <div class="fc fc-offer"><span class="fc-ico">{ICO['coins']}</span><span><strong><bdi>{e(L['fc_offer'][0])}</bdi></strong><small>{e(L['fc_offer'][1])}</small></span></div>
+   <div class="fc fc-offer" data-badge="{e(L['hero_tag'])}"><span class="fc-ico">{ICO['coins']}</span><span><strong><bdi>{e(L['fc_offer'][0])}</bdi></strong><small>{e(L['fc_offer'][1])}</small></span></div>
    <div class="fc fc-stat fc-b"><span class="fc-ico">{ICO['video']}</span><span><strong><bdi>{e(L['fc_b'][0])}</bdi></strong><small>{e(L['fc_b'][1])}</small></span></div>
    <div class="fc fc-stat fc-a"><span class="fc-ico">{ICO['team']}</span><span><strong><bdi>{e(L['fc_a'][0])}</bdi></strong><small>{e(L['fc_a'][1])}</small></span></div>
    <div class="fc fc-trust2"><span class="fc-ico">{ICO['shield']}</span><span><strong>{e(L['fc_trust'][0])}</strong><small>{e(L['fc_trust'][1])}</small></span></div>
