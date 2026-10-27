@@ -1018,3 +1018,8 @@ html, body { overflow-x: clip; }
 
 /* Desktop density: render the whole page at 90% so it no longer reads as zoomed in */
 @media (min-width: 1024px) { html { zoom: .9; } }
+
+/* Header: a quieter "by Talent360" next to the Mawared mark */
+.lockup .mm-by { font-size: .72rem; gap: 5px; }
+.lockup .mm-by img { block-size: 15px !important; }
+@media (max-width: 700px) { .lockup .mm-by { font-size: .62rem; } .lockup .mm-by img { block-size: 11px !important; } }
