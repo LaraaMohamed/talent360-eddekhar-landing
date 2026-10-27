@@ -1017,7 +1017,7 @@ html, body { overflow-x: clip; }
 }
 
 /* Density: laptops with display scaling (125-200%) report ~900-1100px, so scale down from 768px up */
-@media (min-width: 600px) { html { zoom: .8; } }
+@media (min-width: 600px) { html { zoom: .86; } }
 
 /* Header: a quieter "by Talent360" next to the Mawared mark */
 .lockup .mm-by { font-size: .72rem; gap: 5px; }
@@ -1044,3 +1044,8 @@ html, body { overflow-x: clip; }
   .bk-who .fields { grid-template-columns: minmax(0, 1fr); }
   .bk-col > .bk-step:last-of-type { margin-block-end: 18px; }
 }
+
+/* Tighter rhythm: less empty space between sections */
+section { padding-block: 44px; }
+@media (min-width: 1024px) { section { padding-block: 64px; } }
+.section-head { margin-block-end: 28px; }
