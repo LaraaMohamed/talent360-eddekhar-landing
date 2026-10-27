@@ -72,6 +72,7 @@ def _render(lang, mode):
               '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
               '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
 
+    PNG_CLIENTS = {"kayangulf", "impetus", "probuilder", "ase", "meexpo", "walaplus", "arweqah", "alkandi", "wsad", "mrsool"}
     AR_CLIENT_NAMES = {"alinma": "مصرف الإنماء", "amanah": "أمانة منطقة الرياض", "probuilder": "البناء المحترف للمقاولات", "ase": "الشركة العربية لهندسة النظم", "walaplus": "ولاء بلس", "arweqah": "أروقة", "alkandi": "مجموعة محمد الكندي", "wsad": "وساد", "mrsool": "مرسول"}
 
     def tiles_html(hidden):
@@ -82,8 +83,8 @@ def _render(lang, mode):
                 out.append('<li class="logo-tile missing"%s>%s</li>' % (ah, L["amanah_missing"].replace("\n", "<br>")))
                 continue
             w, h = CLIENT_SIZES[f]
-            out.append('<li class="logo-tile"%s%s><img src="%simg/clients/%s.webp" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">%s</li>'
-                       % (ah, "" if hidden else ' tabindex="0"', A, f, "" if hidden else e(AR_CLIENT_NAMES.get(f, name) if rtl else name), w, h,
+            out.append('<li class="logo-tile"%s%s><img src="%simg/clients/%s.%s" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">%s</li>'
+                       % (ah, "" if hidden else ' tabindex="0"', A, f, "png" if f in PNG_CLIENTS else "webp", "" if hidden else e(AR_CLIENT_NAMES.get(f, name) if rtl else name), w, h,
                           pending(L, "اعتماد الاسم" if rtl else "Name approval") if (approval and not hidden) else ""))
         return "".join(out)
 
