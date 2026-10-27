@@ -1245,3 +1245,12 @@ html[lang="ar"] body { line-height: 1.85; }
   .hero-stage .hero-copy { padding-block: clamp(48px, 5.6vw, 80px) clamp(84px, 8.5vw, 112px); }
   .hero-stage .hero-photo { object-position: 50% 36%; }
 }
+
+/* Offer bar stays on screen while scrolling; the header sticks right under it */
+:root { --ann-h: 40px; }
+.announce { position: sticky; inset-block-start: 0; z-index: 51; }
+.announce a { block-size: var(--ann-h); min-block-size: 0; padding-block: 0; overflow: hidden; white-space: nowrap; }
+.announce .a-long, .announce .a-short { overflow: hidden; text-overflow: ellipsis; min-inline-size: 0; }
+.site-header { inset-block-start: var(--ann-h); }
+html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
+@media (min-width: 900px) { .sc-form { inset-block-start: calc(96px + var(--ann-h)); } }
