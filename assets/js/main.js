@@ -751,3 +751,24 @@
   }, { threshold: 0.6 });
   document.querySelectorAll(".stat-card strong bdi, .floats .fc strong bdi").forEach(function (el) { cio.observe(el); });
 })();
+
+/* Side menu */
+(function () {
+  var drawer = document.getElementById("side-nav"), btn = document.querySelector(".menu-btn");
+  if (!drawer || !btn) return;
+  function open() {
+    drawer.hidden = false; document.documentElement.classList.add("drawer-open");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { drawer.classList.add("open"); }); });
+    btn.setAttribute("aria-expanded", "true");
+    var f = drawer.querySelector(".drawer-close"); if (f) f.focus();
+  }
+  function close() {
+    drawer.classList.remove("open"); document.documentElement.classList.remove("drawer-open");
+    btn.setAttribute("aria-expanded", "false");
+    setTimeout(function () { drawer.hidden = true; }, 300);
+    btn.focus({ preventScroll: true });
+  }
+  btn.addEventListener("click", open);
+  drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !drawer.hidden) close(); });
+})();

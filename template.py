@@ -190,9 +190,21 @@ def _render(lang, mode):
   <div class="header-actions">
    <a class="icon-btn" href="{other_href}" hreflang="{C[other]['hreflang']}" lang="{other}" data-lang-link aria-label="{e(L['other_lang_label'])}">{e(L['other_lang'])}</a>
    {cta(L['header_cta'], 'header', 'btn btn-primary btn-sm header-cta', arrow=False)}
+   <button class="icon-btn menu-btn" type="button" aria-controls="side-nav" aria-expanded="false" aria-label="{'القائمة' if rtl else 'Menu'}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
   </div>
  </div>
 </header>
+<div class="drawer" id="side-nav" hidden>
+ <div class="drawer-scrim" data-close></div>
+ <aside class="drawer-panel" role="dialog" aria-modal="true" aria-label="{e(L['nav_label'])}">
+  <div class="drawer-top">{lockup}<button class="icon-btn drawer-close" type="button" data-close aria-label="{'إغلاق القائمة' if rtl else 'Close menu'}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <nav aria-label="{e(L['nav_label'])}"><ul class="drawer-links">{''.join('<li><a href="%s" data-close>%s<span aria-hidden="true">%s</span></a></li>' % (h, e(t), '‹' if rtl else '›') for h, t in L['nav'])}</ul></nav>
+  <div class="drawer-foot">
+   {cta(L['header_cta'], 'drawer', 'btn btn-primary btn-block', arrow=False).replace('<a ', '<a data-close ', 1)}
+   <a class="drawer-lang" href="{other_href}" hreflang="{C[other]['hreflang']}" lang="{other}" data-lang-link>{'English' if rtl else 'العربية'}</a>
+  </div>
+ </aside>
+</div>
 
 <main id="main">
 <!-- Hero: the profile cover -->
