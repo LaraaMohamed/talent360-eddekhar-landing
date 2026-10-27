@@ -13,6 +13,8 @@ Content lives in `content.py`, markup in `template.py`, styles and scripts in `a
 
 ## Deploy
 
+**Calendar and Gmail:** bookings and guide emails run through a Google Apps Script inside business-growth@talent-360.me's own account. Setup takes five minutes and needs no admin: follow `backend/apps-script/README.md`, then set `APPS_SCRIPT_URL` and `APPS_SCRIPT_SECRET` on Render. Check `/api/health`.
+
 **Render (live, dynamic):** `render.yaml` runs `backend/server.js`, which serves the built pages from `dist/` and the
 booking and lead-magnet API on the same domain. Every push to `main` redeploys. Email needs `SMTP_HOST`, `SMTP_USER` and
 `SMTP_PASS` set in the Render service's Environment tab; calendar invites need `GOOGLE_SERVICE_ACCOUNT_JSON` (see `backend/.env.example`).
