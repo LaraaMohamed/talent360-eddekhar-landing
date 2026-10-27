@@ -19,8 +19,9 @@ C["ar"] = dict(
     partner_tag="عرض رسمي من شريك إدخار",
     nav=[
         ("#help", "خدماتنا"),
+        ("#elite", "قصص العملاء"),
         ("#compare", "المقارنة"),
-        ("#tools", "أدلة وأدوات"),
+        ("#tools", "أدوات ومصادر"),
         ("#faq", "أسئلة متكررة"),
     ],
     nav_label="القائمة الرئيسية",
@@ -410,8 +411,9 @@ C["en"] = dict(
     partner_tag="Official Eddekhar partner offer",
     nav=[
         ("#help", "Services"),
+        ("#elite", "Client stories"),
         ("#compare", "Compare"),
-        ("#tools", "Guides & tools"),
+        ("#tools", "Tools & resources"),
         ("#faq", "FAQ"),
     ],
     nav_label="Main navigation",
