@@ -1223,3 +1223,18 @@ html[lang="ar"] body { line-height: 1.85; }
   .tool-grid > .tool-card:last-child:nth-child(odd) { flex-basis: 100%; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto; column-gap: 24px; align-items: center; }
   .tool-grid > .tool-card:last-child:nth-child(odd) .btn { grid-column: 2; grid-row: 1 / span 3; margin: 0; align-self: center; }
 }
+
+/* Salary calculators: inputs on top in one row, results full width underneath */
+.sc-body, .sc-bulk-body { grid-template-columns: minmax(0, 1fr) !important; align-items: stretch; }
+.sc-form { position: static !important; }
+@media (min-width: 900px) {
+  .sc-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); column-gap: 20px; row-gap: 8px; align-items: end; }
+  .sc-form > .sc-seg { grid-column: 1; grid-row: 2; margin: 0; }
+  .sc-form > #sc-amount-label { grid-column: 2; grid-row: 1; margin: 0; }
+  .sc-form > #sc-amount { grid-column: 2; grid-row: 2; margin: 0; }
+  .sc-form > span.sc-label { grid-column: 3; grid-row: 1; margin: 0; }
+  .sc-form > .sc-chips { grid-column: 3; grid-row: 2; margin: 0; }
+  .sc-form > #sc-manual { grid-column: 3; grid-row: 3; margin: 0; }
+  .sc-form > .sc-note { grid-column: 1 / -1; grid-row: 4; margin: 4px 0 0; }
+  .sc-bulk-in .sc-ta { min-block-size: 140px; block-size: 140px; }
+}
