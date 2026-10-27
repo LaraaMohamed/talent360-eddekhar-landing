@@ -201,10 +201,10 @@ def _render(lang, mode):
   </div>
  </div>
  <div class="container floats">
-   <div class="fc fc-offer" data-badge="{e(L['hero_tag'])}"><span class="fc-ico">{ICO['coins']}</span><span><strong><bdi>{e(L['fc_offer'][0])}</bdi></strong><small>{e(L['fc_offer'][1])}</small></span></div>
+   <div class="fc fc-offer"><span class="fc-ico">{ICO['coins']}</span><span><strong><bdi>{e(L['fc_offer'][0])}</bdi></strong><small>{e(L['fc_offer'][1])}</small></span></div>
    <div class="fc fc-stat fc-b"><span class="fc-ico">{ICO['video']}</span><span><strong><bdi>{e(L['fc_b'][0])}</bdi></strong><small>{e(L['fc_b'][1])}</small></span></div>
    <div class="fc fc-stat fc-a"><span class="fc-ico">{ICO['team']}</span><span><strong><bdi>{e(L['fc_a'][0])}</bdi></strong><small>{e(L['fc_a'][1])}</small></span></div>
-   <div class="fc fc-trust2"><span class="fc-ico">{ICO['shield']}</span><span><strong>{e(L['fc_trust'][0])}</strong><small>{e(L['fc_trust'][1])}</small></span></div>
+   <div class="fc fc-trust2"><span class="fc-ico">{ICO['shield']}</span><span><strong><bdi>{e(L['fc_trust'][0])}</bdi></strong><small>{e(L['fc_trust'][1])}</small></span></div>
   </div>
 </section>
 
