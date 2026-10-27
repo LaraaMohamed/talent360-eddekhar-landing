@@ -1238,3 +1238,10 @@ html[lang="ar"] body { line-height: 1.85; }
   .sc-form > .sc-note { grid-column: 1 / -1; grid-row: 4; margin: 4px 0 0; }
   .sc-bulk-in .sc-ta { min-block-size: 140px; block-size: 140px; }
 }
+
+/* Hero: a lighter trim than before (about half), so more of the first screen shows the cards */
+@media (min-width: 701px) {
+  .hero-stage { min-block-size: clamp(540px, 44vw, 700px); }
+  .hero-stage .hero-copy { padding-block: clamp(48px, 5.6vw, 80px) clamp(84px, 8.5vw, 112px); }
+  .hero-stage .hero-photo { object-position: 50% 36%; }
+}
