@@ -525,7 +525,7 @@
       $("sc-r-ins").textContent = "− " + egp(r.insurance);
       $("sc-r-tax").textContent = "− " + egp(r.tax);
       $("sc-r-net").textContent = egp(r.net);
-      $("sc-r-annual").textContent = egp(r.net * 12) + " " + (T.cur || "EGP");
+      $("sc-r-annual").textContent = egp(r.net * 12) + " EGP";
       var sl = taxSlices(r.taxable);
       $("sc-r-eff").textContent = (r.gross > 0 ? (r.tax / r.gross * 100) : 0).toFixed(1) + "%";
       $("sc-r-marg").textContent = sl.length ? (sl[sl.length - 1].rate * 100).toFixed(1).replace(".0", "") + "%" : "0%";
@@ -537,7 +537,7 @@
       if (r.cost !== null) {
         $("sc-r-erins").textContent = "+ " + egp(r.erIns);
         $("sc-r-ercost").textContent = egp(r.cost);
-        $("sc-r-erannual").textContent = egp(r.cost * 12) + " " + (T.cur || "EGP");
+        $("sc-r-erannual").textContent = egp(r.cost * 12) + " EGP";
       }
       scLast = r;
       out.hidden = false;
@@ -570,8 +570,8 @@
     $("sc-copy").addEventListener("click", function () {
       if (!scLast) return;
       var btn = this, l = JSON.parse(btn.getAttribute("data-l")), r = scLast;
-      var lines = [l[0] + ": " + egp(r.gross) + " " + (T.cur || "EGP"), l[1] + ": " + egp(r.insurance) + " " + (T.cur || "EGP"), l[2] + ": " + egp(r.tax) + " " + (T.cur || "EGP"), l[3] + ": " + egp(r.net) + " " + (T.cur || "EGP")];
-      if (r.cost !== null) lines.push(l[4] + ": " + egp(r.erIns) + " " + (T.cur || "EGP"), l[5] + ": " + egp(r.cost) + " " + (T.cur || "EGP"));
+      var lines = [l[0] + ": " + egp(r.gross) + " EGP", l[1] + ": " + egp(r.insurance) + " EGP", l[2] + ": " + egp(r.tax) + " EGP", l[3] + ": " + egp(r.net) + " EGP"];
+      if (r.cost !== null) lines.push(l[4] + ": " + egp(r.erIns) + " EGP", l[5] + ": " + egp(r.cost) + " EGP");
       var done = function () { var t = btn.textContent; btn.textContent = btn.getAttribute("data-done"); setTimeout(function () { btn.textContent = t; }, 2500); };
       if (navigator.clipboard) navigator.clipboard.writeText(lines.join("\n")).then(done, function () {}); 
       track("tool_used", { tool: "salary_calculator_eg", action: "copy_offer" });

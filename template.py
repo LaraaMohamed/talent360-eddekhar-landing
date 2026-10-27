@@ -72,8 +72,6 @@ def _render(lang, mode):
               '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
               '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
 
-    AR_CLIENT_NAMES = {"alinma": "مصرف الإنماء", "amanah": "أمانة منطقة الرياض"}
-
     def tiles_html(hidden):
         out = []
         for f, name, approval in CLIENTS:
@@ -83,7 +81,7 @@ def _render(lang, mode):
                 continue
             w, h = CLIENT_SIZES[f]
             out.append('<li class="logo-tile"%s%s><img src="%simg/clients/%s.webp" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">%s</li>'
-                       % (ah, "" if hidden else ' tabindex="0"', A, f, "" if hidden else e(AR_CLIENT_NAMES.get(f, name) if rtl else name), w, h,
+                       % (ah, "" if hidden else ' tabindex="0"', A, f, "" if hidden else e(name), w, h,
                           pending(L, "اعتماد الاسم" if rtl else "Name approval") if (approval and not hidden) else ""))
         return "".join(out)
 
@@ -101,10 +99,10 @@ def _render(lang, mode):
     chips = "".join('<div class="chip"><input type="radio" name="focus" id="f-%s" value="%s"><label for="f-%s">%s</label></div>' % (k, k, k, e(v)) for k, v in L["focus"].items())
 
     mocks = [
-        '<div class="mock" aria-hidden="true"><div class="mock-h"><span>%s</span><span>%s</span></div><div class="mini-days">%s</div><div class="mini-slots"><span>10:00</span><span class="on">10:45</span><span>11:30</span><span>12:15</span><span>13:00</span><span>13:45</span></div></div>'
-        % (e(L["mock1_h"]), "الرياض" if L["dir"] == "rtl" else "GMT+3", "".join('<span%s>%s</span>' % (' class="on"' if i == 1 else "", d) for i, d in enumerate(L["mock1_days"]))),
-        '<div class="mock" aria-hidden="true"><div class="mock-h"><span>%s</span><span style="color:#1FC9B1">●</span></div><div class="call"><span class="av">%s</span><div><strong>%s</strong><br><span>%s</span></div></div><div class="bar"><i style="inline-size:60%%"></i></div></div>'
-        % (e(L["mock2_h"]), "م" if L["dir"] == "rtl" else "T", e(L["mock2_who"]), e(L["mock2_meta"])),
+        '<div class="mock" aria-hidden="true"><div class="mock-h"><span>%s</span><span>GMT+3</span></div><div class="mini-days">%s</div><div class="mini-slots"><span>10:00</span><span class="on">10:45</span><span>11:30</span><span>12:15</span><span>13:00</span><span>13:45</span></div></div>'
+        % (e(L["mock1_h"]), "".join('<span%s>%s</span>' % (' class="on"' if i == 1 else "", d) for i, d in enumerate(L["mock1_days"]))),
+        '<div class="mock" aria-hidden="true"><div class="mock-h"><span>%s</span><span style="color:#1FC9B1">●</span></div><div class="call"><span class="av">T</span><div><strong>%s</strong><br><span>%s</span></div></div><div class="bar"><i style="inline-size:60%%"></i></div></div>'
+        % (e(L["mock2_h"]), e(L["mock2_who"]), e(L["mock2_meta"])),
         '<div class="mock" aria-hidden="true"><div class="mock-h"><span>%s</span><span class="tag10">-10%%</span></div><ol>%s</ol><div class="mock-h" style="margin:0"><span>%s</span><span style="color:#608E4D">✓</span></div></div>'
         % (e(L["mock3_h"]), "".join("<li>%s</li>" % e(i) for i in L["mock3_items"]), e(L["mock3_price"])),
     ]
@@ -418,7 +416,7 @@ def _render(lang, mode):
      <div id="sc-out" hidden>
       <div class="sc-head">
       <small id="sc-out-label" data-g="{e(L['sc_out_gross'])}" data-n="{e(L['sc_out_net'])}">{e(L['sc_out_net'])}</small>
-      <div class="sc-big" dir="ltr"><span id="sc-big">0</span> <span class="cur">{e(L['js']['cur'])}</span></div>
+      <div class="sc-big" dir="ltr"><span id="sc-big">0</span> <span class="cur">EGP</span></div>
       <div class="sc-bar" dir="ltr" aria-hidden="true"><i class="b-net" id="sc-b-net"></i><i class="b-ins" id="sc-b-ins"></i><i class="b-tax" id="sc-b-tax"></i></div>
       </div>
       <dl class="sc-rows">
