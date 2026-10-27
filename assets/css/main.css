@@ -1460,3 +1460,9 @@ html[lang="en"] .hs-num { font-weight: 600; }
   .hs-num { font-size: 1.25rem; }
   .hs-lbl { font-size: .72rem; }
 }
+
+/* Hero figures strip removed: no space left below the hero */
+.hero { padding-block-end: 0 !important; }
+.hero-stage .hero-copy { padding-block-end: clamp(44px, 5vw, 72px) !important; }
+@media (min-width: 701px) { .hero-stage { min-block-size: clamp(440px, 34vw, 560px) !important; } }
+@media (max-width: 700px) { .hero-stage .hero-copy { padding-block-end: 36px !important; } }
