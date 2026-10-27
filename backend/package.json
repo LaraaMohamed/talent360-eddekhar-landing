@@ -1,0 +1,10 @@
+{
+  "name": "talent360-eddekhar-booking",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Booking API for the Talent360 x Eddekhar landing page",
+  "main": "server.js",
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "googleapis": "^144.0.0", "nodemailer": "^6.9.15" }
+}

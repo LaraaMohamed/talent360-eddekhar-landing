@@ -1,0 +1,8 @@
+dist/
+preview/
+__pycache__/
+*.bak
+node_modules/
+backend/.env
+guides/out/*.png
+guides/out/*.html
