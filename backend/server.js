@@ -335,19 +335,56 @@ async function pushToCrm(b) {
 /* ---------- Storage: bookings in Postgres when DATABASE_URL is set (survive restarts), memory otherwise ---------- */
 const db = env.DATABASE_URL ? new (require("pg").Pool)({ connectionString: env.DATABASE_URL, max: 4, ssl: /sslmode=require/.test(env.DATABASE_URL) ? { rejectUnauthorized: false } : false }) : null;
 class BookingStore extends Map {
-  set(id, b) { super.set(id, b); this.save(b); return this; }
-  delete(id) { const had = super.delete(id); if (db) db.query("DELETE FROM bookings WHERE id = $1", [id]).catch((e) => console.error("[db] delete", e.message)); return had; }
-  save(b) { if (db) db.query("INSERT INTO bookings (id, data, start_at) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, start_at = EXCLUDED.start_at", [b.id, b, b.start]).catch((e) => console.error("[db] save", e.message)); }
+  set(id, b) { if (!b.status) b.status = "booked"; super.set(id, b); this.save(b); return this; }
+  // Cancelled or rescheduled bookings leave memory (they no longer block slots) but stay in the database
+  close(b, status) { b.status = status; b.closedAt = new Date().toISOString(); this.save(b); return super.delete(b.id); }
+  save(b) { if (db) db.query("INSERT INTO bookings (id, data, start_at, status, email, created_at) VALUES ($1, $2, $3, $4, $5, COALESCE($6::timestamptz, now())) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, start_at = EXCLUDED.start_at, status = EXCLUDED.status",
+    [b.id, b, b.start, b.status || "booked", b.email, b.createdAt || null]).catch((e) => console.error("[db] save", e.message)); }
 }
 const bookings = new BookingStore();
+function saveLead(l) {
+  if (db) db.query("INSERT INTO leads (email, tool, title, lang, utm, page) VALUES ($1, $2, $3, $4, $5, $6)", [l.email, l.tool, l.title, l.lang, l.utm || {}, l.page || null])
+    .catch((e) => console.error("[db] lead", e.message));
+}
 if (db) (async () => {
   try {
     await db.query("CREATE TABLE IF NOT EXISTS bookings (id text PRIMARY KEY, data jsonb NOT NULL, start_at timestamptz, created_at timestamptz DEFAULT now())");
-    const r = await db.query("SELECT data FROM bookings WHERE start_at > now() - interval '1 day'");
+    await db.query("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS status text DEFAULT 'booked', ADD COLUMN IF NOT EXISTS email text");
+    await db.query("CREATE TABLE IF NOT EXISTS leads (id serial PRIMARY KEY, email text NOT NULL, tool text, title text, lang text, utm jsonb, page text, created_at timestamptz DEFAULT now())");
+    const r = await db.query("SELECT data FROM bookings WHERE start_at > now() - interval '1 day' AND COALESCE(status, 'booked') = 'booked'");
     r.rows.forEach((row) => Map.prototype.set.call(bookings, row.data.id, row.data));
     console.log("[db] loaded", r.rows.length, "bookings");
   } catch (e) { console.error("[db] init", e.message); }
 })();
+
+/* ---------- Private admin view: /admin?key=ADMIN_KEY (bookings incl. cancelled, guide requests, CSV export) ---------- */
+function csv(rows, cols) {
+  const q = (v) => { v = v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  return "\ufeff" + cols.join(",") + "\n" + rows.map((r) => cols.map((c) => q(r[c])).join(",")).join("\n");
+}
+async function adminData() {
+  const b = await db.query("SELECT id, status, created_at, start_at, data FROM bookings ORDER BY created_at DESC LIMIT 2000");
+  const l = await db.query("SELECT id, created_at, email, tool, title, lang, utm, page FROM leads ORDER BY created_at DESC LIMIT 5000");
+  const fmtT = (d) => d ? new Date(d).toLocaleString("en-GB", { timeZone: TZ, dateStyle: "medium", timeStyle: "short" }) : "";
+  return {
+    bookings: b.rows.map((r) => ({ booked_at: fmtT(r.created_at), session: fmtT(r.start_at), status: r.status || "booked", name: r.data.name, email: r.data.email, company: r.data.company,
+      phone: r.data.phone || "", check: r.data.focusLabel || r.data.focus, lang: r.data.lang, closed_at: fmtT(r.data.closedAt), meet: r.data.meetUrl || "", utm_source: (r.data.utm || {}).utm_source || "" })),
+    leads: l.rows.map((r) => ({ requested_at: fmtT(r.created_at), email: r.email, guide: r.title || r.tool, lang: r.lang, utm_source: (r.utm || {}).utm_source || "" })),
+  };
+}
+function adminPage(d, key) {
+  const t = (rows) => rows.length ? "<table><thead><tr>" + Object.keys(rows[0]).map((k) => "<th>" + esc(k.replace(/_/g, " ")) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map((r) => "<tr" + (r.status && r.status !== "booked" ? ' class="off"' : "") + ">" + Object.values(r).map((v) => "<td>" + esc(v) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" : "<p>None yet.</p>";
+  const n = (s) => d.bookings.filter((b) => b.status === s).length;
+  const k = encodeURIComponent(key);
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Eddekhar leads</title>
+<style>body{font:14px/1.5 system-ui,sans-serif;margin:0;padding:24px;background:#F4F8F9;color:#0E183C}h1{margin:0 0 6px}h2{margin:32px 0 10px}.k{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}.k div{background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 6px 18px -12px #0E183C55}.k b{display:block;font-size:22px}
+.wrap{overflow:auto;background:#fff;border-radius:14px;box-shadow:0 10px 30px -22px #0E183C88}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:8px 10px;border-bottom:1px solid #E5ECEF;text-align:left;white-space:nowrap}th{background:#0E183C;color:#fff;position:sticky;top:0;text-transform:capitalize}tr.off td{color:#9AA5B5;text-decoration:line-through}tr.off td:nth-child(3){text-decoration:none;color:#B4412F;font-weight:700}a.btn{display:inline-block;margin-right:8px;padding:6px 12px;border-radius:8px;background:#1FC9B1;color:#0E183C;font-weight:700;text-decoration:none}</style></head><body>
+<h1>Talent360 × Eddekhar: leads</h1><p>Times in Riyadh time.</p>
+<div class="k"><div>Bookings<b>${n("booked")}</b></div><div>Cancelled<b>${n("cancelled")}</b></div><div>Rescheduled<b>${n("rescheduled")}</b></div><div>Guide requests<b>${d.leads.length}</b></div><div>Unique guide emails<b>${new Set(d.leads.map((l) => l.email.toLowerCase())).size}</b></div></div>
+<h2>Bookings</h2><a class="btn" href="/admin/export.csv?type=bookings&key=${k}">Download CSV</a><div class="wrap">${t(d.bookings)}</div>
+<h2>Guide requests</h2><a class="btn" href="/admin/export.csv?type=leads&key=${k}">Download CSV</a><div class="wrap">${t(d.leads)}</div></body></html>`;
+}
 
 const FOCUS = { hr: "HR Health Check", team: "Team & Workforce Check", unsure: "Not sure (decide in first 5 min)" };
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -501,7 +538,7 @@ http.createServer(async (req, res) => {
       if (cal && b.eventId) await cal.events.delete({ calendarId: CAL_ID, eventId: b.eventId, sendUpdates: "all" });
       else if (GAS && b.eventId) await gas("cancel", { eventId: b.eventId, calendarId: CAL_ID });
       refreshBusy().catch(() => {});
-      bookings.delete(b.id);
+      bookings.close(b, m[2] === "reschedule" ? "rescheduled" : "cancelled");
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();
     }
@@ -510,6 +547,16 @@ http.createServer(async (req, res) => {
       if (!f) return send(res, 410, { error: "expired" });
       res.writeHead(200, { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="${require("path").basename(f)}"`, "Cache-Control": "no-store" });
       return require("fs").createReadStream(f).pipe(res);
+    }
+    if (req.method === "GET" && (url.pathname === "/admin" || url.pathname === "/admin/export.csv")) {
+      const key = url.searchParams.get("key") || "";
+      if (!env.ADMIN_KEY || !db || key.length !== env.ADMIN_KEY.length || !crypto.timingSafeEqual(Buffer.from(key), Buffer.from(env.ADMIN_KEY))) return send(res, 404, { error: "not_found" });
+      const d = await adminData();
+      if (url.pathname === "/admin") { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }); return res.end(adminPage(d, key)); }
+      const type = url.searchParams.get("type") === "leads" ? "leads" : "bookings";
+      const rows = d[type];
+      res.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="eddekhar-${type}.csv"`, "Cache-Control": "no-store" });
+      return res.end(csv(rows, rows.length ? Object.keys(rows[0]) : ["none"]));
     }
     if (req.method === "GET" && url.pathname === "/api/health") {
       return send(res, 200, { db: !!db, calendar: !!(cal || GAS), mail: !!mailer, appsScript: gasStatus, busyCalendars: BUSY_CALS, guests: GUESTS, calendarOwner: CAL_OWNER, mailFrom: FROM, team: TEAM });
@@ -521,6 +568,8 @@ http.createServer(async (req, res) => {
       if (isPersonal(body.email)) return send(res, 400, { error: "personal_email" });
       if (!(await receivesMail(body.email))) return send(res, 400, { error: "no_mail_domain" });
       const r = await sendLeadMagnet(body);
+      const tool = String(body.tool || "").replace(/[^\w-]/g, "");
+      saveLead({ email: String(body.email).trim().toLowerCase().slice(0, 160), tool, title: (LEAD_TITLES[tool] || [tool, tool])[1], lang: body.lang === "en" ? "en" : "ar", utm: body.utm, page: String(body.page || "").slice(0, 500) });
       return send(res, 200, Object.assign({ ok: true, mailed: !!mailer }, r));
     }
     if (req.method === "GET" || req.method === "HEAD") return serveStatic(url.pathname, res);
