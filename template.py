@@ -14,6 +14,9 @@ def _ver(rel):
         return hashlib.sha1(f.read()).hexdigest()[:10]
 
 
+# Hidden sections: flip to True to show them again (their copy stays in content.py).
+SHOW_ECOSYSTEM = False  # "We work every day with the systems your company uses" (GOSI, Qiwa, Mudad...)
+
 from build import BASE, REVIEW, UPDATED, PRIVACY_URL, TEAM_INBOX, SOCIAL, TICK, ARROW, ICONS, CLIENTS, CLIENT_SIZES, pending, jsonld
 
 ICO = {
@@ -113,6 +116,8 @@ def _render(lang, mode):
     for key, _ in L["eco_tabs"]:
         cells = "".join('<div class="eco"><span class="mark" aria-hidden="true">%s</span><div><strong>%s</strong><span>%s</span></div></div>' % (e(a[:2] if not rtl else a[:1]), e(a), e(b)) for a, b in L["eco_" + key])
         eco_panels += '<div id="eco-%s"><div class="eco-grid">%s</div></div>' % (key, cells)
+    eco_section = ('<section id="ecosystem" class="alt" aria-labelledby="eco-h">\n <div class="container">\n  %s\n  <div class="eco-panel">%s</div>\n </div>\n</section>'
+                   % (head(L['eco_eyebrow'], L['eco_h'], L['eco_answer'], 'eco-h'), eco_panels)) if SHOW_ECOSYSTEM else ""
 
     pills = "".join('<li class="pill"><span class="pdot">%s</span><span class="ptext">%s%s</span></li>'
                     % (ICO[PILL_ICONS[i % 6]], e(f), pending(L, "تأكيد الأساس" if rtl else "Confirm basis") if "40" in f else "")
@@ -316,13 +321,8 @@ def _render(lang, mode):
  </div>
 </section>
 
-<!-- Ecosystem (Eddekhar's partner/integration tabs) -->
-<section id="ecosystem" class="alt" aria-labelledby="eco-h">
- <div class="container">
-  {head(L['eco_eyebrow'], L['eco_h'], L['eco_answer'], 'eco-h')}
-  <div class="eco-panel">{eco_panels}</div>
- </div>
-</section>
+<!-- Ecosystem (government platforms): hidden while SHOW_ECOSYSTEM is False -->
+{eco_section}
 
 <!-- Elite: the profile's HCM pillars layout -->
 <section id="elite" class="sweep" aria-labelledby="elite-h">
