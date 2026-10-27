@@ -307,7 +307,6 @@ def _render(lang, mode):
    <aside class="booking-aside">
     <div class="aside-edd"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="81" height="26" loading="lazy"><span>{e(L['edd_band_tag'])}</span></div>
     {offer}
-    <div class="aside-card"><h3>{e(L['aside_get_h'])}</h3><ul>{''.join('<li>%s<span>%s</span></li>' % (TICK, e(i)) for i in L['aside_get'])}</ul></div>
    </aside>
   </div>
  </div>
