@@ -93,6 +93,13 @@ td:first-child { font-weight: 700; color: #0E183C; }
 .ex b.l { color: #0E183C; font-size: 10pt; }
 .ex ol { margin: 4px 0 6px; padding-inline-start: 18px; }
 .ex .res { background: #0E183C; color: #fff; border-radius: 8px; padding: 6px 10px; font-weight: 700; display: inline-block; }
+.logos-grid { background: #fff; border: 1px solid #DCE7EE; border-radius: 12px; padding: 12px 14px; margin: 8px 0 10px; break-inside: avoid; }
+.logos-grid b { display: block; text-align: center; color: #0E183C; font-size: 10pt; margin-bottom: 10px; }
+.logos-grid div { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 14px; align-items: center; justify-items: center; }
+.dl { list-style: none; padding: 0; margin: 6px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.dl li { background: #fff; border: 1px solid #DCE7EE; border-radius: 10px; padding: 9px 12px; font-size: 9pt; line-height: 1.5; break-inside: avoid; }
+.dl li b { display: block; color: #0E183C; font-size: 9.5pt; margin-bottom: 3px; }
+.logos-grid img { max-width: 100%%; max-height: 30px; object-fit: contain; }
 .check { background: #F1FAF8; border-radius: 12px; padding: 10px 14px; margin: 6px 0 10px; break-inside: avoid; }
 .check ul { list-style: none; padding: 0; margin: 0; }
 .check li { position: relative; padding-inline-start: 24px; margin: 5px 0; }
@@ -139,6 +146,10 @@ def block(b, lang):
             E(t(("مثال محسوب", "Worked example"), lang)), E(t(b[1], lang)), lines, E(t(b[3], lang)))
     if k == "check":
         return '<div class="check"><ul>%s</ul></div>' % "".join("<li>%s</li>" % E(t(x, lang)) for x in b[1])
+    if k == "dl":
+        return '<ul class="dl">%s</ul>' % "".join("<li><b>%s</b>%s</li>" % (E(t(h, lang)), E(t(d, lang))) for h, d in b[1])
+    if k == "logos":
+        return '<div class="logos-grid"><b>%s</b><div>%s</div></div>' % (E(t(b[1], lang)), "".join('<img src="%s" alt="">' % img64(f) for f in b[2]))
     if k == "cols":
         return '<div class="cols">%s</div>' % "".join("<div>%s</div>" % block(x, lang) for x in b[1])
     raise ValueError(k)

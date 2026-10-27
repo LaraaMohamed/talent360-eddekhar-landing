@@ -171,7 +171,7 @@ C["ar"] = dict(
     tools_answer="أدلة محدّثة لعام 2026 عن نظام العمل في السعودية ومصر، وحاسبة رواتب مصرية. اكتب بريد شركتك ويبدأ التنزيل فورًا.",
     tools=[
         ("compare_pdf", "دليل · محدّث 2026", "فريق في مصر عبر موارد ومهارات أم شركة خاصة؟", "مقارنة في 12 بندًا بين فريق عبر موارد ومهارات وشركتك الخاصة وصاحب العمل المسجل، مع تكاليف 2026 ومثال محسوب. 5 صفحات."),
-        ("hcm_guide", "دليل · محدّث 2026", "إدارة الموارد البشرية بالكامل أم موظف داخلي؟", "مقارنة بندًا ببند، ومن يتولى ماذا في كل وظيفة، وعلامات أن شركتك تجاوزت الحلول المؤقتة. 7 صفحات."),
+        ("hcm_guide", "دليل · محدّث 2026", "إدارة الموارد البشرية بالكامل أم موظف داخلي؟", "مقارنة بندًا ببند، ومن يتولى ماذا في كل وظيفة، وعلامات أن شركتك تجاوزت الحلول المؤقتة، ولماذا موارد ومهارات. 8 صفحات."),
         ("labour_law_eg", "دليل · محدّث 2026", "قانون العمل المصري الجديد 14 لسنة 2025", "العقود وساعات العمل والإجازات والأجور والجزاءات وإنهاء الخدمة، بأرقام المواد وأمثلة محسوبة. 11 صفحة."),
         ("benefits_eg", "دليل · محدّث 2026", "مزايا الموظفين في مصر 2026", "الحد الأدنى للأجور، والتأمينات والضريبة، وأمثلة رواتب، وتكلفة صاحب العمل، وكيف تبني الباقة. 9 صفحات."),
         ("labour_law_sa", "دليل · محدّث 2026", "نظام العمل السعودي بعد تعديلات 2025", "التجربة والإشعار ونهاية الخدمة والإجازات والتأمينات بأرقام المواد، مع تحديثات قوى والتوطين لعام 2026. 9 صفحات."),
@@ -560,7 +560,7 @@ C["en"] = dict(
     tools_answer="Guides updated for 2026 on Saudi and Egyptian labour law, plus an Egypt salary calculator. Enter your company email and the download starts straight away.",
     tools=[
         ("compare_pdf", "Guide · Updated 2026", "A team in Egypt via Talent360, or your own company?", "12 items comparing a Talent360 team, your own company and an employer of record, with 2026 costs and a worked example. 6 pages."),
-        ("hcm_guide", "Guide · Updated 2026", "HCM vs an in-house HR hire", "A side-by-side comparison, who does what in every HR function, and the signs you have outgrown ad-hoc HR. 7 pages."),
+        ("hcm_guide", "Guide · Updated 2026", "HCM vs an in-house HR hire", "A side-by-side comparison, who does what in every HR function, the signs you have outgrown ad-hoc HR, and why Talent360. 9 pages."),
         ("labour_law_eg", "Guide · Updated 2026", "Egypt's new Labour Law 14/2025", "Contracts, hours, leave, pay, discipline and termination, with article numbers and worked examples. 11 pages."),
         ("benefits_eg", "Guide · Updated 2026", "Employee benefits in Egypt, 2026", "Minimum wage, insurance and tax, sample payslips, employer cost and how to build a package. 9 pages."),
         ("labour_law_sa", "Guide · Updated 2026", "Saudi Labour Law after the 2025 amendments", "Probation, notice, end of service, leave and GOSI with article numbers, plus the 2026 Qiwa and Saudization updates. 9 pages."),
