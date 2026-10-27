@@ -983,23 +983,18 @@ html, body { overflow-x: clip; }
   .foot-brand .edd-chip img, .foot-logos .edd-chip img { block-size: 52px !important; }
 }
 .lockup { flex: none; }
-/* Keep logos, links, language and CTA on one balanced non-mobile row. */
+/* Non-mobile navigation stays above the hero. A second header row avoids
+   squeezing the co-brand lockup and links on smaller laptops and tablets. */
 @media (min-width: 768px) {
-  .header-inner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: clamp(12px, 2vw, 32px); min-block-size: 76px; }
-  .main-nav { display: block; min-inline-size: 0; }
-  .main-nav ul { justify-content: center; flex-wrap: nowrap; gap: clamp(2px, .5vw, 10px); }
-  .main-nav a { padding-inline: clamp(6px, .7vw, 12px); font-size: .92rem; }
-  .header-actions { flex-wrap: nowrap; gap: 8px; }
+  .header-inner { flex-wrap: wrap; column-gap: 20px; row-gap: 0; }
+  .main-nav { display: block; order: 3; flex: 1 0 100%; min-inline-size: 0; border-block-start: 1px solid var(--line); }
+  .main-nav ul { justify-content: center; flex-wrap: wrap; }
+  .main-nav a { padding-inline: 10px; font-size: .88rem; }
 }
-@media (min-width: 768px) and (max-width: 1023px) {
-  .header-inner { column-gap: 10px; }
-  .header-inner .lockup { gap: 10px; }
-  .header-inner .lockup .edd-chip { padding-inline-start: 10px; }
-  .header-inner .lockup .edd-chip img { block-size: 32px !important; }
-  .header-inner .lockup .mm-logo > img { block-size: 32px !important; }
-  .main-nav a { padding-inline: 5px; font-size: .82rem; }
-  .header-actions { gap: 2px; }
-  .header-cta { padding-inline: 12px; font-size: .85rem; }
+@media (min-width: 1360px) {
+  .header-inner { flex-wrap: nowrap; }
+  .main-nav { order: 0; flex: 0 1 auto; border-block-start: 0; }
+  .main-nav a { padding-inline: 8px; }
 }
 @media (max-width: 700px) { .lockup .edd-chip img { block-size: 30px !important; } }
 @media (max-width: 700px) { .lockup .mm-by img { block-size: 20px !important; } }
