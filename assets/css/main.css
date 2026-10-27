@@ -988,3 +988,30 @@ html, body { overflow-x: clip; }
 @media (max-width: 700px) { .lockup .edd-chip img { block-size: 30px !important; } }
 @media (max-width: 700px) { .lockup .mm-by img { block-size: 20px !important; } }
 #salcalc-sec .salcalc { margin-block-start: 0; }
+
+/* Footer v5: one modest Mawared logo, three equal columns that line up on the same top edge */
+.foot-brand { gap: 0; }
+.foot-brand .fb-logo { display: inline-block; line-height: 0; }
+.foot-brand .fb-logos { display: flex; align-items: center; gap: 16px; block-size: 56px; }
+.foot-brand .fb-logo img { block-size: 52px; inline-size: auto; }
+.foot-brand .fb-edd img { block-size: 38px; }
+.foot-brand .fb-x { color: var(--teal-3); font-size: 1rem; line-height: 1; }
+.foot-brand .fb-line { margin: 18px 0 0; font-size: .95rem; line-height: 1.8; }
+.foot-brand .socials { margin-block-start: 18px; }
+.foot-col h3 { block-size: 56px; display: flex; align-items: center; margin: 0 0 18px; }
+.foot-main .contact-list { gap: 16px; }
+.contact-list .cdot { inline-size: 38px; block-size: 38px; }
+.contact-list .cdot svg { inline-size: 18px; block-size: 18px; }
+.contact-list.offices li + li { margin-block-start: 4px; }
+@media (max-width: 959px) {
+  .foot-col h3 { block-size: auto; }
+  .foot-main .foot-grid { max-inline-size: 640px; margin-inline: auto; }
+}
+@media (min-width: 960px) {
+  .foot-main { grid-template-columns: 1.15fr 1fr 1fr !important; }
+  .foot-main > .foot-brand, .foot-main .foot-col { align-items: flex-start !important; text-align: start !important; padding-inline: 0 40px !important; }
+  .foot-main .foot-col { padding-inline: 40px !important; }
+  .foot-main > .foot-brand .socials { justify-content: flex-start !important; }
+  .foot-main .foot-col > * { max-inline-size: none; }
+  .foot-main > .foot-brand .fb-line { max-inline-size: 340px; }
+}
