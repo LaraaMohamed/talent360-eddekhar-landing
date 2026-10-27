@@ -50,21 +50,65 @@ const cal = calendarClient();
 /* ---------- Google Apps Script bridge (preferred): runs inside business-growth@'s own account ----------
    See backend/apps-script/. Set APPS_SCRIPT_URL + APPS_SCRIPT_SECRET; then no service account or SMTP is needed. */
 const GAS = env.APPS_SCRIPT_URL || "";
-async function gas(action, payload) {
-  const r = await fetch(GAS, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, redirect: "follow",
-    body: JSON.stringify(Object.assign({ action, key: env.APPS_SCRIPT_SECRET || "" }, payload)) });
-  const text = await r.text();
-  let j; try { j = JSON.parse(text); } catch (e) { throw new Error("apps script: non-JSON reply (" + r.status + "): " + text.slice(0, 160)); }
-  if (j.error) throw new Error("apps script: " + j.error);
-  return j;
+// Each call has a timeout and retries transient failures (network, 5xx, Google rate limits) with backoff.
+async function gas(action, payload, tries = 3) {
+  let last;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(GAS, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, redirect: "follow",
+        signal: AbortSignal.timeout(30000), body: JSON.stringify(Object.assign({ action, key: env.APPS_SCRIPT_SECRET || "" }, payload)) });
+      const text = await r.text();
+      let j; try { j = JSON.parse(text); } catch (e) { throw Object.assign(new Error("apps script: non-JSON reply (" + r.status + "): " + text.slice(0, 160)), { retry: r.status >= 500 || r.status === 429 }); }
+      if (j.error) throw Object.assign(new Error("apps script: " + j.error), { retry: !!j.retryable, code: j.error });
+      return j;
+    } catch (e) {
+      last = e;
+      const retry = e.retry || e.name === "TimeoutError" || e.name === "AbortError" || /fetch failed|ECONNRESET|ETIMEDOUT|EAI_AGAIN/i.test(e.message);
+      if (!retry || i === tries - 1) break;
+      await new Promise((ok) => setTimeout(ok, 1000 * Math.pow(3, i)));
+    }
+  }
+  throw last;
 }
 let gasStatus = GAS ? "checking" : "not configured";
 if (GAS) gas("ping", {}).then((j) => { gasStatus = "ok as " + j.account; console.log("[apps-script]", gasStatus); })
   .catch((e) => { gasStatus = e.message; console.error("[apps-script]", e.message); });
+// Re-check the bridge every 30 minutes so /api/health shows its real state.
+if (GAS) setInterval(() => gas("ping", {}, 1).then((j) => { gasStatus = "ok as " + j.account; }).catch((e) => { gasStatus = e.message; console.error("[apps-script] ping", e.message); }), 30 * 60000).unref();
+
+/* Calendar events that failed to create are retried in the background (2, 5, 15, 30, 60, 120 min).
+   The booking is already recorded and the team already notified; Google sends the client the invite once it exists.
+   The queue lives in memory, so a restart drops it: the team email says when an invite still has to be sent by hand. */
+const RETRY_MIN = [2, 5, 15, 30, 60, 120];
+function queueEvent(b, payload, attempt = 0) {
+  if (attempt >= RETRY_MIN.length) {
+    console.error("[calendar] gave up on", b.id);
+    if (mailer) mailer.sendMail({ from: FROM, to: TEAM, subject: `[Eddekhar booking] Calendar invite NOT created for ${b.company}`,
+      text: `Please send the invite by hand.\n${b.name} <${b.email}>, ${b.company}\n${fmt(new Date(b.start), "en")} Riyadh time` }).catch(() => {});
+    return;
+  }
+  setTimeout(async () => {
+    try {
+      const ev = await gas("event", payload);
+      b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
+      console.log("[calendar] created late for", b.id);
+      if (mailer) mailer.sendMail({ from: FROM, to: TEAM, subject: `[Eddekhar booking] Calendar invite created for ${b.company}`,
+        text: `The invite for ${b.name} <${b.email}> is now on the calendar.\nMeet: ${b.meetUrl || "(none)"}` }).catch(() => {});
+    } catch (e) {
+      if (e.code === "slot_taken") return console.error("[calendar] slot taken before late retry for", b.id);
+      console.error("[calendar] retry", attempt + 1, "failed:", e.message);
+      queueEvent(b, payload, attempt + 1);
+    }
+  }, RETRY_MIN[attempt] * 60000).unref();
+}
 const CAL_ID = env.CONSULTANT_CALENDAR_ID || AHMED;
 
 async function busyBetween(timeMin, timeMax) {
-  if (!cal && GAS) return (await gas("busy", { timeMin, timeMax, calendars: BUSY_CALS })).busy || [];
+  if (!cal && GAS) {
+    try { return (await gas("busy", { timeMin, timeMax, calendars: BUSY_CALS })).busy || []; }
+    // Keep the booking page working; the bridge re-checks free/busy under a lock before creating the event.
+    catch (e) { console.error("[apps-script] busy:", e.message); return []; }
+  }
   if (!cal) return []; // stub mode: everything free
   const r = await cal.freebusy.query({ requestBody: { timeMin, timeMax, timeZone: TZ, items: [{ id: CAL_ID }] } });
   return (r.data.calendars[CAL_ID] && r.data.calendars[CAL_ID].busy) || [];
@@ -311,10 +355,17 @@ async function book(body, ip) {
       b.eventId = ev.data.id;
       b.meetUrl = ev.data.hangoutLink || null;
     } else if (GAS) {
-      const ev = await gas("event", { summary: `${FOCUS[focus]} · ${company} (Eddekhar)`,
+      const payload = { summary: `${FOCUS[focus]} · ${company} (Eddekhar)`,
         description: `Eddekhar referral. ${name}, ${company}. Language: ${lang}. 10% discount applies.`,
-        start: b.start, end: b.end, attendee: email, guests: GUESTS, requestId: id, calendarId: CAL_ID });
-      b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
+        start: b.start, end: b.end, attendee: email, guests: GUESTS, requestId: id, calendarId: CAL_ID };
+      try {
+        const ev = await gas("event", payload);
+        b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
+      } catch (e) {
+        if (e.code === "slot_taken") return [409, { error: "slot_taken" }];
+        console.error("[calendar] event failed, queued for retry:", e.message);
+        queueEvent(b, payload);
+      }
     }
     bookings.set(id, b);
     const sent = await Promise.allSettled([sendConfirmation(b), notifyTeam(b), pushToCrm(b)]);
