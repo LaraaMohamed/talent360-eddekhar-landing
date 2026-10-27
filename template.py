@@ -72,8 +72,8 @@ def _render(lang, mode):
               '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
               '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
 
-    PNG_CLIENTS = {"sifi", "kayangulf", "impetus", "probuilder"}
-    AR_CLIENT_NAMES = {"alinma": "مصرف الإنماء", "amanah": "أمانة منطقة الرياض", "probuilder": "البناء المحترف للمقاولات"}
+    PNG_CLIENTS = {"ase", "walaplus", "sifi", "kayangulf", "impetus", "probuilder"}
+    AR_CLIENT_NAMES = {"alinma": "مصرف الإنماء", "amanah": "أمانة منطقة الرياض", "probuilder": "البناء المحترف للمقاولات", "ase": "الشركة العربية لهندسة النظم", "walaplus": "ولاء بلس"}
 
     def tiles_html(hidden):
         out = []
