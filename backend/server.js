@@ -93,6 +93,7 @@ function queueEvent(b, payload, attempt = 0) {
     try {
       const ev = await gas("event", payload);
       b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
+      bookings.save(b);
       refreshBusy().catch(() => {});
       console.log("[calendar] created late for", b.id);
       if (mailer) mailer.sendMail({ from: FROM, to: TEAM, subject: `[Eddekhar booking] Calendar invite created for ${b.company}`,
@@ -331,8 +332,22 @@ async function pushToCrm(b) {
   await fetch(env.CRM_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (env.CRM_API_KEY || "") }, body: JSON.stringify(payload) });
 }
 
-/* ---------- Storage (swap for the CRM or a DB; in-memory is for the stub only) ---------- */
-const bookings = new Map();
+/* ---------- Storage: bookings in Postgres when DATABASE_URL is set (survive restarts), memory otherwise ---------- */
+const db = env.DATABASE_URL ? new (require("pg").Pool)({ connectionString: env.DATABASE_URL, max: 4, ssl: /sslmode=require/.test(env.DATABASE_URL) ? { rejectUnauthorized: false } : false }) : null;
+class BookingStore extends Map {
+  set(id, b) { super.set(id, b); this.save(b); return this; }
+  delete(id) { const had = super.delete(id); if (db) db.query("DELETE FROM bookings WHERE id = $1", [id]).catch((e) => console.error("[db] delete", e.message)); return had; }
+  save(b) { if (db) db.query("INSERT INTO bookings (id, data, start_at) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, start_at = EXCLUDED.start_at", [b.id, b, b.start]).catch((e) => console.error("[db] save", e.message)); }
+}
+const bookings = new BookingStore();
+if (db) (async () => {
+  try {
+    await db.query("CREATE TABLE IF NOT EXISTS bookings (id text PRIMARY KEY, data jsonb NOT NULL, start_at timestamptz, created_at timestamptz DEFAULT now())");
+    const r = await db.query("SELECT data FROM bookings WHERE start_at > now() - interval '1 day'");
+    r.rows.forEach((row) => Map.prototype.set.call(bookings, row.data.id, row.data));
+    console.log("[db] loaded", r.rows.length, "bookings");
+  } catch (e) { console.error("[db] init", e.message); }
+})();
 
 const FOCUS = { hr: "HR Health Check", team: "Team & Workforce Check", unsure: "Not sure (decide in first 5 min)" };
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -472,6 +487,7 @@ http.createServer(async (req, res) => {
       const clip = (v) => String(v || "").slice(0, 160);
       const b = bookings.get(m[1]) || { id: m[1], name: clip(body.name), email: clip(body.email), company: clip(body.company), start: clip(body.start) };
       b.phone = phone;
+      if (bookings.has(m[1])) bookings.save(b);
       if (bookings.has(m[1])) await pushToCrm(b).catch(() => {});
       if (mailer) mailer.sendMail({ from: FROM, to: TEAM, replyTo: emailRe.test(b.email) ? b.email : undefined,
         subject: `[Eddekhar booking] Phone for ${b.company || b.name || m[1]}`,
@@ -496,7 +512,7 @@ http.createServer(async (req, res) => {
       return require("fs").createReadStream(f).pipe(res);
     }
     if (req.method === "GET" && url.pathname === "/api/health") {
-      return send(res, 200, { calendar: !!(cal || GAS), mail: !!mailer, appsScript: gasStatus, busyCalendars: BUSY_CALS, guests: GUESTS, calendarOwner: CAL_OWNER, mailFrom: FROM, team: TEAM });
+      return send(res, 200, { db: !!db, calendar: !!(cal || GAS), mail: !!mailer, appsScript: gasStatus, busyCalendars: BUSY_CALS, guests: GUESTS, calendarOwner: CAL_OWNER, mailFrom: FROM, team: TEAM });
     }
     if (req.method === "POST" && url.pathname === "/api/lead-magnet") {
       const body = await readJson(req);
