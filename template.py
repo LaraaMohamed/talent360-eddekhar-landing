@@ -219,12 +219,12 @@ def _render(lang, mode):
    <div class="hero-ctas">{cta(L['cta_primary'], 'hero_primary', 'btn btn-primary btn-lg', focus='hr')}{cta(L['cta_secondary'], 'hero_secondary', 'btn btn-glass btn-lg', href='#compare', arrow=False)}</div>
   </div>
  </div>
- <div class="container floats">
-   <div class="fc fc-offer"><span class="fc-ico">{ICO['coins']}</span><span><strong><bdi>{e(L['fc_offer'][0])}</bdi></strong><small>{e(L['fc_offer'][1])}</small></span></div>
-   <div class="fc fc-stat fc-b"><span class="fc-ico">{ICO['video']}</span><span><strong><bdi>{e(L['fc_b'][0])}</bdi></strong><small>{e(L['fc_b'][1])}</small></span></div>
-   <div class="fc fc-stat fc-a"><span class="fc-ico">{ICO['team']}</span><span><strong><bdi>{e(L['fc_a'][0])}</bdi></strong><small>{e(L['fc_a'][1])}</small></span></div>
-   <div class="fc fc-trust2"><span class="fc-ico">{ICO['check']}</span><span><strong><bdi>{e(L['fc_trust'][0])}</bdi></strong><small>{e(L['fc_trust'][1])}</small></span></div>
-  </div>
+ <ul class="hstats" aria-label="{'أرقام' if rtl else 'Key figures'}">
+  <li class="hs-offer"><span class="hs-num"><bdi>{e(L['fc_offer'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_offer'][1])}</span></li>
+  <li><span class="hs-num"><bdi>{e(L['fc_b'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_b'][1])}</span></li>
+  <li><span class="hs-num"><bdi>{e(L['fc_a'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_a'][1])}</span></li>
+  <li><span class="hs-num"><bdi>{e(L['fc_trust'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_trust'][1])}</span></li>
+ </ul>
 </section>
 
 <!-- Trusted by: the profile's white client panel -->
@@ -259,7 +259,6 @@ def _render(lang, mode):
   <ul class="slide-stats" aria-label="{e(L['stats_label'])}">{stat_cards}</ul>
  </div>
  <div class="container stats-foot">
-  <p class="answer">{e(L['why_panel'])}</p>
   <p class="stats-note">{pending(L, 'الأرقام من ملف الشركة 2026، بانتظار تأكيد لارا' if rtl else 'Figures from the 2026 company profile, awaiting Lara’s confirmation')}</p>
  </div>
 </section>
@@ -269,7 +268,6 @@ def _render(lang, mode):
  <div class="container">
   {head(L['help_eyebrow'], L['help_h'], L['help_answer'], 'help-h')}
   <div class="tiles">{services}</div>
-  <p class="tiles-foot">{e(L['proof_cta'])}</p>
  </div>
 </section>
 
@@ -324,7 +322,6 @@ def _render(lang, mode):
      <button class="btn btn-primary btn-block" id="bk-submit" type="submit" disabled>{e(L['submit'])}</button>
      <p class="bk-hint" id="bk-hint">{e(L['js']['pickTime'])}</p>
      <p class="form-error" id="bk-error" role="alert"></p>
-     <p class="privacy">{ICO['lock'].replace('<svg ', '<svg width="18" height="18" style="flex:none;margin-top:3px" ')}<span>{e(L['privacy_line'])}</span></p>
      </div>
     </form>
    </div>
@@ -480,7 +477,6 @@ def _render(lang, mode):
    <p class="sc-basis">{e(L['sc_basis'])}</p>
    <div class="sc-cta">{cta(L['sc_cta'], 'salary_calc', focus='team')}</div>
   </div>
-  <p class="later">{e(L['tools_later'])}</p>
  </div>
 </section>
 

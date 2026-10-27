@@ -749,7 +749,7 @@
       countUp(en.target);
     });
   }, { threshold: 0.6 });
-  document.querySelectorAll(".stat-card strong bdi, .floats .fc strong bdi").forEach(function (el) { cio.observe(el); });
+  document.querySelectorAll(".stat-card strong bdi, .hstats .hs-num bdi").forEach(function (el) { cio.observe(el); });
 })();
 
 /* Side menu */

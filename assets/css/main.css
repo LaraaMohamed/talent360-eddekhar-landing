@@ -1424,3 +1424,39 @@ html.drawer-open { overflow: hidden; }
 #salcalc .sc-tot b { text-align: start; }
 #salcalc .sc-copy, #salcalc #sc-bulk-dl { inline-size: calc(100% - 2 * clamp(16px, 2.2vw, 24px)) !important; box-sizing: border-box; display: flex; justify-content: center; margin-inline: clamp(16px, 2.2vw, 24px) !important; }
 #salcalc .sc-tw { margin-block-start: 6px; }
+
+/* Logo strip on phones: smaller logos, more of them in view, inset from the screen edges */
+@media (max-width: 700px) {
+  .trusted .logo-panel { margin-inline: 16px; padding: 10px 0 !important; }
+  .trusted .marquee-track { gap: 34px !important; animation-duration: 28s; }
+  .trusted .logo-tile { block-size: 48px; padding-inline: 2px; }
+  .trusted .logo-tile img { max-block-size: 30px !important; max-inline-size: 92px !important; }
+  .trusted .logo-tile img[src*="amanah"] { max-block-size: 36px !important; block-size: 36px !important; }
+  .trusted .marquee { mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+}
+
+/* Hero stats v6: a clean strip under the hero, new markup (.hstats) so no legacy card styles apply.
+   The Eddekhar offer leads in navy; three figures follow, separated by hairlines. */
+.hstats { display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; align-items: stretch; inline-size: min(1080px, calc(100% - 48px)); box-sizing: border-box; margin: clamp(28px, 3.5vw, 44px) auto 0; padding: 0; list-style: none;
+  background: #fff; border-radius: 22px; border: 1px solid rgba(14,24,60,.07); box-shadow: 0 24px 56px -38px rgba(14,24,60,.5); overflow: hidden; }
+.hstats > li { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 4px; padding: 20px 16px; position: relative; }
+.hstats > li + li:not(.hs-offer)::before { content: ""; position: absolute; inset-block: 26%; inset-inline-start: 0; inline-size: 1px; background: rgba(14,24,60,.1); }
+.hstats > li.hs-offer + li::before { display: none; }
+.hs-num { font: 800 1.75rem/1.1 var(--font-head); color: var(--navy); letter-spacing: -.01em; }
+html[lang="en"] .hs-num { font-weight: 600; }
+.hs-lbl { font-size: .85rem; line-height: 1.4; color: var(--text-muted); max-inline-size: 18ch; }
+.hstats .hs-offer { background: linear-gradient(135deg, #0E183C 0%, #17306A 100%); flex-direction: row; gap: 14px; justify-content: center; }
+.hstats .hs-offer .hs-num { color: #5FE3CF; font-size: 2.1rem; }
+.hstats .hs-offer .hs-lbl { color: rgba(255,255,255,.9); text-align: start; max-inline-size: 14ch; font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) {
+  .hstats .hs-offer .hs-num { background: linear-gradient(90deg, #5FE3CF, #D2FFF7, #5FE3CF); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: fc-shine 3s linear infinite; }
+}
+@media (max-width: 760px) {
+  .hstats { grid-template-columns: repeat(3, minmax(0, 1fr)); inline-size: calc(100% - 32px); border-radius: 18px; margin-block-start: 20px; }
+  .hstats .hs-offer { grid-column: 1 / -1; padding: 12px 16px; }
+  .hstats .hs-offer .hs-num { font-size: 1.7rem; }
+  .hstats .hs-offer .hs-lbl { max-inline-size: none; }
+  .hstats > li { padding: 12px 6px; }
+  .hs-num { font-size: 1.25rem; }
+  .hs-lbl { font-size: .72rem; }
+}
