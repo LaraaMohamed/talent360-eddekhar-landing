@@ -393,7 +393,7 @@ def _render(lang, mode):
     <div class="sc-form">
      <div class="sc-seg" role="group" aria-label="{e(L['sc_h'])}"><button type="button" data-scmode="g2n" aria-pressed="true" dir="ltr">{e(L['sc_g2n'])}</button><button type="button" data-scmode="n2g" aria-pressed="false" dir="ltr">{e(L['sc_n2g'])}</button></div>
      <label class="sc-label" for="sc-amount" id="sc-amount-label" data-g="{e(L['sc_in_gross'])}" data-n="{e(L['sc_in_net'])}">{e(L['sc_in_gross'])}</label>
-     <input class="sc-input" id="sc-amount" type="number" inputmode="decimal" min="0" placeholder="0" dir="ltr">
+     <input class="sc-input" id="sc-amount" type="number" inputmode="decimal" min="0" placeholder="0" value="20000" dir="ltr">
      <span class="sc-label">{e(L['sc_ins'])}</span>
      <div class="sc-chips" role="group" aria-label="{e(L['sc_ins'])}"><button type="button" data-scins="auto" aria-pressed="true">{e(L['sc_ins_auto'])}</button><button type="button" data-scins="manual" aria-pressed="false">{e(L['sc_ins_manual'])}</button></div>
      <input class="sc-input sc-manual" id="sc-manual" type="number" inputmode="decimal" min="0" placeholder="0" dir="ltr" hidden aria-label="{e(L['sc_ins'])}">

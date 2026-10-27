@@ -1137,3 +1137,76 @@ html[lang="ar"] body { line-height: 1.85; }
 /* Logo strip: full width, rounded corners */
 .trusted .logo-panel { border-radius: 32px; overflow: hidden; border: 1px solid var(--line); }
 @media (max-width: 700px) { .trusted .logo-panel { border-radius: 22px; } }
+
+/* Salary calculator v2: light card in the site's style; inputs on a mint panel, the result on a navy card */
+#salcalc-sec .salcalc { background: #fff; color: var(--text); border: 1px solid rgba(14,24,60,.07); box-shadow: 0 30px 70px -40px rgba(14,24,60,.35); padding: clamp(20px, 3vw, 44px); }
+.salcalc h3 { color: var(--navy); }
+.salcalc h3 span { color: var(--teal-3); }
+.sc-intro p, .sc-bulk-head p { color: var(--text-muted); }
+.sc-kicker { color: var(--teal-3); border-color: rgba(31,201,177,.45); background: rgba(31,201,177,.08); }
+.sc-body, .sc-bulk-body { gap: 20px; }
+@media (min-width: 900px) {
+  .sc-body, .sc-bulk-body { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: stretch; }
+}
+.sc-form, .sc-bulk-in { align-content: start; gap: 12px; padding: clamp(18px, 2.4vw, 28px); border-radius: 22px; background: #F2FAF9; border: 1px solid rgba(31,201,177,.18); }
+.sc-seg { background: #fff; border: 1px solid rgba(14,24,60,.08); margin-block-end: 4px; }
+.sc-seg button { color: #5A6680; }
+.sc-seg button[aria-pressed="true"] { background: var(--navy); color: #fff; box-shadow: 0 8px 18px -10px rgba(14,24,60,.6); }
+.sc-label { color: var(--heading); margin-block-start: 4px; }
+.sc-input { background: #fff; border: 1px solid rgba(14,24,60,.12); color: var(--navy); border-radius: 14px; padding: 16px 18px; font-size: 1.6rem; }
+.sc-input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(31,201,177,.18); }
+.sc-chips button { background: #fff; border: 1px solid rgba(14,24,60,.12); color: #5A6680; }
+.sc-chips button[aria-pressed="true"] { border-color: var(--teal); background: rgba(31,201,177,.12); color: var(--teal-3); }
+.sc-note { color: var(--text-muted); }
+
+.sc-body > .sc-result { position: relative; overflow: hidden; background: linear-gradient(150deg, #0E183C 0%, #16295C 100%); color: #DCE6F2; border-radius: 22px; padding: clamp(20px, 2.6vw, 32px); box-shadow: 0 24px 50px -28px rgba(14,24,60,.7); }
+.sc-body > .sc-result::before { content: ""; position: absolute; inset-block-start: -80px; inset-inline-end: -80px; inline-size: 220px; block-size: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(95,227,207,.22), transparent 70%); pointer-events: none; }
+.sc-body > .sc-result small { color: #9FB0C8; }
+.sc-body > .sc-result .sc-big { color: #5FE3CF; font-size: clamp(2.4rem, 1.8rem + 2vw, 3.4rem); text-align: start; margin-block: 2px 14px; }
+.sc-body > .sc-result .sc-big .cur { color: #9FB0C8; }
+.sc-body > .sc-result .sc-bar { background: rgba(255,255,255,.1); }
+.sc-body > .sc-result .sc-rows > div { border-block-end-color: rgba(255,255,255,.1); }
+.sc-body > .sc-result .sc-rows dt { color: #C9D5E4; }
+.sc-body > .sc-result .sc-rows dd { color: #fff; }
+.sc-body > .sc-result .sc-rows .sc-muted dt, .sc-body > .sc-result .sc-rows .sc-muted dd { color: #8FA1BB; }
+.sc-body > .sc-result .sc-rows .sc-total dt { color: #fff; }
+.sc-body > .sc-result .sc-rows .sc-total dd { color: #5FE3CF; font-size: 1.2rem; }
+.sc-body > .sc-result .sc-annual { border-block-start-color: rgba(255,255,255,.14); color: #9FB0C8; }
+.sc-body > .sc-result .sc-annual b, .sc-body > .sc-result .sc-rates b { color: #fff; }
+.sc-body > .sc-result .sc-rates { color: #9FB0C8; }
+.sc-body > .sc-result .sc-er { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
+.sc-body > .sc-result .sc-er-h { color: #fff; }
+.sc-body > .sc-result .sc-br { border-color: rgba(255,255,255,.14); }
+.sc-body > .sc-result .sc-br summary { color: #5FE3CF; }
+.sc-body > .sc-result .sc-br[open] summary { border-block-end-color: rgba(255,255,255,.14); }
+.sc-body > .sc-result .sc-br-t th { color: #9FB0C8; }
+.sc-body > .sc-result .sc-br-t td { color: #fff; border-block-start-color: rgba(255,255,255,.1); }
+.sc-body > .sc-result .sc-br-none { color: #9FB0C8; }
+.sc-body > .sc-result .sc-copy { border-color: rgba(95,227,207,.5); color: #5FE3CF; }
+.sc-body > .sc-result .sc-copy:hover { background: rgba(95,227,207,.1); }
+.sc-body > .sc-result .sc-empty { color: #9FB0C8; }
+
+.sc-bulk { margin-block-start: 36px; padding-block-start: 32px; border-block-start: 1px solid var(--line); }
+.sc-bulk-head h4 { color: var(--navy); }
+.sc-ta { font-size: 1rem; font-weight: 600; min-block-size: 190px; }
+.sc-ta::placeholder { color: #A3AEC2; }
+.sc-file { background: #fff; border: 1.5px dashed rgba(31,201,177,.6); color: var(--teal-3); }
+.sc-file:hover { border-color: var(--teal-3); color: var(--teal-3); background: rgba(31,201,177,.06); }
+.sc-bulk-out { background: #fff; border: 1px solid rgba(14,24,60,.08); border-radius: 22px; padding: clamp(18px, 2.4vw, 26px); box-shadow: 0 18px 40px -30px rgba(14,24,60,.4); }
+.sc-bulk-out .sc-empty { display: grid; place-items: center; gap: 10px; min-block-size: 190px; padding: 20px; border: 1.5px dashed rgba(14,24,60,.12); border-radius: 16px; background: #FAFCFD; }
+.sc-bulk-out .sc-empty::before { content: ""; inline-size: 44px; block-size: 44px; border-radius: 12px; background: rgba(31,201,177,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23168C7C' stroke-width='1.8' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M3 9h18M9 9v11M15 9v11'/%3E%3C/svg%3E") center / 24px no-repeat; }
+.sc-tot > div { background: #F2FAF9; border: 1px solid rgba(31,201,177,.16); }
+.sc-tot b { font-size: 1.3rem; }
+.sc-basis { color: var(--text-muted); }
+.sc-cta .btn-primary { background: var(--navy); color: #fff; }
+.sc-cta .btn-primary .ico-dir { color: #5FE3CF; }
+.sc-bulk-out .sc-empty[hidden] { display: none; }
+@media (min-width: 900px) { .sc-body, .sc-bulk-body { align-items: start; } }
+
+/* Hero: trim the photo from the top so the four cards sit inside the first screen on laptops */
+@media (min-width: 701px) {
+  .hero-stage { min-block-size: clamp(480px, 38vw, 620px); }
+  .hero-stage .hero-copy { padding-block: clamp(28px, 3vw, 48px) clamp(80px, 8vw, 104px); }
+  .hero-stage .hero-photo { object-position: 50% 42%; }
+}
+@media (min-width: 900px) { .sc-form { position: sticky; inset-block-start: 96px; } }
