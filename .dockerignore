@@ -1,0 +1,9 @@
+.git
+.github
+**/node_modules
+dist
+preview
+__pycache__
+guides/out/*.png
+guides/out/*.html
+backend/.env

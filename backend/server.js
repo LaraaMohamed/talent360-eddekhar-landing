@@ -20,6 +20,8 @@ const { google } = require("googleapis");
 const nodemailer = require("nodemailer");
 
 const env = process.env;
+// On Railway, fall back to the service's public domain when PUBLIC_BASE_URL is not set.
+if (!env.PUBLIC_BASE_URL && env.RAILWAY_PUBLIC_DOMAIN) env.PUBLIC_BASE_URL = "https://" + env.RAILWAY_PUBLIC_DOMAIN;
 // Everything (calendar, sender, team copies) runs from the Business Growth mailbox unless overridden.
 const BG = "business-growth@talent-360.me";
 const CAL_OWNER = env.CONSULTANT_EMAIL || BG;
