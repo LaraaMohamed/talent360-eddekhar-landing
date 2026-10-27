@@ -422,9 +422,11 @@ def _render(lang, mode):
      <p class="sc-empty" id="sc-empty">{e(L['sc_empty'])}</p>
      <p class="sc-err" id="sc-err" hidden>{e(L['sc_err'])}</p>
      <div id="sc-out" hidden>
+      <div class="sc-head">
       <small id="sc-out-label" data-g="{e(L['sc_out_gross'])}" data-n="{e(L['sc_out_net'])}">{e(L['sc_out_net'])}</small>
       <div class="sc-big" dir="ltr"><span id="sc-big">0</span> <span class="cur">{e(L['js']['cur'])}</span></div>
       <div class="sc-bar" dir="ltr" aria-hidden="true"><i class="b-net" id="sc-b-net"></i><i class="b-ins" id="sc-b-ins"></i><i class="b-tax" id="sc-b-tax"></i></div>
+      </div>
       <dl class="sc-rows">
        <div><dt>{e(L['sc_gross'])}</dt><dd dir="ltr" id="sc-r-gross"></dd></div>
        <div class="sc-muted" id="sc-wage-row"><dt>{e(L['sc_wage'])}</dt><dd dir="ltr" id="sc-r-wage"></dd></div>

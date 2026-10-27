@@ -1373,3 +1373,54 @@ html[dir="ltr"] .drawer-panel { translate: 100% 0; }
 .drawer-lang { text-align: center; font-weight: 700; color: var(--teal-3); text-decoration: none; padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
 html.drawer-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .drawer-panel, .drawer-scrim { transition: none; } }
+
+/* Salary calculator v3: one look for both modes. Inputs on a mint panel; results on a white card
+   whose top is a navy header carrying the key figures (net pay for one person, totals for the team). */
+.b-ins, .d-ins { background: #7FAE6A; }
+.b-tax, .d-tax { background: #8FA3C8; }
+#salcalc .sc-form, #salcalc .sc-bulk-in { background: #F2FAF9; border: 1px solid rgba(31,201,177,.2); border-radius: 22px; box-shadow: none; }
+#salcalc .sc-result { position: relative; background: #fff !important; color: var(--text) !important; border: 1px solid rgba(14,24,60,.08); border-radius: 22px; padding: 0 !important; overflow: hidden; box-shadow: 0 22px 50px -34px rgba(14,24,60,.45) !important; }
+#salcalc .sc-result::before { content: none !important; }
+#salcalc .sc-result > .sc-empty, #salcalc .sc-result > .sc-err { margin: 20px; }
+#salcalc #sc-out, #salcalc #sc-bulk-res { padding: 0 0 18px; }
+#salcalc #sc-out > :not(.sc-head), #salcalc #sc-bulk-res > :not(.sc-tot) { margin-inline: clamp(16px, 2.2vw, 24px); }
+
+/* Navy header (shared) */
+#salcalc .sc-head, #salcalc .sc-tot { background: linear-gradient(135deg, #0E183C 0%, #16295C 100%); color: #fff; padding: clamp(18px, 2.4vw, 26px) clamp(16px, 2.2vw, 24px); margin: 0 0 8px !important; border-radius: 0; }
+#salcalc .sc-head small { color: #9FB0C8 !important; font-weight: 700; }
+#salcalc .sc-head .sc-big { color: #5FE3CF !important; text-align: start; margin: 4px 0 14px; font-size: clamp(2.2rem, 1.7rem + 1.8vw, 3rem); }
+#salcalc .sc-head .sc-big .cur { color: #9FB0C8 !important; }
+#salcalc .sc-head .sc-bar { background: rgba(255,255,255,.12) !important; margin: 0; }
+#salcalc .sc-tot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+@media (min-width: 900px) { #salcalc .sc-tot { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+#salcalc .sc-tot > div { background: none !important; border: 0 !important; padding: 0 !important; }
+#salcalc .sc-tot small { color: #9FB0C8 !important; font-weight: 700; font-size: .8rem; }
+#salcalc .sc-tot b { color: #fff !important; font-size: 1.35rem; margin-top: 2px; }
+#salcalc .sc-tot > div:nth-child(3) b { color: #5FE3CF !important; }
+
+/* Light body (shared) */
+#salcalc .sc-result .sc-rows > div { border-block-end-color: var(--line) !important; }
+#salcalc .sc-result .sc-rows dt { color: var(--text) !important; }
+#salcalc .sc-result .sc-rows dd { color: var(--heading) !important; }
+#salcalc .sc-result .sc-rows .sc-muted dt, #salcalc .sc-result .sc-rows .sc-muted dd { color: var(--text-muted) !important; }
+#salcalc .sc-result .sc-rows .sc-total dt { color: var(--heading) !important; }
+#salcalc .sc-result .sc-rows .sc-total dd { color: var(--teal-3) !important; font-size: 1.15rem; }
+#salcalc .sc-result .sc-annual { border-block-start-color: var(--line) !important; color: var(--text-muted) !important; }
+#salcalc .sc-result .sc-annual b, #salcalc .sc-result .sc-rates b { color: var(--heading) !important; }
+#salcalc .sc-result .sc-rates { color: var(--text-muted) !important; }
+#salcalc .sc-result .sc-er { background: #F2FAF9 !important; border: 1px solid rgba(31,201,177,.2) !important; }
+#salcalc .sc-result .sc-er-h { color: var(--heading) !important; }
+#salcalc .sc-result .sc-br { border-color: var(--line) !important; }
+#salcalc .sc-result .sc-br summary { color: var(--teal-3) !important; }
+#salcalc .sc-result .sc-br[open] summary { border-block-end-color: var(--line) !important; }
+#salcalc .sc-result .sc-br-t th { color: var(--text-muted) !important; }
+#salcalc .sc-result .sc-br-t td { color: var(--heading) !important; border-block-start-color: var(--line) !important; }
+#salcalc .sc-result .sc-copy { border-color: rgba(31,201,177,.6) !important; color: var(--teal-3) !important; background: transparent; }
+#salcalc .sc-result .sc-copy:hover { background: rgba(31,201,177,.08) !important; }
+#salcalc .sc-prev th { background: #F7FAFB; }
+#salcalc .sc-prev td:not(:first-child), #salcalc .sc-prev th:not(:first-child) { text-align: end; }
+#salcalc #sc-bulk-dl { background: var(--navy) !important; color: #fff !important; margin-top: 6px; box-shadow: 0 14px 30px -18px rgba(14,24,60,.7); }
+#salcalc .sc-bulk-out .sc-empty { margin: 20px; }
+#salcalc .sc-tot b { text-align: start; }
+#salcalc .sc-copy, #salcalc #sc-bulk-dl { inline-size: calc(100% - 2 * clamp(16px, 2.2vw, 24px)) !important; box-sizing: border-box; display: flex; justify-content: center; margin-inline: clamp(16px, 2.2vw, 24px) !important; }
+#salcalc .sc-tw { margin-block-start: 6px; }
