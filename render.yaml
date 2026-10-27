@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: talent360-eddekhar
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: python3 build.py && npm --prefix backend install
+    startCommand: node backend/server.js
+    envVars:
+      - key: PUBLIC_BASE_URL
+        value: https://talent360-eddekhar.onrender.com
+      - key: TEAM_EMAIL
+        value: info@talent-360.me
+      - key: MAIL_FROM
+        value: Talent360 <info@talent-360.me>
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

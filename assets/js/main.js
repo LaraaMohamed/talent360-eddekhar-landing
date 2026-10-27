@@ -368,7 +368,12 @@
     submitBtn.disabled = true; submitBtn.textContent = T.booking;
     fetch(API + "/book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
-      .then(function (res) { confirmed(s, res, false); })
+      .then(function (res) {
+        res.who = payload;
+        if (res.calendar === false) res.relay = true; // no calendar link yet: the team confirms by hand
+        if (res.mailed === false) notifyBooking(s, payload); // no SMTP on the server yet: tell the team through the relay
+        confirmed(s, res, false);
+      })
       .catch(function (err) {
         if (err && err.error === "slot_taken") {
           errEl.textContent = T.slotTaken; DAYS[state.day].slots[state.slot].busy = true; state.slot = null; renderSlots();
@@ -377,16 +382,20 @@
         if (err && err.error === "personal_email") { errEl.textContent = T.emailPersonal; submitBtn.textContent = T.submit; validate(); return; }
         if (err && err.error) { errEl.textContent = T.genericError; submitBtn.textContent = T.submit; validate(); return; }
         // No booking API (static hosting): send the request to the team inbox
-        var when = fmtDay(s.start, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " " + fmtTime(s.start, false) + " " + T.riyadhShort;
-        relay("New HR Health Check booking (Eddekhar): " + payload.company, {
-          type: "Booking request", name: payload.name, email: payload.email, company: payload.company,
-          focus: T.focus[payload.focus] || payload.focus, requested_time: when, start_utc: payload.start, utm: utmText(utm), _honey: payload.website
-        }, T.eventDetails + "\n" + when).then(function (ok) {
+        notifyBooking(s, payload).then(function (ok) {
           if (!ok) { errEl.textContent = T.genericError; submitBtn.textContent = T.submit; validate(); return; }
           confirmed(s, { id: "relay", meetUrl: null, relay: true, who: payload }, true);
         });
       });
   });
+
+  function notifyBooking(s, payload) {
+    var when = fmtDay(s.start, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " " + fmtTime(s.start, false) + " " + T.riyadhShort;
+    return relay("New HR Health Check booking (Eddekhar): " + payload.company, {
+      type: "Booking request", name: payload.name, email: payload.email, company: payload.company,
+      focus: T.focus[payload.focus] || payload.focus, requested_time: when, start_utc: payload.start, utm: utmText(utm), _honey: payload.website
+    }, T.eventDetails + "\n" + when);
+  }
 
   function icsDate(d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); }
 
@@ -430,7 +439,7 @@
       var v = document.getElementById("bk-phone").value.trim();
       var msg = document.getElementById("phone-msg");
       if (!/^\+?[0-9\s-]{8,16}$/.test(v)) { msg.style.color = ""; msg.textContent = T.phoneInvalid; return; }
-      var saving = res.relay
+      var saving = res.relay || res.mailed === false
         ? relay("Phone for booking: " + res.who.company, { type: "Phone number", name: res.who.name, email: res.who.email, company: res.who.company, phone: v })
         : fetch(API + "/booking/" + encodeURIComponent(res.id) + "/phone", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: v, token: res.token }) })
             .then(function (r) { return r.ok; }, function () { return false; });
@@ -658,7 +667,7 @@
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j, offline: !r.ok && !j.error }; }); },
               function () { return { offline: true }; })
         .then(function (res) {
-          if (!res.offline) return res;
+          if (!res.offline && !(res.ok && res.j && res.j.mailed === false)) return res;
           // No API (static hosting): tell the team by email instead
           return relay("Lead magnet request (Eddekhar): " + title, {
             type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value

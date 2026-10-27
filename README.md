@@ -13,12 +13,12 @@ Content lives in `content.py`, markup in `template.py`, styles and scripts in `a
 
 ## Deploy
 
-Every push to `main` builds the site and publishes `dist/` to GitHub Pages (`.github/workflows/pages.yml`).
-In the repo settings, set **Pages → Source** to **GitHub Actions** once.
+**Render (live, dynamic):** `render.yaml` runs `backend/server.js`, which serves the built pages from `dist/` and the
+booking and lead-magnet API on the same domain. Every push to `main` redeploys. Email needs `SMTP_HOST`, `SMTP_USER` and
+`SMTP_PASS` set in the Render service's Environment tab; calendar invites need `GOOGLE_SERVICE_ACCOUNT_JSON` (see `backend/.env.example`).
+Until SMTP is set, every booking and download request is still emailed to the team through FormSubmit (`formEndpoint` in the page config).
 
-GitHub Pages serves static files only. Booking, Google Calendar invites and lead-magnet emails need the
-Node backend in `backend/` hosted separately (see `backend/.env.example` and `HANDOFF.md`), with
-`apiBase` in the page config pointing at it. Until then the forms validate but nothing is sent.
+**GitHub Pages (static mirror):** `.github/workflows/pages.yml` publishes `dist/` on every push. Forms there use the FormSubmit relay only.
 
 ## Lead-magnet guides
 

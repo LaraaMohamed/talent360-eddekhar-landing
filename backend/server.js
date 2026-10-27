@@ -77,7 +77,7 @@ function sign(id) { return crypto.createHmac("sha256", env.LINK_SECRET || "dev-s
 function verify(id, token) { const a = Buffer.from(sign(id)); const b = Buffer.from(String(token || "")); return a.length === b.length && crypto.timingSafeEqual(a, b); }
 
 /* ---------- Email (bilingual) ---------- */
-const mailer = env.SMTP_HOST ? nodemailer.createTransport({ host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 587), auth: { user: env.SMTP_USER, pass: env.SMTP_PASS } }) : null;
+const mailer = env.SMTP_HOST ? nodemailer.createTransport({ host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 587), secure: Number(env.SMTP_PORT) === 465, auth: { user: env.SMTP_USER, pass: env.SMTP_PASS } }) : null;
 function fmt(date, lang) {
   return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-GB", { timeZone: TZ, dateStyle: "full", timeStyle: "short" }).format(date);
 }
@@ -216,8 +216,29 @@ async function book(body, ip) {
     }
     bookings.set(id, b);
     await Promise.allSettled([sendConfirmation(b), pushToCrm(b)]);
-    return [200, { id, token: b.token, meetUrl: b.meetUrl || null }];
+    return [200, { id, token: b.token, meetUrl: b.meetUrl || null, calendar: !!cal, mailed: !!mailer }];
   } finally { locks.delete(key); }
+}
+
+/* ---------- Static site: serves the built pages from ../dist ---------- */
+const DIST = require("path").join(__dirname, "..", "dist");
+const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".svg": "image/svg+xml",
+  ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".pdf": "application/pdf", ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml", ".woff2": "font/woff2" };
+function serveStatic(pathname, res) {
+  const path = require("path"), fs = require("fs");
+  let rel = decodeURIComponent(pathname);
+  if (rel.endsWith("/")) rel += "index.html";
+  const file = path.normalize(path.join(DIST, rel));
+  if (!file.startsWith(DIST)) return send(res, 404, { error: "not_found" });
+  fs.stat(file, (err, st) => {
+    if (!err && st.isDirectory()) { res.writeHead(301, { Location: pathname + "/" }); return res.end(); }
+    if (err) { res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" }); return res.end('<p>Not found. <a href="/">Home</a></p>'); }
+    const ext = path.extname(file).toLowerCase();
+    res.writeHead(200, { "Content-Type": TYPES[ext] || "application/octet-stream",
+      "Cache-Control": ext === ".html" ? "no-cache" : "public, max-age=86400" });
+    fs.createReadStream(file).pipe(res);
+  });
 }
 
 /* ---------- HTTP ---------- */
@@ -245,7 +266,7 @@ http.createServer(async (req, res) => {
       if (!b || !verify(b.id, body.token)) return send(res, 404, { error: "not_found" });
       b.phone = String(body.phone || "").replace(/[^\d+\s-]/g, "").slice(0, 20);
       await pushToCrm(b).catch(() => {});
-      return send(res, 200, { ok: true });
+      return send(res, 200, { ok: true, mailed: !!mailer });
     }
     if (req.method === "GET" && (m = url.pathname.match(/^\/api\/booking\/([\w-]+)\/(cancel|reschedule)$/))) {
       const b = bookings.get(m[1]);
@@ -261,11 +282,12 @@ http.createServer(async (req, res) => {
       if (rateLimited(ip, 10) || !emailRe.test(String(body.email || ""))) return send(res, 400, { error: "invalid" });
       if (isPersonal(body.email)) return send(res, 400, { error: "personal_email" });
       await sendLeadMagnet(body);
-      return send(res, 200, { ok: true });
+      return send(res, 200, { ok: true, mailed: !!mailer });
     }
+    if (req.method === "GET" || req.method === "HEAD") return serveStatic(url.pathname, res);
     send(res, 404, { error: "not_found" });
   } catch (err) {
     console.error(err);
     send(res, 500, { error: "server_error" });
   }
-}).listen(PORT, () => console.log("booking api on :" + PORT + (cal ? "" : " (stub mode: no Google credentials)")));
+}).listen(PORT, () => console.log("site + booking api on :" + PORT + (cal ? "" : " (stub mode: no Google credentials)")));
