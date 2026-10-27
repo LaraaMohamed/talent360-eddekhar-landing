@@ -44,7 +44,7 @@ def _render(lang, mode):
     edd_logo = A + "img/brand/eddekhar-%s.svg" % lang
     t360 = A + "img/brand/mawared-mark.webp"
     t360w = A + "img/brand/mawared-mark-white.webp"
-    by_t360 = ('<span class="mm-by" dir="ltr"><span>by</span><img class="logo-light" src="' + A + 'img/brand/talent360-wordmark.png" alt="Talent360" width="96" height="16"><img class="logo-dark" src="' + A + 'img/brand/talent360-wordmark-white.png" alt="" width="96" height="16"></span>')
+    by_t360 = ('<span class="mm-by" dir="ltr"><span>by</span><img class="logo-light" src="' + A + 'img/brand/talent360-lockup.png" alt="Talent360" width="124" height="20"><img class="logo-dark" src="' + A + 'img/brand/talent360-lockup-white.png" alt="" width="124" height="20"></span>')
     privacy = PRIVACY_URL
 
     def cta(label, key, cls="btn btn-primary", href="#book", focus=None, arrow=True):
@@ -56,7 +56,7 @@ def _render(lang, mode):
                 % (" center" if center else "", e(label), hid, e(h), extra, e(answer)))
 
     lockup = ('<div class="lockup"><a class="mm-logo" href="https://talent-360.me" aria-label="%s" target="_blank" rel="noopener"><img class="logo-light" src="%s" alt="%s" width="86" height="44"><img class="logo-dark" src="%s" alt="" width="86" height="44">' + by_t360 + '</a>'
-              '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="81" height="26"></a>'
+              '<span class="x" aria-hidden="true">×</span><a class="edd-chip" href="https://eddekhar.com" aria-label="%s" rel="noopener"><img src="%s" alt="%s" width="138" height="44"></a>'
               '</div>') % (e(L["t360_alt"]), t360, e(L["t360_alt"]), t360w, e(L["edd_alt"]), edd_logo, e(L["edd_alt"]))
 
     def tiles_html(hidden):
@@ -159,7 +159,7 @@ def _render(lang, mode):
 <link rel="preload" as="image" href="{hero_img}" imagesrcset="{A}img/hero-top-900.webp 900w, {hero_img} 1600w" imagesizes="100vw" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{fonts}&display=swap">
-<link rel="stylesheet" href="{A}css/main.css?v=202610270800">
+<link rel="stylesheet" href="{A}css/main.css?v=202610270802">
 <script type="application/ld+json">{jsonld(lang, L, url)}</script>
 </head>
 <body>
@@ -215,7 +215,7 @@ def _render(lang, mode):
 <section class="edd-band-wrap" aria-labelledby="edd-band-h">
  <div class="container">
   <div class="edd-band">
-   <a class="edd-band-logo" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="81" height="26" loading="lazy"></a>
+   <a class="edd-band-logo" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="138" height="44" loading="lazy"></a>
    <div class="edd-band-copy"><span class="edd-band-tag">{e(L['edd_band_tag'])}</span><h2 id="edd-band-h">{e(L['edd_band_h'])}</h2><p>{e(L['edd_band_p'])}</p></div>
    <div class="edd-band-offer"><span class="edd-band-big">{e(L['offer_big'])}</span>{cta(L['cta_primary'], 'edd_band', 'btn btn-edd', focus='hr')}</div>
   </div>
@@ -355,7 +355,7 @@ def _render(lang, mode):
     <p class="expect-h">{e(L['expert_back_h'])}</p><ul class="promise expect-list">{''.join('<li>%s<span>%s</span></li>' % (TICK, e(i)) for i in L['expert_back_items'])}</ul>
    </div>
   </div>
-  <div class="partner-approval"><a class="edd-chip" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="81" height="26" loading="lazy"></a><p>{e(L['partner_approval'])}</p></div>
+  <div class="partner-approval"><a class="edd-chip" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="138" height="44" loading="lazy"></a><p>{e(L['partner_approval'])}</p></div>
   <div class="cta-row trust-cta">{cta(L['cta_primary'], 'trust', 'btn btn-primary btn-lg', focus='hr')}</div>
  </div>
 </section>
@@ -478,7 +478,7 @@ def _render(lang, mode):
   <div class="foot-brand">
    <a class="fb-t360" href="https://talent-360.me" target="_blank" rel="noopener"><img class="logo-light" src="{t360}" alt="{e(L['t360_alt'])}" width="156" height="80" loading="lazy"><img class="logo-dark" src="{t360w}" alt="" width="156" height="80" loading="lazy">{by_t360}</a>
    <span class="fb-x" aria-hidden="true">×</span>
-   <a class="edd-chip" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="81" height="26" loading="lazy"></a>
+   <a class="edd-chip" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="138" height="44" loading="lazy"></a>
    <p class="fb-line">{e(L['foot_line'])}</p>
    <div class="socials">{socials}</div>
   </div>
@@ -523,7 +523,7 @@ def _render(lang, mode):
 
 <script type="application/json" id="i18n">{json.dumps(L['js'], ensure_ascii=False)}</script>
 <script>window.T360_CONFIG = {{ apiBase: "/api", formEndpoint: "https://formsubmit.co/ajax/info@talent-360.me", debug: false }};</script>
-<script src="{A}js/main.js?v=202610270800" defer></script>
+<script src="{A}js/main.js?v=202610270802" defer></script>
 </body>
 </html>
 """

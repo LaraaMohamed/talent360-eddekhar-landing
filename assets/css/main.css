@@ -1018,3 +1018,26 @@ html, body { overflow-x: clip; }
 @media (min-width: 1080px) {
   .tool-grid > .tool-card { flex-basis: calc((100% - 36px) / 3); }
 }
+
+/* Logos v5: full Talent360 logo (T mark + wordmark); Eddekhar given equal weight */
+.mm-by img { block-size: 24px !important; }
+.lockup { gap: 16px; }
+.lockup .edd-chip img, .lockup .edd-chip { block-size: auto; }
+.lockup .edd-chip img { block-size: 40px !important; inline-size: auto; }
+.lockup .edd-chip { padding-inline-start: 16px; }
+.foot-brand .mm-by img { block-size: 32px !important; }
+.foot-brand .edd-chip img, .foot-logos .edd-chip img { block-size: 64px !important; inline-size: auto; }
+.partner-approval .edd-chip img { block-size: 44px !important; }
+.edd-band-logo img { block-size: 60px; }
+@media (max-width: 700px) {
+  .lockup { gap: 10px; }
+  .mm-by img { block-size: 18px !important; }
+  .lockup .edd-chip { padding-inline-start: 10px; }
+  .lockup .edd-chip img { block-size: 34px !important; }
+  .foot-brand .edd-chip img, .foot-logos .edd-chip img { block-size: 52px !important; }
+}
+.lockup { flex: none; }
+@media (min-width: 1240px) { .main-nav { display: none; } }
+@media (min-width: 1360px) { .main-nav { display: block; } .main-nav a { padding-inline: 8px; font-size: .88rem; } }
+@media (max-width: 700px) { .lockup .edd-chip img { block-size: 30px !important; } }
+@media (max-width: 700px) { .lockup .mm-by img { block-size: 20px !important; } }
