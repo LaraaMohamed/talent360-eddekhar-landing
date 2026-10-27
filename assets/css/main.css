@@ -1492,3 +1492,19 @@ html[lang="en"] .hs-num { font-weight: 600; }
   html[lang="en"] .bars li { font-size: .88rem !important; }
 }
 @media (max-width: 899px) { .slide-stats { margin-block-start: 16px !important; } .slide-cubes { inline-size: min(200px, 50%) !important; } }
+
+/* English hero: same type sizes, spread a little wider and airier */
+html[lang="en"] .hero-stage h1 { max-width: 1120px; line-height: 1.3; letter-spacing: -.005em; }
+html[lang="en"] .hero-stage .tagline { margin-block: 20px 14px; letter-spacing: .01em; }
+html[lang="en"] .hero-stage .sub { max-inline-size: 780px; line-height: 1.8; letter-spacing: .005em; }
+html[lang="en"] .hero-stage .hero-ctas { margin-block-start: 30px; }
+@media (max-width: 700px) {
+  html[lang="en"] .hero-stage h1 { line-height: 1.42; }
+  html[lang="en"] .hero-stage .tagline { margin-block: 14px 10px; }
+  html[lang="en"] .hero-stage .sub { line-height: 1.8; margin-block: 8px 22px; }
+  html[lang="en"] .hero-stage .hero-copy { padding-inline: 20px; }
+}
+html[lang="en"] .hero-stage .sub { max-width: 800px; max-inline-size: 800px; }
+/* Service cards: clear space between cards, enough for the number badges that hang below each card */
+.tiles { gap: 52px 28px !important; }
+@media (max-width: 700px) { .tiles { gap: 16px !important; } }
