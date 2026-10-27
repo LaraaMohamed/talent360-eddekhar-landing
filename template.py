@@ -480,7 +480,7 @@ def _render(lang, mode):
    <p class="sc-basis">{e(L['sc_basis'])}</p>
    <div class="sc-cta">{cta(L['sc_cta'], 'salary_calc', focus='team')}</div>
   </div>
-  <p class="later">{e(L['tools_later'])}</p>
+  {('<p class="later">%s</p>' % e(L['tools_later'])) if L['tools_later'] else ''}
  </div>
 </section>
 
