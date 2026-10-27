@@ -1203,12 +1203,6 @@ html[lang="ar"] body { line-height: 1.85; }
 .sc-bulk-out .sc-empty[hidden] { display: none; }
 @media (min-width: 900px) { .sc-body, .sc-bulk-body { align-items: start; } }
 
-/* Hero: trim the photo from the top so the four cards sit inside the first screen on laptops */
-@media (min-width: 701px) {
-  .hero-stage { min-block-size: clamp(480px, 38vw, 620px); }
-  .hero-stage .hero-copy { padding-block: clamp(28px, 3vw, 48px) clamp(80px, 8vw, 104px); }
-  .hero-stage .hero-photo { object-position: 50% 42%; }
-}
 @media (min-width: 900px) { .sc-form { position: sticky; inset-block-start: 96px; } }
 
 /* Salary calculator: two choice cards (one employee / whole team) open the matching calculator */
