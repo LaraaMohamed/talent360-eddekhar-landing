@@ -357,21 +357,19 @@ def render(data, lang, benefits=False):
     upd = ""
     if L.get("updates"):
         upd = '<div class="upd"><h2>%s</h2><ul>%s</ul></div>' % (E(L["updates_h"]), "".join("<li>%s</li>" % E(i) for i in L["updates"]))
-    src = "".join('<li>%s: <a href="%s">%s</a></li>' % (E(t), E(u), E(u)) for t, u in data["sources"])
     return """<!doctype html><html lang="%s" dir="%s"><head><meta charset="utf-8"><title>%s</title>
 <link href="https://fonts.googleapis.com/css2?family=%s&display=swap" rel="stylesheet"><style>%s</style></head><body>
 <header class="cover"><div class="brand"><div class="mm"><img class="mark" src="%s" alt="موارد ومهارات"><span class="by" dir="ltr">by <img src="%s" alt="Talent360"></span></div><span class="edition">%s</span></div>
 <h1>%s</h1><p class="sub">%s</p><p class="intro">%s</p></header>
 <main>%s<div class="cols">%s</div>%s
 <div class="check"><h2>%s</h2><ul>%s</ul></div>
-<div class="cta"><div><h3>%s</h3><p>%s</p></div><a href="%s">%s</a></div>
-<div class="src"><h2>%s</h2><ul>%s</ul><p class="disc">%s</p></div></main></body></html>""" % (
+<div class="cta"><div><h3>%s</h3><p>%s</p></div><a href="%s">%s</a></div></main></body></html>""" % (
         lang, "rtl" if rtl else "ltr", E(L["title"]), fonts, CSS % font,
         img64("mawared-mark-white.png"), img64("talent360-wordmark-white.png"), E(EDITION[lang]),
         E(L["title"]), E(L["sub"]), E(L["intro"]), upd, secs, ben,
         E(L["checklist_h"]), "".join("<li>%s</li>" % E(i) for i in L["checklist"]),
-        E(L["cta_h"]), E(L["cta_p"]), BOOK[lang], E(L["cta_btn"]),
-        E(L["sources_h"]), src, E(L["disclaimer"]))
+        E(L["cta_h"]), E(L["cta_p"]), BOOK[lang], E(L["cta_btn"]))
+    # Sources and disclaimer stay in the data above but are not printed in the PDF.
 
 
 if __name__ == "__main__":
