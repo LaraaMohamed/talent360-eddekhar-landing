@@ -154,7 +154,8 @@ def main():
     out = os.path.join(here, mode if mode == "preview" else "dist")
     if os.path.exists(out):
         shutil.rmtree(out)
-    shutil.copytree(os.path.join(here, "assets"), os.path.join(out, "assets"))
+    # Gated PDFs are served only by the booking server after email verification (backend/files), never as public files
+    shutil.copytree(os.path.join(here, "assets"), os.path.join(out, "assets"), ignore=shutil.ignore_patterns("files"))
     if mode == "preview":
         write(os.path.join(out, "index.html"), render("ar", "preview"))
         write(os.path.join(out, "en.html"), render("en", "preview"))

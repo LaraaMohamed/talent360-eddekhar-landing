@@ -427,7 +427,6 @@
      Social insurance: Law 148/2019, employee share 11% of the insured wage,
      insured wage limits from 1/1/2026: min 2,700, max 16,700 EGP.
      Income tax: Law 91/2005 as amended, 2026 brackets, 20,000 EGP exemption. */
-  var GUIDE_FILES = { labour_law_eg: 1, labour_law_sa: 1 }; // PDFs hosted in assets/files/<tool>-<lang>.pdf
   var afterGate = {}; // tool -> action to run once the visitor has given an email
   var sc = document.getElementById("salcalc");
   if (sc) {
@@ -632,37 +631,29 @@
       if (est !== "ok") { gateMsg.textContent = emailMsg(est); return; }
       store("session", "t360_email", email);
       var tool = gateForm.tool.value, title = gateTitle.textContent, after = afterGate[tool];
-      var file = GUIDE_FILES[tool] ? new URL("../assets/files/" + tool + "-" + LANG + ".pdf", location.href).href : "";
       var btn = gateForm.querySelector('button[type="submit"]'); if (btn) btn.disabled = true;
       fetch(API + "/lead-magnet", { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, tool: tool, lang: LANG, utm: utm, website: gateForm.website.value }) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j, offline: !r.ok && !j.error }; }); },
               function () { return { offline: true }; })
         .then(function (res) {
-          if (!res.offline && !(res.ok && res.j && res.j.mailed === false)) return res;
-          // No API (static hosting): tell the team by email instead
+          if (res.j && res.j.error) return res;
+          if (!res.offline && res.ok && res.j && (res.j.sent || after)) return res;
+          // No API or no mailbox connected yet: tell the team by email instead, and they follow up by hand
           return relay("Lead magnet request (Eddekhar): " + title, {
             type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value
-          }, file ? title + "\n" + file : "").then(function (ok) { return { ok: ok, relayed: true }; });
+          }).then(function (ok) { return { ok: ok, relayed: true }; });
         })
         .then(function (res) {
           if (btn) btn.disabled = false;
-          // Files we host are handed over straight away, whatever happened to the notification
-          if (!res.ok && !file && !after) {
+          if (!res.ok && !after) {
             gateMsg.textContent = res.j && res.j.error === "personal_email" ? T.emailPersonal : T.gateFail; return;
           }
-          track("lead_magnet_requested", { tool: tool, relayed: !!res.relayed, notified: !!res.ok });
+          track("lead_magnet_requested", { tool: tool, relayed: !!res.relayed, verify_sent: !!(res.j && res.j.sent) });
           gateMsg.style.color = "var(--accent-ink)";
           if (after) { after(); gateMsg.textContent = T.bulkSent; return; }
-          if (file) {
-            var a = document.createElement("a"); a.href = file; a.download = tool + "-" + LANG + ".pdf";
-            document.body.appendChild(a); a.click(); a.remove();
-            gateMsg.innerHTML = "";
-            gateMsg.appendChild(document.createTextNode(T.guideDl + " "));
-            var link = document.createElement("a"); link.href = file; link.target = "_blank"; link.rel = "noopener"; link.textContent = T.guideDlLink;
-            gateMsg.appendChild(link); return;
-          }
-          gateMsg.textContent = T.gateSent;
+          // The file unlocks only from the link in the confirmation email (company email verified)
+          gateMsg.textContent = res.j && res.j.sent ? T.gateVerify.replace("{email}", email) : T.gateSent;
         });
     });
   }
