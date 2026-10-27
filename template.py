@@ -159,7 +159,7 @@ def _render(lang, mode):
 <link rel="preload" as="image" href="{hero_img}" imagesrcset="{A}img/hero-top-900.webp 900w, {hero_img} 1600w" imagesizes="100vw" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{fonts}&display=swap">
-<link rel="stylesheet" href="{A}css/main.css?v=202610270804">
+<link rel="stylesheet" href="{A}css/main.css?v=202610270806">
 <script type="application/ld+json">{jsonld(lang, L, url)}</script>
 </head>
 <body>
@@ -330,18 +330,6 @@ def _render(lang, mode):
  </div>
 </section>
 
-<!-- Comparison -->
-<section id="compare" class="alt" aria-labelledby="compare-h">
- <div class="container">
-  {head(L['cmp_eyebrow'], L['cmp_h'], L['cmp_answer'], 'compare-h')}
-  <div class="cmp-wrap" role="region" aria-labelledby="compare-h"><table class="cmp"><thead><tr>{cmp_head}</tr></thead><tbody>{cmp_body}</tbody></table>
-   <div class="cmp-locked"><table class="cmp cmp-blur" aria-hidden="true"><tbody>{cmp_locked}</tbody></table>
-   <div class="cmp-gate"><p class="cmp-gate-h">{e(L['cmp_gate_h'])}</p><p class="cmp-gate-p">{e(L['cmp_gate_p'])}</p><button class="btn btn-primary" type="button" data-tool="compare_pdf" data-title="{e(L['tools'][0][2])}">{e(L['cmp_gate_btn'])}</button></div></div>
-  </div>
-  <div class="cta-row">{cta(L['cmp_cta2'], 'compare', focus='team')}</div>
- </div>
-</section>
-
 <!-- Credibility: the profile's "Why choose Talent 360" slide -->
 <section id="trust" aria-labelledby="trust-h">
  <div class="container">
@@ -364,6 +352,24 @@ def _render(lang, mode):
  <div class="container">
   {head(L['tools_eyebrow'], L['tools_h'], L['tools_answer'], 'tools-h')}
   <div class="tool-grid">{tools}</div>
+ </div>
+</section>
+
+<!-- Comparison -->
+<section id="compare" class="alt" aria-labelledby="compare-h">
+ <div class="container">
+  {head(L['cmp_eyebrow'], L['cmp_h'], L['cmp_answer'], 'compare-h')}
+  <div class="cmp-wrap" role="region" aria-labelledby="compare-h"><table class="cmp"><thead><tr>{cmp_head}</tr></thead><tbody>{cmp_body}</tbody></table>
+   <div class="cmp-locked"><table class="cmp cmp-blur" aria-hidden="true"><tbody>{cmp_locked}</tbody></table>
+   <div class="cmp-gate"><p class="cmp-gate-h">{e(L['cmp_gate_h'])}</p><p class="cmp-gate-p">{e(L['cmp_gate_p'])}</p><button class="btn btn-primary" type="button" data-tool="compare_pdf" data-title="{e(L['tools'][0][2])}">{e(L['cmp_gate_btn'])}</button></div></div>
+  </div>
+  <div class="cta-row">{cta(L['cmp_cta2'], 'compare', focus='team')}</div>
+ </div>
+</section>
+
+<!-- Egypt salary calculator -->
+<section id="salcalc-sec" class="waves" aria-labelledby="salcalc-h">
+ <div class="container">
   <div class="salcalc" id="salcalc">
    <div class="sc-intro">
     <span class="sc-kicker">{e(L['sc_kicker'])}</span>
@@ -522,7 +528,7 @@ def _render(lang, mode):
 
 <script type="application/json" id="i18n">{json.dumps(L['js'], ensure_ascii=False)}</script>
 <script>window.T360_CONFIG = {{ apiBase: "/api", formEndpoint: "https://formsubmit.co/ajax/{TEAM_INBOX}", debug: false }};</script>
-<script src="{A}js/main.js?v=202610270804" defer></script>
+<script src="{A}js/main.js?v=202610270806" defer></script>
 </body>
 </html>
 """
