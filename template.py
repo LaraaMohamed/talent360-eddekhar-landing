@@ -253,6 +253,7 @@ def _render(lang, mode):
   <ul class="slide-stats" aria-label="{e(L['stats_label'])}">{stat_cards}</ul>
  </div>
  <div class="container stats-foot">
+  <p class="answer">{e(L['why_panel'])}</p>
   <p class="stats-note">{pending(L, 'الأرقام من ملف الشركة 2026، بانتظار تأكيد لارا' if rtl else 'Figures from the 2026 company profile, awaiting Lara’s confirmation')}</p>
  </div>
 </section>
@@ -262,6 +263,7 @@ def _render(lang, mode):
  <div class="container">
   {head(L['help_eyebrow'], L['help_h'], L['help_answer'], 'help-h')}
   <div class="tiles">{services}</div>
+  <p class="tiles-foot">{e(L['proof_cta'])}</p>
  </div>
 </section>
 
@@ -316,6 +318,7 @@ def _render(lang, mode):
      <button class="btn btn-primary btn-block" id="bk-submit" type="submit" disabled>{e(L['submit'])}</button>
      <p class="bk-hint" id="bk-hint">{e(L['js']['pickTime'])}</p>
      <p class="form-error" id="bk-error" role="alert"></p>
+     <p class="privacy">{ICO['lock'].replace('<svg ', '<svg width="18" height="18" style="flex:none;margin-top:3px" ')}<span>{e(L['privacy_line'])}</span></p>
      </div>
     </form>
    </div>
@@ -471,6 +474,7 @@ def _render(lang, mode):
    <p class="sc-basis">{e(L['sc_basis'])}</p>
    <div class="sc-cta">{cta(L['sc_cta'], 'salary_calc', focus='team')}</div>
   </div>
+  <p class="later">{e(L['tools_later'])}</p>
  </div>
 </section>
 
