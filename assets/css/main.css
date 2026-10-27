@@ -1561,3 +1561,9 @@ html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
 .logo-tile:hover, .logo-tile:focus-within { transform: translateY(-3px); background: rgba(31,201,177,.08); box-shadow: 0 8px 20px -10px rgba(22,140,124,.55); }
 .logo-tile:hover img, .logo-tile:focus-within img { transform: scale(1.08); }
 @media (prefers-reduced-motion: reduce) { .logo-tile, .logo-tile img { transition: none; } .logo-tile:hover, .logo-tile:hover img { transform: none; } }
+
+/* Eddekhar header logo: slightly smaller */
+.lockup .edd-chip img { block-size: 35px !important; }
+@media (min-width: 768px) and (max-width: 1023px) { .header-inner .lockup .edd-chip img { block-size: 28px !important; } }
+@media (max-width: 767px) { .lockup .edd-chip img { block-size: 30px !important; } }
+@media (max-width: 700px) { .lockup .edd-chip img { block-size: 27px !important; } }
