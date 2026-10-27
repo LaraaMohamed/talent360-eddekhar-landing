@@ -481,9 +481,7 @@ def _render(lang, mode):
  <div class="container">
   <div class="foot-main">
   <div class="foot-brand">
-   <a class="fb-t360" href="https://talent-360.me" target="_blank" rel="noopener"><img class="logo-light" src="{t360}" alt="{e(L['t360_alt'])}" width="156" height="80" loading="lazy">{by_t360}</a>
-   <span class="fb-x" aria-hidden="true">×</span>
-   <a class="edd-chip" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="138" height="44" loading="lazy"></a>
+   <div class="fb-logos"><a class="fb-logo" href="https://talent-360.me" target="_blank" rel="noopener"><img src="{t360}" alt="{e(L['t360_alt'])}" width="381" height="195" loading="lazy"></a><span class="fb-x" aria-hidden="true">×</span><a class="fb-logo fb-edd" href="https://eddekhar.com" rel="noopener"><img src="{edd_logo}" alt="{e(L['edd_alt'])}" width="138" height="44" loading="lazy"></a></div>
    <p class="fb-line">{e(L['foot_line'])}</p>
    <div class="socials">{socials}</div>
   </div>
