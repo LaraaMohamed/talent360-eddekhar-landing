@@ -57,7 +57,7 @@ def jsonld(lang, L, url):
         "description": L["foot_line"],
     }
     service = {
-        "@type": "Service", "@id": url + "#hr-health-check", "name": "HR Health Check",
+        "@type": "Service", "@id": url + "#hr-health-check", "name": "فحص الموارد البشرية" if lang == "ar" else "Free HR check",
         "serviceType": "HR consulting" if lang == "en" else "استشارات الموارد البشرية",
         "provider": {"@id": "https://talent-360.me/#org"}, "areaServed": {"@type": "Country", "name": "Saudi Arabia" if lang == "en" else "المملكة العربية السعودية"},
         "description": L["checks_answer"],
