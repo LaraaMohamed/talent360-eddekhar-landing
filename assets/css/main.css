@@ -1579,3 +1579,6 @@ html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
 
 /* Stats-slide sentence: a little lower from the top edge */
 .stats-foot { padding-block-start: 22px; }
+
+/* Booking section: Eddekhar badge + 10% banner sit a little higher under the intro */
+.booking-grid .booking-aside { margin-block-start: -16px; }
