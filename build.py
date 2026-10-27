@@ -36,8 +36,9 @@ CLIENTS = [  # (file, name, needs naming approval)
     ("alinma", "Alinma Bank", False), ("holouly", "Holouly", False), ("techstrike", "TechStrike", False),
     ("sifi", "SIFI", False), ("mohasby", "Mohasby", False), ("amanah", "Amanah Al Riyadh", False),
     ("magnetic", "Magnetic", True), ("omq", "OMQ", True), ("elite", "Elite", False),
+    ("kayangulf", "Kayan Gulf", False),
 ]
-CLIENT_SIZES = {"alinma": (309, 120), "techstrike": (360, 62), "sifi": (190, 120), "magnetic": (252, 120), "mohasby": (308, 120), "holouly": (360, 80), "omq": (144, 120), "elite": (104, 120), "amanah": (126, 120)}
+CLIENT_SIZES = {"alinma": (309, 120), "techstrike": (360, 62), "sifi": (190, 120), "magnetic": (252, 120), "mohasby": (308, 120), "holouly": (360, 80), "omq": (144, 120), "elite": (104, 120), "amanah": (126, 120), "kayangulf": (225, 120)}
 
 
 def pending(L, label=None):
