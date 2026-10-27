@@ -1268,3 +1268,64 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
 
 .bk-hint { margin: 10px 0 0; font-size: .9rem; color: var(--muted, #5b6677); text-align: center; }
 .bk-hint[hidden] { display: none; }
+
+/* Mobile: tighter type and less text, so each section fits about one screen */
+@media (max-width: 700px) {
+  body { font-size: 15px; }
+  html[lang="ar"] body { line-height: 1.7; }
+  section { padding-block: 32px; }
+  .container { padding-inline: 16px; }
+  .section-head { margin-block-end: 18px; }
+  .section-head h2, h2 { font-size: 1.32rem !important; line-height: 1.45; }
+  .section-head .rule { margin-block: 8px 10px; }
+  .section-head .answer { font-size: .9rem; line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  h3 { font-size: 1.02rem; }
+  .hero-stage h1 { font-size: 1.62rem !important; line-height: 1.45; }
+  .hero-stage .tagline { font-size: .95rem; }
+  .hero-stage .sub { display: none; }
+  .hero-stage .hero-copy { padding-block: 28px 64px; }
+  .btn-lg { padding-block: 13px; font-size: .95rem; }
+
+  /* Trusted logos and partner band */
+  .trusted h2 { font-size: 1.1rem !important; }
+  .marquee-track img, .logo-tile img { max-block-size: 34px; }
+  .edd-band { padding: 18px 16px !important; gap: 10px !important; }
+  .edd-band h2 { font-size: 1.1rem !important; }
+  .edd-band p { font-size: .88rem; }
+  .edd-band-big { font-size: 2.1rem !important; }
+
+  /* Stats: drop the decorative cubes */
+  .slide-cubes { display: none !important; }
+  .slide-stats { margin-block-start: 14px !important; gap: 8px !important; }
+  .slide .stat-card { padding: 12px 8px !important; }
+  .slide .stat-card strong { font-size: 1.4rem !important; }
+  .stats-foot .answer { display: none; }
+  .stats-slide { padding-block: 32px !important; }
+
+  /* Services: compact cards, two-line descriptions */
+  .tiles { gap: 12px !important; }
+  .tile { padding: 16px 16px 18px !important; min-block-size: 0 !important; }
+  .tile .tile-ico { inline-size: 38px; block-size: 38px; }
+  .tile h3 { margin-block: 10px 6px; }
+  .tile p, .tool-card p { font-size: .86rem; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-block: 0 8px; }
+  .tile .more { font-size: .85rem; }
+
+  /* Packages */
+  .cream { padding: 18px 16px !important; }
+  .cream .circle { inline-size: 52px; block-size: 52px; }
+  .cream li { font-size: .88rem; }
+
+  /* How it works: steps without the illustrations */
+  .steps .mock { display: none !important; }
+  .steps .step p { font-size: .88rem; }
+  .step-dot { transform: scale(.8); }
+
+  /* Why us, tools, compare, FAQ */
+  .why-photo img { aspect-ratio: 16 / 9; object-fit: cover; }
+  .why-panel li, .why-panel .expect-h { font-size: .9rem; }
+  .tool-card { padding: 16px !important; }
+  .cmp, .cmp th, .cmp td { font-size: .8rem !important; }
+  .faq-list summary { font-size: .95rem; }
+  .faq-list p { font-size: .88rem; }
+  .final .sub { font-size: .9rem; }
+}
