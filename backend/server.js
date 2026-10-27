@@ -26,8 +26,9 @@ const CAL_OWNER = env.CONSULTANT_EMAIL || BG;
 const FROM = env.MAIL_FROM || `Talent360 <${env.SMTP_USER || BG}>`;
 const TEAM = env.TEAM_EMAIL || BG;
 // Calendars that must all be free for a slot to show, and people invited to every booking.
-const BUSY_CALS = (env.BUSY_CALENDARS || BG + ",ahmed@talent-360.me").split(",").map((x) => x.trim()).filter(Boolean);
-const GUESTS = (env.BOOKING_GUESTS || "ahmed@talent-360.me").split(",").map((x) => x.trim()).filter(Boolean);
+const AHMED = "darkawi@talent-360.me"; // Ahmed Al-Darkawi: the consultant whose calendar takes the bookings
+const BUSY_CALS = (env.BUSY_CALENDARS || AHMED).split(",").map((x) => x.trim()).filter(Boolean);
+const GUESTS = (env.BOOKING_GUESTS || "").split(",").map((x) => x.trim()).filter(Boolean);
 const PORT = Number(env.PORT || 8080);
 const TZ = "Asia/Riyadh";
 const OFFSET_MIN = 180;
@@ -60,7 +61,7 @@ async function gas(action, payload) {
 let gasStatus = GAS ? "checking" : "not configured";
 if (GAS) gas("ping", {}).then((j) => { gasStatus = "ok as " + j.account; console.log("[apps-script]", gasStatus); })
   .catch((e) => { gasStatus = e.message; console.error("[apps-script]", e.message); });
-const CAL_ID = env.CONSULTANT_CALENDAR_ID || "primary";
+const CAL_ID = env.CONSULTANT_CALENDAR_ID || AHMED;
 
 async function busyBetween(timeMin, timeMax) {
   if (!cal && GAS) return (await gas("busy", { timeMin, timeMax, calendars: BUSY_CALS })).busy || [];
@@ -312,7 +313,7 @@ async function book(body, ip) {
     } else if (GAS) {
       const ev = await gas("event", { summary: `${FOCUS[focus]} · ${company} (Eddekhar)`,
         description: `Eddekhar referral. ${name}, ${company}. Language: ${lang}. 10% discount applies.`,
-        start: b.start, end: b.end, attendee: email, guests: GUESTS, requestId: id });
+        start: b.start, end: b.end, attendee: email, guests: GUESTS, requestId: id, calendarId: CAL_ID });
       b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
     }
     bookings.set(id, b);
@@ -374,7 +375,7 @@ http.createServer(async (req, res) => {
       const b = bookings.get(m[1]);
       if (!b || !verify(b.id, url.searchParams.get("token"))) return send(res, 404, { error: "not_found" });
       if (cal && b.eventId) await cal.events.delete({ calendarId: CAL_ID, eventId: b.eventId, sendUpdates: "all" });
-      else if (GAS && b.eventId) await gas("cancel", { eventId: b.eventId });
+      else if (GAS && b.eventId) await gas("cancel", { eventId: b.eventId, calendarId: CAL_ID });
       bookings.delete(b.id);
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();

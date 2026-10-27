@@ -21,7 +21,7 @@ function doPost(e) {
       case "ping": return out({ ok: true, account: Session.getEffectiveUser().getEmail() });
       case "busy": return out({ busy: busy(b.timeMin, b.timeMax, b.calendars) });
       case "event": return out(createEvent(b));
-      case "cancel": Calendar.Events.remove("primary", b.eventId, { sendUpdates: "all" }); return out({ ok: true });
+      case "cancel": Calendar.Events.remove(b.calendarId || "primary", b.eventId, { sendUpdates: "all" }); return out({ ok: true });
       case "mail": return out(mail(b));
     }
     return out({ error: "unknown_action" });
@@ -47,7 +47,8 @@ function busy(timeMin, timeMax, calendars) {
   return all;
 }
 
-// Event with a Google Meet link; Google emails the invite to the client.
+// Event with a Google Meet link on the consultant's calendar (b.calendarId, e.g. darkawi@talent-360.me;
+// this mailbox needs "Make changes to events" on it). Google emails the invite to the client.
 function createEvent(b) {
   var ev = Calendar.Events.insert({
     summary: b.summary, description: b.description,
@@ -55,7 +56,7 @@ function createEvent(b) {
     attendees: [{ email: b.attendee }].concat((b.guests || []).map(function (g) { return { email: g }; })),
     conferenceData: { createRequest: { requestId: b.requestId, conferenceSolutionKey: { type: "hangoutsMeet" } } },
     reminders: { useDefault: false, overrides: [{ method: "email", minutes: 1440 }, { method: "popup", minutes: 60 }] },
-  }, "primary", { conferenceDataVersion: 1, sendUpdates: "all" });
+  }, b.calendarId || "primary", { conferenceDataVersion: 1, sendUpdates: "all" });
   return { eventId: ev.id, meetUrl: ev.hangoutLink || null };
 }
 
