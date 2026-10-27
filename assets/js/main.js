@@ -657,7 +657,7 @@
           if (!res.offline && res.ok && res.j && res.j.download) {
             var a = document.createElement("a"); a.href = res.j.download; a.download = "";
             document.body.appendChild(a); a.click(); a.remove();
-            relay("Lead magnet request (Eddekhar): " + title, { type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value });
+            if (!res.j.teamNotified) relay("Lead magnet request (Eddekhar): " + title, { type: "Lead magnet", requested: title, tool: tool, email: email, utm: utmText(utm), _honey: gateForm.website.value });
             return { ok: true, j: res.j, downloaded: true };
           }
           // No API or no mailbox connected yet: tell the team by email instead, and they follow up by hand
@@ -668,7 +668,7 @@
         .then(function (res) {
           if (btn) btn.disabled = false;
           if (!res.ok && !after) {
-            gateMsg.textContent = res.j && res.j.error === "personal_email" ? T.emailPersonal : T.gateFail; return;
+            gateMsg.textContent = res.j && res.j.error === "personal_email" ? T.emailPersonal : res.j && res.j.error === "no_mail_domain" ? T.emailNoDomain : T.gateFail; return;
           }
           track("lead_magnet_requested", { tool: tool, relayed: !!res.relayed, verify_sent: !!(res.j && res.j.sent) });
           gateMsg.style.color = "var(--accent-ink)";

@@ -10,7 +10,7 @@
  *   POST /api/booking/:id/phone           add the optional phone after confirmation
  *   GET  /api/booking/:id/cancel?token=   cancel (link in the confirmation email)
  *   GET  /api/booking/:id/reschedule?token=  redirects to the page with the booking id
- *   POST /api/lead-magnet                 emails the guide to the company inbox, with a thank-you and a CTA
+ *   POST /api/lead-magnet                 checks the company email (format, not personal, domain has MX), returns a download link, alerts the team
  */
 "use strict";
 
@@ -285,7 +285,14 @@ async function sendLeadMagnet(body) {
     note: `Eddekhar referral. Requested "${title}" from the landing page${file ? "; the guide was emailed to their company inbox" : ""}.` };
   if (env.CRM_WEBHOOK_URL) fetch(env.CRM_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (env.CRM_API_KEY || "") }, body: JSON.stringify(crm) }).catch((e) => console.error("[crm]", e.message));
   else console.log("[crm stub]", JSON.stringify(crm));
-  if (!mailer) return { sent: false, download: file ? guideLink(tool, lang) : null };
+  // Visitor emails are switched off until a dedicated sending domain is set up (protects talent-360.me's reputation).
+  // The visitor gets an instant download; the team still gets an internal alert. Set SEND_VISITOR_EMAIL=true to email the guide again.
+  if (!mailer || !SEND_VISITOR_EMAIL) {
+    if (mailer) mailer.sendMail({ from: FROM, to: TEAM, replyTo: email, subject: `[Eddekhar lead] ${title} downloaded by ${email}`,
+      text: `${email} downloaded "${title}" (${tool}) from the Eddekhar landing page (${lang}).` + (file ? "" : "\nNo file is configured for this tool yet: please send it by hand.") })
+      .catch((e) => console.error("[mail] team", e.message));
+    return { sent: false, teamNotified: !!mailer, download: file ? guideLink(tool, lang) : null };
+  }
   const book = `${env.PUBLIC_BASE_URL}/${lang}/#book`;
   const html = emailHtml(lang, {
     title: ar ? "شكرًا لاهتمامك، دليلك مرفق" : "Thank you, your guide is attached",
@@ -327,6 +334,21 @@ const bookings = new Map();
 
 const FOCUS = { hr: "HR Health Check", team: "Team & Workforce Check", unsure: "Not sure (decide in first 5 min)" };
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SEND_VISITOR_EMAIL = env.SEND_VISITOR_EMAIL === "true";
+// A real company email must be on a domain that receives mail (has MX records). DNS outages don't block visitors.
+const dnsP = require("dns").promises, mxCache = new Map();
+async function receivesMail(email) {
+  const d = String(email).trim().toLowerCase().split("@")[1] || "";
+  if (mxCache.has(d)) return mxCache.get(d);
+  const ok = await Promise.race([
+    dnsP.resolveMx(d).then((r) => r.some((x) => x.exchange && x.exchange !== "."), (e) => (e.code === "ENOTFOUND" || e.code === "ENODATA" ? false : true)),
+    new Promise((r) => setTimeout(() => r(true), 4000)),
+  ]);
+  // If even a known domain fails, the server's DNS is down: let the visitor through rather than block everyone.
+  if (!ok && !(await dnsP.resolveMx("gmail.com").then(() => true, () => false))) return true;
+  mxCache.set(d, ok);
+  return ok;
+}
 // Company emails only (mirrors the page): personal mailboxes are refused.
 const FREE_MAIL = new Set(["gmail.com", "googlemail.com", "msn.com", "ymail.com", "rocketmail.com", "icloud.com", "me.com", "mac.com", "aol.com",
   "proton.me", "protonmail.com", "pm.me", "mail.com", "email.com", "zoho.com", "zohomail.com", "tutanota.com", "tuta.io", "fastmail.com",
@@ -470,6 +492,7 @@ http.createServer(async (req, res) => {
       if (body.website) return send(res, 200, { ok: true });
       if (rateLimited(ip, 10) || !emailRe.test(String(body.email || ""))) return send(res, 400, { error: "invalid" });
       if (isPersonal(body.email)) return send(res, 400, { error: "personal_email" });
+      if (!(await receivesMail(body.email))) return send(res, 400, { error: "no_mail_domain" });
       const r = await sendLeadMagnet(body);
       return send(res, 200, Object.assign({ ok: true, mailed: !!mailer }, r));
     }
