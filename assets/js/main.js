@@ -665,3 +665,56 @@
     });
   }
 })();
+
+/* Motion: reveal sections on scroll and count stats up, only when the visitor allows motion */
+(function () {
+  if (!("IntersectionObserver" in window) || !window.matchMedia || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var root = document.documentElement;
+  root.classList.add("anim");
+
+  var groups = [".section-head", ".tiles > *", ".tool-card", ".steps > .step", "article.cream", ".stat-card", ".edd-band", ".why-photo", ".why-panel", ".offer-panel", ".sc-intro", ".sc-body", "#faq details", ".final .container > *"];
+  var items = [];
+  groups.forEach(function (sel) {
+    var seen = new Map();
+    document.querySelectorAll(sel).forEach(function (el) {
+      if (el.closest(".hero")) return;
+      var n = seen.get(el.parentNode) || 0;
+      seen.set(el.parentNode, n + 1);
+      el.style.setProperty("--d", Math.min(n, 5) * 90 + "ms");
+      el.classList.add("rv");
+      items.push(el);
+    });
+  });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      en.target.classList.add("in");
+      io.unobserve(en.target);
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+  items.forEach(function (el) { io.observe(el); });
+
+  function countUp(el) {
+    var txt = el.textContent, m = txt.match(/\d[\d,]*/);
+    if (!m) return;
+    var end = parseInt(m[0].replace(/,/g, ""), 10), comma = m[0].indexOf(",") > -1;
+    var pre = txt.slice(0, m.index), post = txt.slice(m.index + m[0].length), t0 = null, dur = 1400;
+    el.style.minWidth = el.offsetWidth + "px";
+    function fmt(v) { return comma ? v.toLocaleString("en-US") : String(v); }
+    function step(t) {
+      if (!t0) t0 = t;
+      var p = Math.min(1, (t - t0) / dur), v = Math.round(end * (1 - Math.pow(1 - p, 3)));
+      el.textContent = pre + fmt(v) + post;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var cio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      cio.unobserve(en.target);
+      countUp(en.target);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll(".stat-card strong bdi, .floats .fc strong bdi").forEach(function (el) { cio.observe(el); });
+})();
