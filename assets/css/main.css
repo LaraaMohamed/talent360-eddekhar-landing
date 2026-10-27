@@ -1582,3 +1582,11 @@ html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
 
 /* Booking section: Eddekhar badge + 10% banner sit a little higher under the intro */
 .booking-grid .booking-aside { margin-block-start: -16px; }
+
+/* English hero: smaller type on laptops and desktops (the wide English font was too large) */
+@media (min-width: 1024px) {
+  html[lang="en"] .hero-stage h1 { font-size: clamp(2.2rem, .8rem + 2.6vw, 3.3rem) !important; line-height: 1.22 !important; }
+  html[lang="en"] .hero-stage .tagline { font-size: clamp(1.1rem, .7rem + .8vw, 1.5rem) !important; }
+  html[lang="en"] .hero-stage .sub { font-size: clamp(1rem, .75rem + .4vw, 1.2rem) !important; }
+  html[lang="en"] .hero-stage .hero-ctas .btn-lg { font-size: clamp(.95rem, .75rem + .3vw, 1.15rem); padding: 18px 40px; }
+}
