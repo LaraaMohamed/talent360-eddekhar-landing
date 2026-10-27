@@ -125,7 +125,7 @@ html[data-review="true"] .pending { display: inline-block; background: var(--pen
 .main-nav a { display: inline-flex; align-items: center; min-block-size: 44px; padding-inline: 11px; color: var(--heading); text-decoration: none; font-weight: 700; font-size: .92rem; white-space: nowrap; border-radius: 10px; }
 html[lang="en"] .main-nav a { font-weight: 600; }
 .main-nav a:hover { color: var(--accent-ink); background: rgba(31,201,177,.1); }
-@media (min-width: 1240px) { .main-nav { display: block; } }
+
 .header-actions { display: flex; align-items: center; gap: 6px; }
 .icon-btn { inline-size: 44px; block-size: 44px; display: inline-grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--heading); cursor: pointer; text-decoration: none; font: 700 .9rem var(--font-body); }
 .header-cta { display: none; }
@@ -983,8 +983,24 @@ html, body { overflow-x: clip; }
   .foot-brand .edd-chip img, .foot-logos .edd-chip img { block-size: 52px !important; }
 }
 .lockup { flex: none; }
-@media (min-width: 1240px) { .main-nav { display: none; } }
-@media (min-width: 1360px) { .main-nav { display: block; } .main-nav a { padding-inline: 8px; font-size: .88rem; } }
+/* Keep logos, links, language and CTA on one balanced non-mobile row. */
+@media (min-width: 768px) {
+  .header-inner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: clamp(12px, 2vw, 32px); min-block-size: 76px; }
+  .main-nav { display: block; min-inline-size: 0; }
+  .main-nav ul { justify-content: center; flex-wrap: nowrap; gap: clamp(2px, .5vw, 10px); }
+  .main-nav a { padding-inline: clamp(6px, .7vw, 12px); font-size: .92rem; }
+  .header-actions { flex-wrap: nowrap; gap: 8px; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header-inner { column-gap: 10px; }
+  .header-inner .lockup { gap: 10px; }
+  .header-inner .lockup .edd-chip { padding-inline-start: 10px; }
+  .header-inner .lockup .edd-chip img { block-size: 32px !important; }
+  .header-inner .lockup .mm-logo > img { block-size: 32px !important; }
+  .main-nav a { padding-inline: 5px; font-size: .82rem; }
+  .header-actions { gap: 2px; }
+  .header-cta { padding-inline: 12px; font-size: .85rem; }
+}
 @media (max-width: 700px) { .lockup .edd-chip img { block-size: 30px !important; } }
 @media (max-width: 700px) { .lockup .mm-by img { block-size: 20px !important; } }
 #salcalc-sec .salcalc { margin-block-start: 0; }
@@ -1351,9 +1367,9 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
   html[lang="en"] .bk-step h3, html[lang="en"] .bk-step legend { font-size: .95rem !important; }
 }
 
-/* Side menu: a hamburger opens a drawer wherever the inline nav is hidden */
+/* Side menu is mobile-only, matching the inline navigation breakpoint. */
 .menu-btn { display: inline-grid; }
-@media (min-width: 1360px) { .menu-btn { display: none; } }
+@media (min-width: 768px) { .menu-btn, .drawer { display: none; } }
 .drawer[hidden] { display: none; }
 .drawer { position: fixed; inset: 0; z-index: 200; }
 .drawer-scrim { position: absolute; inset: 0; background: rgba(14,24,60,.45); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
@@ -1530,3 +1546,24 @@ html[lang="en"] .hero-stage .sub { max-width: 800px; max-inline-size: 800px; }
   .hero-stage .hero-ctas { margin-block-start: 36px !important; gap: 22px; }
   .hero-stage .hero-ctas .btn-lg { font-size: clamp(1.05rem, .8rem + .45vw, 1.35rem); padding: 22px 52px; }
 }
+
+/* Scrollbar: square (no rounded corners) with a teal gradient and a hover glow */
+html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
+::-webkit-scrollbar { inline-size: 12px; block-size: 12px; }
+::-webkit-scrollbar-track { background: #E6F3F1; border-radius: 0; }
+::-webkit-scrollbar-thumb { border-radius: 0; background: linear-gradient(180deg, var(--teal-2), var(--teal-4)); border: 2px solid #E6F3F1; transition: background .3s ease; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #1FC9B1, var(--teal-3)); box-shadow: 0 0 10px rgba(31,201,177,.7); }
+::-webkit-scrollbar-corner { background: #E6F3F1; border-radius: 0; }
+
+/* Logo strip: soft lift and glow on hover */
+.logo-tile { transition: transform .3s cubic-bezier(.2,.7,.2,1), background-color .3s ease, box-shadow .3s ease; }
+.logo-tile img { transition: transform .3s cubic-bezier(.2,.7,.2,1), filter .3s ease, opacity .3s ease; }
+.logo-tile:hover, .logo-tile:focus-within { transform: translateY(-3px); background: rgba(31,201,177,.08); box-shadow: 0 8px 20px -10px rgba(22,140,124,.55); }
+.logo-tile:hover img, .logo-tile:focus-within img { transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) { .logo-tile, .logo-tile img { transition: none; } .logo-tile:hover, .logo-tile:hover img { transform: none; } }
+
+/* Eddekhar header logo: slightly smaller */
+.lockup .edd-chip img { block-size: 35px !important; }
+@media (min-width: 768px) and (max-width: 1023px) { .header-inner .lockup .edd-chip img { block-size: 28px !important; } }
+@media (max-width: 767px) { .lockup .edd-chip img { block-size: 30px !important; } }
+@media (max-width: 700px) { .lockup .edd-chip img { block-size: 27px !important; } }
