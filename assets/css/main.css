@@ -1590,3 +1590,13 @@ html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
   html[lang="en"] .hero-stage .sub { font-size: clamp(1rem, .75rem + .4vw, 1.2rem) !important; }
   html[lang="en"] .hero-stage .hero-ctas .btn-lg { font-size: clamp(.95rem, .75rem + .3vw, 1.15rem); padding: 18px 40px; }
 }
+
+/* 10% offer cards: slightly smaller everywhere */
+.offer-panel { padding: 12px 18px; border-radius: 18px; gap: 12px; }
+.offer-panel .big { font-size: 2.3rem; }
+html[lang="en"] .offer-panel .big { font-size: 2rem; }
+.offer-panel .lbl { font-size: .94rem; }
+.offer-panel small { font-size: .8rem; }
+.booking-aside .offer-panel { max-inline-size: 440px; margin-inline: auto; inline-size: 100%; }
+.final .offer-panel { max-inline-size: 320px; }
+.hero-stage .offer-panel { max-inline-size: 260px; }
