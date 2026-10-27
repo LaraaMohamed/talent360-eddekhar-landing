@@ -1017,8 +1017,7 @@ html, body { overflow-x: clip; }
 }
 
 /* Density: laptops with display scaling (125-200%) report ~900-1100px, so scale down from 768px up */
-@media (min-width: 768px) { html { zoom: .88; } }
-@media (min-width: 900px) { html { zoom: .82; } }
+@media (min-width: 600px) { html { zoom: .8; } }
 
 /* Header: a quieter "by Talent360" next to the Mawared mark */
 .lockup .mm-by { font-size: .72rem; gap: 5px; }
