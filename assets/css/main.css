@@ -1576,3 +1576,6 @@ html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
   .trusted .logo-panel::after { animation: logo-sweep 6s ease-in-out infinite; }
   @keyframes logo-sweep { 0% { background-position: 150% 0; } 60%, 100% { background-position: -50% 0; } }
 }
+
+/* Stats-slide sentence: a little lower from the top edge */
+.stats-foot { padding-block-start: 22px; }
