@@ -19,7 +19,7 @@ function doPost(e) {
   try {
     switch (b.action) {
       case "ping": return out({ ok: true, account: Session.getEffectiveUser().getEmail() });
-      case "busy": return out({ busy: busy(b.timeMin, b.timeMax) });
+      case "busy": return out({ busy: busy(b.timeMin, b.timeMax, b.calendars) });
       case "event": return out(createEvent(b));
       case "cancel": Calendar.Events.remove("primary", b.eventId, { sendUpdates: "all" }); return out({ ok: true });
       case "mail": return out(mail(b));
@@ -33,11 +33,18 @@ function doPost(e) {
 
 function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
-// Busy intervals on the primary calendar (timed events the owner hasn't declined).
-function busy(timeMin, timeMax) {
-  return CalendarApp.getDefaultCalendar().getEvents(new Date(timeMin), new Date(timeMax))
-    .filter(function (ev) { return !ev.isAllDayEvent() && ev.getMyStatus() !== CalendarApp.GuestStatus.NO; })
-    .map(function (ev) { return { start: ev.getStartTime().toISOString(), end: ev.getEndTime().toISOString() }; });
+// Busy intervals across every calendar that must be free (this mailbox plus e.g. a consultant's).
+// Free/busy is shared inside a Google Workspace domain by default, so no extra sharing is needed.
+function busy(timeMin, timeMax, calendars) {
+  var ids = (calendars && calendars.length) ? calendars : ["primary"];
+  var r = Calendar.Freebusy.query({ timeMin: timeMin, timeMax: timeMax, timeZone: TZ, items: ids.map(function (id) { return { id: id }; }) });
+  var all = [];
+  Object.keys(r.calendars || {}).forEach(function (id) {
+    var c = r.calendars[id];
+    if (c.errors && c.errors.length) console.warn("free/busy unavailable for " + id + ": " + JSON.stringify(c.errors));
+    (c.busy || []).forEach(function (x) { all.push({ start: x.start, end: x.end }); });
+  });
+  return all;
 }
 
 // Event with a Google Meet link; Google emails the invite to the client.
@@ -45,7 +52,7 @@ function createEvent(b) {
   var ev = Calendar.Events.insert({
     summary: b.summary, description: b.description,
     start: { dateTime: b.start, timeZone: TZ }, end: { dateTime: b.end, timeZone: TZ },
-    attendees: [{ email: b.attendee }],
+    attendees: [{ email: b.attendee }].concat((b.guests || []).map(function (g) { return { email: g }; })),
     conferenceData: { createRequest: { requestId: b.requestId, conferenceSolutionKey: { type: "hangoutsMeet" } } },
     reminders: { useDefault: false, overrides: [{ method: "email", minutes: 1440 }, { method: "popup", minutes: 60 }] },
   }, "primary", { conferenceDataVersion: 1, sendUpdates: "all" });

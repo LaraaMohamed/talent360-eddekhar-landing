@@ -10,7 +10,8 @@
  *   POST /api/booking/:id/phone           add the optional phone after confirmation
  *   GET  /api/booking/:id/cancel?token=   cancel (link in the confirmation email)
  *   GET  /api/booking/:id/reschedule?token=  redirects to the page with the booking id
- *   POST /api/lead-magnet                 email capture for gated PDFs
+ *   POST /api/lead-magnet                 emails a company-email verification link for a gated file
+ *   GET  /api/download?t=                 verifies the link, then starts the download
  */
 "use strict";
 
@@ -25,6 +26,9 @@ const BG = "business-growth@talent-360.me";
 const CAL_OWNER = env.CONSULTANT_EMAIL || BG;
 const FROM = env.MAIL_FROM || `Talent360 <${env.SMTP_USER || BG}>`;
 const TEAM = env.TEAM_EMAIL || BG;
+// Calendars that must all be free for a slot to show, and people invited to every booking.
+const BUSY_CALS = (env.BUSY_CALENDARS || BG + ",ahmed@talent-360.me").split(",").map((x) => x.trim()).filter(Boolean);
+const GUESTS = (env.BOOKING_GUESTS || "ahmed@talent-360.me").split(",").map((x) => x.trim()).filter(Boolean);
 const PORT = Number(env.PORT || 8080);
 const TZ = "Asia/Riyadh";
 const OFFSET_MIN = 180;
@@ -60,7 +64,7 @@ if (GAS) gas("ping", {}).then((j) => { gasStatus = "ok as " + j.account; console
 const CAL_ID = env.CONSULTANT_CALENDAR_ID || "primary";
 
 async function busyBetween(timeMin, timeMax) {
-  if (!cal && GAS) return (await gas("busy", { timeMin, timeMax })).busy || [];
+  if (!cal && GAS) return (await gas("busy", { timeMin, timeMax, calendars: BUSY_CALS })).busy || [];
   if (!cal) return []; // stub mode: everything free
   const r = await cal.freebusy.query({ requestBody: { timeMin, timeMax, timeZone: TZ, items: [{ id: CAL_ID }] } });
   return (r.data.calendars[CAL_ID] && r.data.calendars[CAL_ID].busy) || [];
@@ -147,39 +151,68 @@ const LEAD_TITLES = {
   labour_law_eg: ["دليل قانون العمل المصري الجديد 14/2025", "Egypt's new Labour Law 14/2025: employer guide"],
   labour_law_sa: ["دليل نظام العمل السعودي بعد تعديلات 2025", "Saudi Labour Law after the 2025 amendments"],
 };
+/* Lead magnets: the visitor gets an email from business-growth@ with a link that verifies the company
+   address; opening it unlocks the download (and tells the team + CRM about a verified lead). */
+const LINK_DAYS = 7;
+function leadFile(tool, lang) {
+  const path = require("path"), fs = require("fs");
+  return [tool + "-" + lang + ".pdf", tool + ".pdf"].map((f) => path.join(__dirname, "files", f)).find((f) => fs.existsSync(f)) || null;
+}
+function leadToken(o) {
+  const p = Buffer.from(JSON.stringify(o)).toString("base64url");
+  return p + "." + sign("lead:" + p);
+}
+function readLeadToken(t) {
+  const [p, sig] = String(t || "").split(".");
+  if (!p || !sig || !verify("lead:" + p, sig)) return null;
+  try { const o = JSON.parse(Buffer.from(p, "base64url").toString()); return o.x > Date.now() ? o : null; } catch (e) { return null; }
+}
 async function sendLeadMagnet(body) {
   const tool = String(body.tool || "").replace(/[^\w-]/g, "");
   const lang = body.lang === "en" ? "en" : "ar";
   const title = (LEAD_TITLES[tool] || [tool, tool])[lang === "ar" ? 0 : 1];
-  // Prefer a language-specific file (files/<tool>-<lang>.pdf), then files/<tool>.pdf.
-  const path = require("path"), fs = require("fs");
-  const file = [tool + "-" + lang + ".pdf", tool + ".pdf"].map((f) => path.join(__dirname, "files", f)).find((f) => fs.existsSync(f));
-  const hasFile = Boolean(file);
-  console.log("[lead-magnet]", tool, body.email, hasFile ? "file" : "no-file");
-  const crm = { source: "eddekhar_landing", tags: ["Eddekhar referral", "lead_magnet:" + tool, "lang:" + lang], email: body.email, utm: body.utm,
-    note: `Eddekhar referral. Requested "${title}" from the landing page.` };
+  const email = String(body.email).trim().slice(0, 160);
+  console.log("[lead-magnet] requested", tool, email);
+  if (!mailer) return false;
+  const t = leadToken({ e: email, t: tool, l: lang, u: body.utm || {}, x: Date.now() + LINK_DAYS * 86400000 });
+  const link = `${env.PUBLIC_BASE_URL}/api/download?t=${t}`;
+  const text = lang === "ar"
+    ? `مرحبًا،\n\nطلبت من موقع موارد ومهارات: ${title}.\nأكّد بريد شركتك من الرابط التالي، وسيبدأ التنزيل مباشرة:\n\n${link}\n\nالرابط صالح لمدة ${LINK_DAYS} أيام. إذا لم تطلب هذا الملف، تجاهل الرسالة.\n\nفريق موارد ومهارات\nbusiness-growth@talent-360.me`
+    : `Hello,\n\nYou requested "${title}" from Talent360.\nConfirm your company email with the link below and your download starts straight away:\n\n${link}\n\nThe link works for ${LINK_DAYS} days. If you didn't ask for this, just ignore this email.\n\nThe Talent360 team\nbusiness-growth@talent-360.me`;
+  await mailer.sendMail({ from: FROM, to: email, replyTo: TEAM,
+    subject: lang === "ar" ? `أكّد بريدك لتنزيل: ${title}` : `Confirm your email to download: ${title}`, text });
+  return true;
+}
+const verifiedLeads = new Set();
+async function leadVerified(o) {
+  const key = o.e + "|" + o.t;
+  if (verifiedLeads.has(key)) return;
+  verifiedLeads.add(key);
+  const title = (LEAD_TITLES[o.t] || [o.t, o.t])[o.l === "ar" ? 0 : 1];
+  const crm = { source: "eddekhar_landing", tags: ["Eddekhar referral", "lead_magnet:" + o.t, "lang:" + o.l, "email_verified"], email: o.e, utm: o.u,
+    note: `Eddekhar referral. Verified their company email and downloaded "${title}" from the landing page.` };
   if (env.CRM_WEBHOOK_URL) fetch(env.CRM_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (env.CRM_API_KEY || "") }, body: JSON.stringify(crm) }).catch((e) => console.error("[crm]", e.message));
   else console.log("[crm stub]", JSON.stringify(crm));
-  if (!mailer) return;
-  const jobs = [];
-  if (tool !== "bulk_payroll_eg") {
-    const ar = hasFile ? `مرفق لك: ${title}.\n\nإذا أردت مناقشة النتائج مع مستشار، احجز فحصك المجاني: ${env.PUBLIC_BASE_URL}/ar/#book\n\nموارد ومهارات by Talent360`
-                       : `شكرًا لطلبك: ${title}.\nسيرسله لك فريق موارد ومهارات خلال يوم عمل.\n\nموارد ومهارات by Talent360`;
-    const en = hasFile ? `Attached: ${title}.\n\nWant to talk it through with a consultant? Book your free check: ${env.PUBLIC_BASE_URL}/en/#book\n\nTalent360`
-                       : `Thanks for requesting: ${title}.\nThe Talent360 team will send it within one working day.\n\nTalent360`;
-    jobs.push(mailer.sendMail({
-      from: FROM, to: body.email,
-      subject: title + (lang === "ar" ? " | موارد ومهارات" : " | Talent360"),
-      text: lang === "ar" ? ar : en,
-      attachments: hasFile ? [{ filename: path.basename(file), path: file }] : [],
-    }));
-  }
-  jobs.push(mailer.sendMail({
-    from: FROM, to: TEAM,
-    subject: `[Eddekhar lead] ${title} requested by ${body.email}`,
-    text: `${body.email} requested "${title}" (${tool}) from the Eddekhar landing page (${lang}).` + (hasFile || tool === "bulk_payroll_eg" ? "" : "\nNo file is configured for this tool yet: please send it by hand."),
-  }));
-  await Promise.allSettled(jobs);
+  if (mailer) mailer.sendMail({ from: FROM, to: TEAM, replyTo: o.e, subject: `[Eddekhar lead] ${o.e} verified and downloaded: ${title}`,
+    text: `${o.e} verified their company email and downloaded "${title}" (${o.t}) from the Eddekhar landing page (${o.l}).` + (leadFile(o.t, o.l) ? "" : "\nNo file is configured for this tool yet: please send it by hand.") })
+    .catch((e) => console.error("[mail] team", e.message));
+}
+function downloadPage(o, ok) {
+  const ar = !o || o.l !== "en";
+  const title = o ? (LEAD_TITLES[o.t] || [o.t, o.t])[ar ? 0 : 1] : "";
+  const has = o && leadFile(o.t, o.l);
+  const fileUrl = o ? "/api/download/file?t=" + encodeURIComponent(leadToken(o)) : "";
+  const back = `${env.PUBLIC_BASE_URL || ""}/${ar ? "ar" : "en"}/`;
+  const msg = !ok ? (ar ? ["انتهت صلاحية الرابط", "اطلب الملف مرة أخرى من الموقع وسنرسل لك رابطًا جديدًا."] : ["This link has expired", "Request the file again on the site and we'll send you a new link."])
+    : has ? (ar ? ["تم تأكيد بريدك", `بدأ تنزيل «${title}». إن لم يبدأ، اضغط الزر.`] : ["Your email is confirmed", `"${title}" is downloading. If it didn't start, use the button.`])
+    : (ar ? ["تم تأكيد بريدك", `سيرسل لك فريقنا «${title}» خلال يوم عمل.`] : ["Your email is confirmed", `Our team will send you "${title}" within one working day.`]);
+  const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  return `<!doctype html><html lang="${ar ? "ar" : "en"}" dir="${ar ? "rtl" : "ltr"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${esc(msg[0])}</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:${ar ? "Almarai," : ""}Montserrat,system-ui,sans-serif;background:linear-gradient(160deg,#F3FBFA,#DDEFF1);color:#26324D}
+.c{background:#fff;border-radius:24px;padding:36px 32px;max-width:440px;margin:16px;text-align:center;box-shadow:0 24px 50px -28px rgba(14,24,60,.35)}h1{color:#0E183C;font-size:1.5rem;margin:0 0 10px}p{line-height:1.7;margin:0 0 22px}
+a.b{display:inline-block;background:#1FC9B1;color:#0E183C;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:999px;margin:4px}a.s{background:none;color:#168C7C}</style></head>
+<body><div class="c"><h1>${esc(msg[0])}</h1><p>${esc(msg[1])}</p>${ok && has ? `<a class="b" href="${fileUrl}">${ar ? "تنزيل الملف" : "Download"}</a>` : ""}<a class="b s" href="${back}">${ar ? "العودة إلى الموقع" : "Back to the site"}</a></div>
+${ok && has ? `<script>setTimeout(function(){location.href=${JSON.stringify(fileUrl)}},600)</script>` : ""}</body></html>`;
 }
 
 /* ---------- CRM (Talent360 CRM on Railway) ---------- */
@@ -256,7 +289,7 @@ async function book(body, ip) {
     } else if (GAS) {
       const ev = await gas("event", { summary: `${FOCUS[focus]} · ${company} (Eddekhar)`,
         description: `Eddekhar referral. ${name}, ${company}. Language: ${lang}. 10% discount applies.`,
-        start: b.start, end: b.end, attendee: email, requestId: id });
+        start: b.start, end: b.end, attendee: email, guests: GUESTS, requestId: id });
       b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
     }
     bookings.set(id, b);
@@ -323,16 +356,28 @@ http.createServer(async (req, res) => {
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();
     }
+    if (req.method === "GET" && url.pathname === "/api/download") {
+      const o = readLeadToken(url.searchParams.get("t"));
+      if (o) await leadVerified(o);
+      res.writeHead(o ? 200 : 410, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+      return res.end(downloadPage(o, !!o));
+    }
+    if (req.method === "GET" && url.pathname === "/api/download/file") {
+      const o = readLeadToken(url.searchParams.get("t")); const f = o && leadFile(o.t, o.l);
+      if (!f) { res.writeHead(410, { "Content-Type": "text/html; charset=utf-8" }); return res.end(downloadPage(o, false)); }
+      res.writeHead(200, { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="${require("path").basename(f)}"`, "Cache-Control": "no-store" });
+      return require("fs").createReadStream(f).pipe(res);
+    }
     if (req.method === "GET" && url.pathname === "/api/health") {
-      return send(res, 200, { calendar: !!(cal || GAS), mail: !!mailer, appsScript: gasStatus, calendarOwner: CAL_OWNER, mailFrom: FROM, team: TEAM });
+      return send(res, 200, { calendar: !!(cal || GAS), mail: !!mailer, appsScript: gasStatus, busyCalendars: BUSY_CALS, guests: GUESTS, calendarOwner: CAL_OWNER, mailFrom: FROM, team: TEAM });
     }
     if (req.method === "POST" && url.pathname === "/api/lead-magnet") {
       const body = await readJson(req);
       if (body.website) return send(res, 200, { ok: true });
       if (rateLimited(ip, 10) || !emailRe.test(String(body.email || ""))) return send(res, 400, { error: "invalid" });
       if (isPersonal(body.email)) return send(res, 400, { error: "personal_email" });
-      await sendLeadMagnet(body);
-      return send(res, 200, { ok: true, mailed: !!mailer });
+      const sent = await sendLeadMagnet(body);
+      return send(res, 200, { ok: true, sent, mailed: !!mailer });
     }
     if (req.method === "GET" || req.method === "HEAD") return serveStatic(url.pathname, res);
     send(res, 404, { error: "not_found" });
