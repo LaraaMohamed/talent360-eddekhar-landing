@@ -150,6 +150,7 @@ const LEAD_TITLES = {
   bulk_payroll_eg: ["كشف الرواتب الكامل", "Full payroll sheet"],
   labour_law_eg: ["دليل قانون العمل المصري الجديد 14/2025", "Egypt's new Labour Law 14/2025: employer guide"],
   labour_law_sa: ["دليل نظام العمل السعودي بعد تعديلات 2025", "Saudi Labour Law after the 2025 amendments"],
+  benefits_eg: ["دليل مزايا الموظفين في مصر 2026", "Employee benefits in Egypt, 2026"],
 };
 /* Lead magnets: the visitor gets an email from business-growth@ with a link that verifies the company
    address; opening it unlocks the download (and tells the team + CRM about a verified lead). */
