@@ -91,6 +91,7 @@ function queueEvent(b, payload, attempt = 0) {
     try {
       const ev = await gas("event", payload);
       b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
+      refreshBusy().catch(() => {});
       console.log("[calendar] created late for", b.id);
       if (mailer) mailer.sendMail({ from: FROM, to: TEAM, subject: `[Eddekhar booking] Calendar invite created for ${b.company}`,
         text: `The invite for ${b.name} <${b.email}> is now on the calendar.\nMeet: ${b.meetUrl || "(none)"}` }).catch(() => {});
@@ -113,6 +114,27 @@ async function busyBetween(timeMin, timeMax) {
   const r = await cal.freebusy.query({ requestBody: { timeMin, timeMax, timeZone: TZ, items: [{ id: CAL_ID }] } });
   return (r.data.calendars[CAL_ID] && r.data.calendars[CAL_ID].busy) || [];
 }
+
+// Free/busy for the whole booking horizon, fetched in one call and kept warm, so the calendar shows slots instantly.
+// Bookings still re-check live free/busy (and the bridge re-checks under a lock), so a stale cache can never double-book.
+const BUSY_TTL = 3 * 60000;
+let busyCache = null, busyLoading = null;
+function refreshBusy() {
+  if (busyLoading) return busyLoading;
+  const from = new Date(Date.now() - 86400000), to = new Date(Date.now() + (RULES.horizonDays + 2) * 86400000);
+  busyLoading = busyBetween(from.toISOString(), to.toISOString())
+    .then((busy) => { busyCache = { at: Date.now(), from: from.getTime(), to: to.getTime(), busy }; return busyCache; })
+    .finally(() => { busyLoading = null; });
+  return busyLoading;
+}
+async function busyForDay(a, z) {
+  let c = busyCache;
+  if (!c || a < c.from || z > c.to) c = await refreshBusy();
+  else if (Date.now() - c.at > BUSY_TTL) refreshBusy().catch(() => {}); // serve now, refresh in the background
+  return c.busy.filter((b) => Date.parse(b.end) > a && Date.parse(b.start) < z);
+}
+setInterval(() => refreshBusy().catch(() => {}), BUSY_TTL).unref();
+refreshBusy().catch(() => {});
 
 /* ---------- Slot rules (mirror the front end; the server is the authority) ---------- */
 function riyadhDow(date) { return new Date(date.getTime() + OFFSET_MIN * 60000).getUTCDay(); }
@@ -353,6 +375,7 @@ async function book(body, ip) {
         },
       });
       b.eventId = ev.data.id;
+      refreshBusy().catch(() => {});
       b.meetUrl = ev.data.hangoutLink || null;
     } else if (GAS) {
       const payload = { summary: `${FOCUS[focus]} · ${company} (Eddekhar)`,
@@ -361,6 +384,7 @@ async function book(body, ip) {
       try {
         const ev = await gas("event", payload);
         b.eventId = ev.eventId; b.meetUrl = ev.meetUrl || null;
+        refreshBusy().catch(() => {});
       } catch (e) {
         if (e.code === "slot_taken") return [409, { error: "slot_taken" }];
         console.error("[calendar] event failed, queued for retry:", e.message);
@@ -409,7 +433,7 @@ http.createServer(async (req, res) => {
       const d = url.searchParams.get("date");
       if (!/^\d{4}-\d{2}-\d{2}$/.test(d || "")) return send(res, 400, { error: "invalid_date" });
       const dayStart = new Date(Date.parse(d + "T00:00:00Z") - OFFSET_MIN * 60000);
-      const busy = await busyBetween(dayStart.toISOString(), new Date(dayStart.getTime() + 86400000).toISOString());
+      const busy = await busyForDay(dayStart.getTime(), dayStart.getTime() + 86400000);
       // Pad busy blocks by the buffer so a slot never sits right against another meeting
       return send(res, 200, { timezone: TZ, busy: busy.map((b) => ({ start: new Date(Date.parse(b.start) - RULES.buffer * 60000).toISOString(), end: new Date(Date.parse(b.end) + RULES.buffer * 60000).toISOString() })) });
     }
@@ -427,6 +451,7 @@ http.createServer(async (req, res) => {
       if (!b || !verify(b.id, url.searchParams.get("token"))) return send(res, 404, { error: "not_found" });
       if (cal && b.eventId) await cal.events.delete({ calendarId: CAL_ID, eventId: b.eventId, sendUpdates: "all" });
       else if (GAS && b.eventId) await gas("cancel", { eventId: b.eventId, calendarId: CAL_ID });
+      refreshBusy().catch(() => {});
       bookings.delete(b.id);
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();
