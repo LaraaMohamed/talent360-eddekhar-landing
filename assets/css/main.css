@@ -1034,3 +1034,13 @@ html, body { overflow-x: clip; }
   .lockup .mm-by { font-size: .5rem !important; }
   .lockup .mm-by img { block-size: 8px !important; }
 }
+
+/* Booking v2: side by side on wide screens. The form splits into "pick a time" (steps 1-2) beside "your details" (step 3 + submit). */
+@media (min-width: 900px) {
+  .booking-grid, .booking-grid:where(*) { max-inline-size: 1120px; }
+  .booking-aside .offer-panel { max-inline-size: 520px; margin-inline: auto; inline-size: 100%; }
+  #booking-form { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 0 40px; align-items: start; }
+  .bk-who { padding-inline-start: 40px; border-inline-start: 1px solid var(--line); align-self: stretch; }
+  .bk-who .fields { grid-template-columns: minmax(0, 1fr); }
+  .bk-col > .bk-step:last-of-type { margin-block-end: 18px; }
+}
