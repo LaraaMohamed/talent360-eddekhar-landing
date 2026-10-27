@@ -310,6 +310,7 @@ def _render(lang, mode):
       <label class="consent"><input type="checkbox" name="consent" required><span>{re.sub(r'<a href="\{privacy\}">(.*?)</a>', r'<button type="button" class="link-btn" popovertarget="pdpl-pop">\1</button>', L['consent'])}</span></label>
      </fieldset>
      <button class="btn btn-primary btn-block" id="bk-submit" type="submit" disabled>{e(L['submit'])}</button>
+     <p class="bk-hint" id="bk-hint">{e(L['js']['pickTime'])}</p>
      <p class="form-error" id="bk-error" role="alert"></p>
      <p class="privacy">{ICO['lock'].replace('<svg ', '<svg width="18" height="18" style="flex:none;margin-top:3px" ')}<span>{e(L['privacy_line'])}</span></p>
      </div>

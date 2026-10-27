@@ -1265,3 +1265,6 @@ html { scroll-padding-block-start: calc(90px + var(--ann-h)); }
 /* Stat cards: their own row under the hero, never overlapping the photo */
 .hero { padding-block-end: clamp(36px, 4vw, 56px); }
 .floats { margin-block-start: clamp(32px, 4vw, 48px) !important; }
+
+.bk-hint { margin: 10px 0 0; font-size: .9rem; color: var(--muted, #5b6677); text-align: center; }
+.bk-hint[hidden] { display: none; }

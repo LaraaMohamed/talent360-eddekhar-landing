@@ -235,20 +235,36 @@
     });
   }
 
-  function loadSlots() {
-    var day = DAYS[state.day];
-    slotsEl.innerHTML = '<p class="slot-empty">' + T.loading + "</p>";
+  // fetch with a hard time limit, so nothing waits forever on a sleeping server
+  function fetchT(url, opts, ms) {
+    var ctl = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, ms);
+    return fetch(url, Object.assign({}, opts, ctl ? { signal: ctl.signal } : {}))
+      .then(function (r) { clearTimeout(timer); return r; }, function (e) { clearTimeout(timer); throw e; });
+  }
+
+  var slotReq = 0;
+  function loadSlots(attempt) {
+    attempt = attempt || 0;
+    var day = DAYS[state.day], req = ++slotReq;
+    slotsEl.innerHTML = '<p class="slot-empty">' + (attempt ? T.waking : T.loading) + "</p>";
     // Ask the backend which slots are free on the consultant's calendar
-    fetch(API + "/slots?date=" + day.key + "&lang=" + LANG, { headers: { Accept: "application/json" } })
+    fetchT(API + "/slots?date=" + day.key + "&lang=" + LANG, { headers: { Accept: "application/json" } }, 8000)
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (data) {
+        if (req !== slotReq) return; // the visitor already picked another day
         var busy = (data.busy || []).map(function (b) { return [Date.parse(b.start), Date.parse(b.end)]; });
         day.slots.forEach(function (s) {
           s.busy = busy.some(function (b) { return s.start.getTime() < b[1] && s.end.getTime() > b[0]; });
         });
         renderSlots();
       })
-      .catch(function () { state.preview = true; renderSlots(); });
+      .catch(function () {
+        if (req !== slotReq) return;
+        // The free server may be waking up: retry a few times, then show the times anyway
+        if (attempt < 5) { slotsEl.innerHTML = '<p class="slot-empty">' + T.waking + "</p>"; setTimeout(function () { if (req === slotReq) loadSlots(attempt + 1); }, 3000); return; }
+        state.preview = true; renderSlots();
+      });
   }
 
   function renderSlots() {
@@ -316,6 +332,8 @@
     } else summaryEl.hidden = true;
     var ok = !!s && form.name.value.trim() && emailState(form.email.value) === "ok" && form.company.value.trim() && form.consent.checked;
     submitBtn.disabled = !ok;
+    var hint = document.getElementById("bk-hint");
+    if (hint) hint.hidden = !!s;
     return ok;
   }
 
@@ -338,7 +356,7 @@
       lang: LANG, utm: utm, page: location.href, referrer: document.referrer || ""
     };
     submitBtn.disabled = true; submitBtn.textContent = T.booking;
-    fetch(API + "/book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+    fetchT(API + "/book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }, 45000)
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
       .then(function (res) {
         res.who = payload;
@@ -347,6 +365,7 @@
         confirmed(s, res, false);
       })
       .catch(function (err) {
+        if (err && err.name === "AbortError") { errEl.textContent = T.bookTimeout; submitBtn.textContent = T.submit; validate(); return; }
         if (err && err.error === "slot_taken") {
           errEl.textContent = T.slotTaken; DAYS[state.day].slots[state.slot].busy = true; state.slot = null; renderSlots();
           submitBtn.textContent = T.submit; validate(); return;
