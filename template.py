@@ -219,12 +219,6 @@ def _render(lang, mode):
    <div class="hero-ctas">{cta(L['cta_primary'], 'hero_primary', 'btn btn-primary btn-lg', focus='hr')}{cta(L['cta_secondary'], 'hero_secondary', 'btn btn-glass btn-lg', href='#compare', arrow=False)}</div>
   </div>
  </div>
- <ul class="hstats" aria-label="{'أرقام' if rtl else 'Key figures'}">
-  <li class="hs-offer"><span class="hs-num"><bdi>{e(L['fc_offer'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_offer'][1])}</span></li>
-  <li><span class="hs-num"><bdi>{e(L['fc_b'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_b'][1])}</span></li>
-  <li><span class="hs-num"><bdi>{e(L['fc_a'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_a'][1])}</span></li>
-  <li><span class="hs-num"><bdi>{e(L['fc_trust'][0])}</bdi></span><span class="hs-lbl">{e(L['fc_trust'][1])}</span></li>
- </ul>
 </section>
 
 <!-- Trusted by: the profile's white client panel -->

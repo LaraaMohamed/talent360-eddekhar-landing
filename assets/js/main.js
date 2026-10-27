@@ -772,3 +772,20 @@
   drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) close(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !drawer.hidden) close(); });
 })();
+
+/* Hero height: exactly the visible screen under the sticky bars, corrected for CSS zoom */
+(function () {
+  var stage = document.querySelector(".hero-stage");
+  if (!stage) return;
+  function fit() {
+    var top = stage.getBoundingClientRect().top + window.scrollY;
+    var z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    var h = (window.innerHeight - top) / z;
+    if (window.innerHeight < 480) h = Math.max(h, 420 / z);
+    document.documentElement.style.setProperty("--hero-fill", Math.max(h, 360) + "px");
+  }
+  fit();
+  var w = window.innerWidth;
+  window.addEventListener("resize", function () { if (Math.abs(window.innerWidth - w) > 40 || !/Mobi/i.test(navigator.userAgent)) { w = window.innerWidth; fit(); } });
+  window.addEventListener("orientationchange", function () { setTimeout(fit, 200); });
+})();

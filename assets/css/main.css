@@ -1460,3 +1460,12 @@ html[lang="en"] .hs-num { font-weight: 600; }
   .hs-num { font-size: 1.25rem; }
   .hs-lbl { font-size: .72rem; }
 }
+
+/* Hero figures strip removed: no space left below the hero */
+.hero { padding-block-end: 0 !important; }
+.hero-stage .hero-copy { padding-block-end: clamp(44px, 5vw, 72px) !important; }
+@media (max-width: 700px) { .hero-stage .hero-copy { padding-block-end: 36px !important; } }
+
+/* Hero fills the first screen (below the announcement bar and header). --hero-fill is set by main.js
+   from the real header height and page zoom, so it is exact on every device. */
+.hero-stage { min-block-size: var(--hero-fill, calc(100svh - 120px)) !important; display: grid; align-content: center; }
