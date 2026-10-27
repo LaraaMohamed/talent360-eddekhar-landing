@@ -1546,3 +1546,18 @@ html[lang="en"] .hero-stage .sub { max-width: 800px; max-inline-size: 800px; }
   .hero-stage .hero-ctas { margin-block-start: 36px !important; gap: 22px; }
   .hero-stage .hero-ctas .btn-lg { font-size: clamp(1.05rem, .8rem + .45vw, 1.35rem); padding: 22px 52px; }
 }
+
+/* Scrollbar: square (no rounded corners) with a teal gradient and a hover glow */
+html { scrollbar-width: thin; scrollbar-color: var(--teal-3) #E6F3F1; }
+::-webkit-scrollbar { inline-size: 12px; block-size: 12px; }
+::-webkit-scrollbar-track { background: #E6F3F1; border-radius: 0; }
+::-webkit-scrollbar-thumb { border-radius: 0; background: linear-gradient(180deg, var(--teal-2), var(--teal-4)); border: 2px solid #E6F3F1; transition: background .3s ease; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #1FC9B1, var(--teal-3)); box-shadow: 0 0 10px rgba(31,201,177,.7); }
+::-webkit-scrollbar-corner { background: #E6F3F1; border-radius: 0; }
+
+/* Logo strip: soft lift and glow on hover */
+.logo-tile { transition: transform .3s cubic-bezier(.2,.7,.2,1), background-color .3s ease, box-shadow .3s ease; }
+.logo-tile img { transition: transform .3s cubic-bezier(.2,.7,.2,1), filter .3s ease, opacity .3s ease; }
+.logo-tile:hover, .logo-tile:focus-within { transform: translateY(-3px); background: rgba(31,201,177,.08); box-shadow: 0 8px 20px -10px rgba(22,140,124,.55); }
+.logo-tile:hover img, .logo-tile:focus-within img { transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) { .logo-tile, .logo-tile img { transition: none; } .logo-tile:hover, .logo-tile:hover img { transform: none; } }
