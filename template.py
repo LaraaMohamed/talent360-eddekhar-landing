@@ -145,7 +145,7 @@ def _render(lang, mode):
     stat_cards = "".join('<li class="stat-card" style="--x:%.3f%%;--y:%.3f%%"><strong><bdi>%s</bdi></strong><span>%s</span></li>' % (x / 14.4, y / 8.1, e(n), e(l)) for (n, l), (x, y) in zip(L["stats"], boxes))
 
     alt_links = '<link rel="alternate" hreflang="ar-SA" href="%sar/"><link rel="alternate" hreflang="en-SA" href="%sen/"><link rel="alternate" hreflang="x-default" href="%sar/">' % (BASE, BASE, BASE)
-    fonts = "family=IBM+Plex+Sans+Arabic:wght@400;500;600;700" if rtl else "family=Plus+Jakarta+Sans:wght@400;500;600;700;800"
+    fonts = "family=Almarai:wght@300;400;700;800" if rtl else "family=Montserrat:wght@400;500;600;700&family=Unbounded:wght@400;500;600"
     hero_img = A + "img/hero-top-1600.webp"
     metric_aside = "من 0 إلى 25" if rtl else "0 → 25"
 
