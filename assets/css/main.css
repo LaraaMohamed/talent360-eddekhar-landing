@@ -1518,3 +1518,15 @@ html[lang="en"] .hero-stage .sub { max-width: 800px; max-inline-size: 800px; }
   .trusted .logo-tile img[src*="amanah"] { max-block-size: 52px !important; block-size: 52px !important; }
   .trusted .marquee { mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
 }
+/* Laptops and desktops: about 10% larger than before (tablets keep .86, phones unchanged) */
+@media (min-width: 1024px) { html { zoom: .95; } }
+/* Desktop hero, as in the reference: a wide, large headline, bigger supporting text and buttons */
+@media (min-width: 1024px) {
+  .hero-stage .hero-copy { max-inline-size: min(1500px, 94vw) !important; }
+  .hero-stage h1 { max-width: none !important; font-size: clamp(3.4rem, 1.2rem + 4.2vw, 5.6rem) !important; line-height: 1.32 !important; }
+  html[lang="en"] .hero-stage h1 { font-size: clamp(3rem, 1rem + 3.6vw, 4.8rem) !important; line-height: 1.18 !important; max-width: 1300px !important; }
+  .hero-stage .tagline { font-size: clamp(1.4rem, .8rem + 1.1vw, 2rem) !important; margin-block: 26px 16px !important; }
+  .hero-stage .sub { font-size: clamp(1.15rem, .8rem + .6vw, 1.45rem) !important; max-inline-size: 1000px !important; max-width: 1000px !important; line-height: 1.85 !important; }
+  .hero-stage .hero-ctas { margin-block-start: 36px !important; gap: 22px; }
+  .hero-stage .hero-ctas .btn-lg { font-size: clamp(1.05rem, .8rem + .45vw, 1.35rem); padding: 22px 52px; }
+}

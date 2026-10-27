@@ -21,7 +21,7 @@ services:
       - key: BUSY_CALENDARS     # a slot shows only when all of these are free
         value: darkawi@talent-360.me
       - key: BOOKING_GUESTS     # invited to every booking alongside the client
-        value: business-growth@talent-360.me
+        value: business-growth@talent-360.me,bd1@talent-360.me
       - key: CONSULTANT_CALENDAR_ID   # bookings are created on this calendar
         value: darkawi@talent-360.me
       # Optional alternatives to the Apps Script bridge: Gmail SMTP and a Workspace service account
