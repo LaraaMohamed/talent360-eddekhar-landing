@@ -1,0 +1,13 @@
+# Free keep-warm: Render's free plan sleeps after 15 idle minutes, which makes the first calendar load slow.
+# A ping every 10 minutes keeps it awake (one always-on service fits inside Render's 750 free hours a month).
+name: Keep booking server warm
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: curl -fsS --max-time 90 --retry 2 https://talent360-eddekhar.onrender.com/api/health -o /dev/null
