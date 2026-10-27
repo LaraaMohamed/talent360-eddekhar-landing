@@ -20,6 +20,11 @@ const { google } = require("googleapis");
 const nodemailer = require("nodemailer");
 
 const env = process.env;
+// Everything (calendar, sender, team copies) runs from the Business Growth mailbox unless overridden.
+const BG = "business-growth@talent-360.me";
+const CAL_OWNER = env.CONSULTANT_EMAIL || BG;
+const FROM = env.MAIL_FROM || `Talent360 <${env.SMTP_USER || BG}>`;
+const TEAM = env.TEAM_EMAIL || BG;
 const PORT = Number(env.PORT || 8080);
 const TZ = "Asia/Riyadh";
 const OFFSET_MIN = 180;
@@ -32,7 +37,7 @@ function calendarClient() {
   const auth = new google.auth.JWT({
     email: creds.client_email, key: creds.private_key,
     scopes: ["https://www.googleapis.com/auth/calendar"],
-    subject: env.CONSULTANT_EMAIL, // impersonate Ahmed so Meet links are created on his calendar
+    subject: CAL_OWNER, // impersonate the Business Growth mailbox so events and Meet links live on its calendar
   });
   return google.calendar({ version: "v3", auth });
 }
@@ -77,7 +82,8 @@ function sign(id) { return crypto.createHmac("sha256", env.LINK_SECRET || "dev-s
 function verify(id, token) { const a = Buffer.from(sign(id)); const b = Buffer.from(String(token || "")); return a.length === b.length && crypto.timingSafeEqual(a, b); }
 
 /* ---------- Email (bilingual) ---------- */
-const mailer = env.SMTP_HOST ? nodemailer.createTransport({ host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 587), secure: Number(env.SMTP_PORT) === 465, auth: { user: env.SMTP_USER, pass: env.SMTP_PASS } }) : null;
+const mailer = env.SMTP_HOST && env.SMTP_PASS ? nodemailer.createTransport({ host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 587), secure: Number(env.SMTP_PORT) === 465, auth: { user: env.SMTP_USER || BG, pass: env.SMTP_PASS } }) : null;
+if (mailer) mailer.verify().then(() => console.log("[mail] SMTP ready as", env.SMTP_USER || BG)).catch((e) => console.error("[mail] SMTP login failed:", e.message));
 function fmt(date, lang) {
   return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-GB", { timeZone: TZ, dateStyle: "full", timeStyle: "short" }).format(date);
 }
@@ -89,11 +95,23 @@ async function sendConfirmation(b) {
   const ar = `تم تأكيد جلستك المجانية مع موارد ومهارات\n\nالموعد: ${when} (بتوقيت الرياض)\nرابط الاجتماع: ${b.meetUrl || "يُرسل لاحقًا"}\nالمستشار: ${env.CONSULTANT_NAME_AR || "أحمد الدركاوي"}\nخصم إدخار 10% مطبق تلقائيًا.\n\nإعادة الجدولة: ${resched}\nالإلغاء: ${cancel}`;
   const en = `Your free session with Talent360 is confirmed\n\nWhen: ${when} (Riyadh time)\nMeeting link: ${b.meetUrl || "to follow"}\nConsultant: ${env.CONSULTANT_NAME_EN || "Ahmed Darkawi"}\n10% Eddekhar discount applied automatically.\n\nReschedule: ${resched}\nCancel: ${cancel}`;
   await mailer.sendMail({
-    from: env.MAIL_FROM || "Talent360 <info@talent-360.me>", to: b.email,
+    from: FROM, to: b.email,
     subject: b.lang === "ar" ? "تأكيد جلسة الفحص المجاني | موارد ومهارات × إدخار" : "Your free HR check is booked | Talent360 × Eddekhar",
     text: b.lang === "ar" ? ar + "\n\n— — —\n\n" + en : en + "\n\n— — —\n\n" + ar,
   });
   // Reminders: Google Calendar sends the invite reminders (24h email + 1h popup) set on the event below.
+}
+async function notifyTeam(b) {
+  if (!mailer) return;
+  await mailer.sendMail({
+    from: FROM, to: TEAM, replyTo: b.email,
+    subject: `[Eddekhar booking] ${b.focusLabel} · ${b.company} · ${fmt(new Date(b.start), "en")}`,
+    text: [`New booking from the Eddekhar landing page.`, ``,
+      `When: ${fmt(new Date(b.start), "en")} (Riyadh time)`, `Focus: ${b.focusLabel}`,
+      `Name: ${b.name}`, `Company: ${b.company}`, `Email: ${b.email}`, `Language: ${b.lang}`,
+      `Meet: ${b.meetUrl || (cal ? "not created" : "calendar not connected: send an invite by hand")}`,
+      `UTM: ${Object.entries(b.utm || {}).map(([k, v]) => k + "=" + v).join(", ") || "none"}`].join("\n"),
+  });
 }
 
 /* ---------- Lead magnets: email the file, tell the team, log to CRM ----------
@@ -128,14 +146,14 @@ async function sendLeadMagnet(body) {
     const en = hasFile ? `Attached: ${title}.\n\nWant to talk it through with a consultant? Book your free check: ${env.PUBLIC_BASE_URL}/en/#book\n\nTalent360`
                        : `Thanks for requesting: ${title}.\nThe Talent360 team will send it within one working day.\n\nTalent360`;
     jobs.push(mailer.sendMail({
-      from: env.MAIL_FROM || "Talent360 <info@talent-360.me>", to: body.email,
+      from: FROM, to: body.email,
       subject: title + (lang === "ar" ? " | موارد ومهارات" : " | Talent360"),
       text: lang === "ar" ? ar : en,
       attachments: hasFile ? [{ filename: path.basename(file), path: file }] : [],
     }));
   }
-  if (env.TEAM_EMAIL) jobs.push(mailer.sendMail({
-    from: env.MAIL_FROM || "Talent360 <info@talent-360.me>", to: env.TEAM_EMAIL,
+  jobs.push(mailer.sendMail({
+    from: FROM, to: TEAM,
     subject: `[Eddekhar lead] ${title} requested by ${body.email}`,
     text: `${body.email} requested "${title}" (${tool}) from the Eddekhar landing page (${lang}).` + (hasFile || tool === "bulk_payroll_eg" ? "" : "\nNo file is configured for this tool yet: please send it by hand."),
   }));
@@ -215,7 +233,8 @@ async function book(body, ip) {
       b.meetUrl = ev.data.hangoutLink || null;
     }
     bookings.set(id, b);
-    await Promise.allSettled([sendConfirmation(b), pushToCrm(b)]);
+    const sent = await Promise.allSettled([sendConfirmation(b), notifyTeam(b), pushToCrm(b)]);
+    sent.forEach((r, i) => { if (r.status === "rejected") console.error(["[mail] confirmation", "[mail] team", "[crm]"][i], r.reason && r.reason.message); });
     return [200, { id, token: b.token, meetUrl: b.meetUrl || null, calendar: !!cal, mailed: !!mailer }];
   } finally { locks.delete(key); }
 }
@@ -275,6 +294,9 @@ http.createServer(async (req, res) => {
       bookings.delete(b.id);
       const back = `${env.PUBLIC_BASE_URL}/${b.lang}/${m[2] === "reschedule" ? "?rebook=1" : "?cancelled=1"}#book`;
       res.writeHead(302, { Location: back }); return res.end();
+    }
+    if (req.method === "GET" && url.pathname === "/api/health") {
+      return send(res, 200, { calendar: !!cal, calendarOwner: CAL_OWNER, mail: !!mailer, mailFrom: FROM, team: TEAM });
     }
     if (req.method === "POST" && url.pathname === "/api/lead-magnet") {
       const body = await readJson(req);
