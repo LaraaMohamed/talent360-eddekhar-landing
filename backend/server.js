@@ -464,10 +464,19 @@ http.createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname === "/api/book") { const [c, o] = await book(await readJson(req), ip); return send(res, c, o); }
     let m;
     if (req.method === "POST" && (m = url.pathname.match(/^\/api\/booking\/([\w-]+)\/phone$/))) {
-      const body = await readJson(req); const b = bookings.get(m[1]);
-      if (!b || !verify(b.id, body.token)) return send(res, 404, { error: "not_found" });
-      b.phone = String(body.phone || "").replace(/[^\d+\s-]/g, "").slice(0, 20);
-      await pushToCrm(b).catch(() => {});
+      // The signed token proves the booking; the booking itself may be gone from memory after a restart,
+      // so the phone is always mailed to the team with whatever details the page sent along.
+      const body = await readJson(req);
+      if (!verify(m[1], body.token)) return send(res, 404, { error: "not_found" });
+      const phone = String(body.phone || "").replace(/[^\d+\s-]/g, "").slice(0, 20);
+      const clip = (v) => String(v || "").slice(0, 160);
+      const b = bookings.get(m[1]) || { id: m[1], name: clip(body.name), email: clip(body.email), company: clip(body.company), start: clip(body.start) };
+      b.phone = phone;
+      if (bookings.has(m[1])) await pushToCrm(b).catch(() => {});
+      if (mailer) mailer.sendMail({ from: FROM, to: TEAM, replyTo: emailRe.test(b.email) ? b.email : undefined,
+        subject: `[Eddekhar booking] Phone for ${b.company || b.name || m[1]}`,
+        text: `${b.name || "(name)"}, ${b.company || "(company)"}, ${b.email || "(email)"}\nPhone: ${phone}${b.start ? "\nSession: " + b.start : ""}` })
+        .catch((e) => console.error("[mail] phone", e.message));
       return send(res, 200, { ok: true, mailed: !!mailer });
     }
     if (req.method === "GET" && (m = url.pathname.match(/^\/api\/booking\/([\w-]+)\/(cancel|reschedule)$/))) {

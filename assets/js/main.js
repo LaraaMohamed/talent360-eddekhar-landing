@@ -432,9 +432,9 @@
       if (!/^\+?[0-9\s-]{8,16}$/.test(v)) { msg.style.color = ""; msg.textContent = T.phoneInvalid; return; }
       var saving = res.relay || res.mailed === false
         ? relay("Phone for booking: " + res.who.company, { type: "Phone number", name: res.who.name, email: res.who.email, company: res.who.company, phone: v })
-        : fetch(API + "/booking/" + encodeURIComponent(res.id) + "/phone", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: v, token: res.token }) })
+        : fetch(API + "/booking/" + encodeURIComponent(res.id) + "/phone", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: v, token: res.token, name: res.who && res.who.name, email: res.who && res.who.email, company: res.who && res.who.company, start: res.who && res.who.start }) })
             .then(function (r) { return r.ok; }, function () { return false; });
-      saving.then(function (ok) { msg.style.color = ok ? "var(--accent-ink)" : ""; msg.textContent = ok ? T.phoneSaved : T.genericError; });
+      saving.then(function (ok) { msg.style.color = ok ? "var(--accent-ink)" : ""; msg.textContent = ok ? T.phoneSaved : T.phoneFail; });
     });
   }
 
