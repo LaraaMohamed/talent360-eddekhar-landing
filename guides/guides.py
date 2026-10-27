@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out")
 BRAND = os.path.join(HERE, "..", "assets", "img", "brand")
 BOOK = {"ar": "https://talent-360.me/eddekhar/ar/#book", "en": "https://talent-360.me/eddekhar/en/#book"}
-EDITION = {"ar": "إصدار أكتوبر 2026", "en": "October 2026 edition"}
+EDITION = {"ar": "محدّث 2026", "en": "Updated 2026"}
 
 
 def img64(name):
@@ -57,6 +57,12 @@ EG = {
                 "الغرامات من 1,000 إلى 100,000 جنيه، ويُسأل المدير المسؤول مع صاحب العمل.",
             ]),
         ],
+        updates_h="تحديثات 2026",
+        updates=[
+            "29 أغسطس 2026: أطلق وزير العمل القواعد العامة للوائح العمل في منشآت القطاع الخاص، ضمن القرارات التنفيذية للقانون 14/2025. راجع لائحة منشأتك لتتوافق معها.",
+            "القرار الوزاري 270 لسنة 2025 وضع متطلبات جديدة لإبلاغ وزارة العمل ببيانات العاملين.",
+            "قرار رئيس مجلس الوزراء 3165 لسنة 2026 يُلزم المجلس القومي للأجور بمراجعة الحد الأدنى للأجور مرة في السنة على الأقل. الحد الأدنى في القطاع الخاص ما زال 7,000 جنيه حتى صدور قرار جديد.",
+        ],
         benefits_h="مزايا الموظفين في مصر 2026",
         benefits=[
             ("التأمينات الاجتماعية (قانون 148/2019)", "صاحب العمل 18.75% والموظف 11% من أجر الاشتراك. حدود الأجر التأميني من يناير 2026: 2,700 إلى 16,700 جنيه شهريًا.", "قانوني"),
@@ -84,7 +90,7 @@ EG = {
         cta_p="موارد ومهارات تتولى التوظيف والرواتب والتأمينات والامتثال لقانون العمل الجديد، برسوم ثابتة لكل موظف. احجز HR Health Check مجانًا.",
         cta_btn="احجز فحصك المجاني",
         sources_h="المصادر",
-        disclaimer="هذا الدليل للتوعية العامة وليس استشارة قانونية. الأرقام كما نُشرت حتى أكتوبر 2026، وقد تتغير بالقرارات التنفيذية. راجع النص الرسمي في الجريدة الرسمية أو استشر محاميًا مرخصًا قبل اتخاذ أي قرار.",
+        disclaimer="هذا الدليل للتوعية العامة وليس استشارة قانونية. الأرقام كما نُشرت حتى 2026، وقد تتغير بالقرارات التنفيذية. راجع النص الرسمي في الجريدة الرسمية أو استشر محاميًا مرخصًا قبل اتخاذ أي قرار.",
         stat_type={"قانوني": "قانوني", "سوقي": "ممارسة سوقية"},
     ),
     "en": dict(
@@ -122,6 +128,12 @@ EG = {
                 "Fines range from EGP 1,000 to EGP 100,000, and the responsible manager is liable alongside the employer.",
             ]),
         ],
+        updates_h="2026 updates",
+        updates=[
+            "29 August 2026: the Minister of Labour launched the general rules for private-sector work regulations, one of the executive decisions under Law 14/2025. Align your company's work regulations with them.",
+            "Ministerial Decree No. 270 of 2025 sets new workforce-data reporting requirements to the Ministry of Labour.",
+            "Prime Minister's Decision No. 3165 of 2026 requires the National Wages Council to review the minimum wage at least once a year. The private-sector minimum stays at EGP 7,000 until a new decision.",
+        ],
         benefits_h="Employee benefits in Egypt, 2026",
         benefits=[
             ("Social insurance (Law 148/2019)", "Employer 18.75% and employee 11% of the insured wage. Insured wage from January 2026: EGP 2,700 to 16,700 a month.", "law"),
@@ -149,7 +161,7 @@ EG = {
         cta_p="Talent360 handles hiring, payroll, social insurance and compliance with the new labour law, for a fixed fee per employee. Book a free HR Health Check.",
         cta_btn="Book your free check",
         sources_h="Sources",
-        disclaimer="This guide is general information, not legal advice. Figures are as published up to October 2026 and may change with executive regulations. Check the official text in the Official Gazette or consult a licensed lawyer before acting.",
+        disclaimer="This guide is general information, not legal advice. Figures are as published up to 2026 and may change with executive regulations. Check the official text in the Official Gazette or consult a licensed lawyer before acting.",
         stat_type={"law": "Statutory", "market": "Market practice"},
     ),
     "sources": [
@@ -159,6 +171,9 @@ EG = {
         ("ZenHR: Egypt Labor Law at a glance", "https://www.zenhr.com/en/egypt-labor-law"),
         ("Atlas HXM: Employee benefits in Egypt, 2026", "https://www.atlashxm.com/resources/employee-benefits-in-egypt"),
         ("Ministry of Investment: private-sector minimum wage EGP 7,000", "https://moic.gov.eg/news/1998"),
+        ("SIS: Labor Minister launches general rules for work regulations at private-sector companies", "https://sis.gov.eg/en/media-center/news/labor-minister-launches-general-rules-for-work-regulations-at-private-sector-companies/"),
+        ("Shehata & Partners: Ministerial Decree No. 270 of 2025", "https://shehatalaw.com/law-update/navigating-the-new-labor-reporting-requirements-in-egypt-a-guide-to-ministerial-decree-no-270-of-2025/"),
+        ("The Rio Times: Egypt orders yearly minimum wage reviews (Decision 3165/2026)", "https://www.riotimesonline.com/egypt-orders-yearly-minimum-wage-reviews-2026"),
     ],
 }
 
@@ -197,8 +212,15 @@ SA = {
                 "حماية الأجور (مدد): رفع ملف الأجور شهريًا، ويغطي الشهر السابق فقط منذ مارس 2025.",
             ]),
         ],
+        updates_h="تحديثات 2026",
+        updates=[
+            "توثيق العقود في قوى: نسبة الالتزام المطلوبة 85% من 30 أبريل 2026 ثم 90% من 30 يونيو 2026، وتُحسب بالعقود الموثقة إلى إجمالي عقود المنشأة. وقد يحدّ التأخر من خدمات الوزارة.",
+            "منذ 15 أبريل 2026 لا يُحتسب في نطاقات إلا السعوديون الذين وُثّقت عقودهم إلكترونيًا في قوى.",
+            "توطين الهندسة 30% في 46 مهنة هندسية بالمنشآت التي لديها 5 مهندسين فأكثر، من 30 يونيو 2026، مع اعتماد مهني من الهيئة السعودية للمهندسين.",
+        ],
         checklist_h="ما الذي تفعله الآن",
         checklist=[
+            "وثّق كل العقود في قوى وتأكد أن نسبة الالتزام 90% أو أكثر.",
             "حدّث نماذج العقود: فترة التجربة، ومدة العقد لغير السعوديين، ومهل الإشعار الجديدة.",
             "عدّل سياسة الإجازات: الوضع 12 أسبوعًا، والمولود 3 أيام، ووفاة الأخ أو الأخت.",
             "راجع احتساب مكافأة نهاية الخدمة وجداول الإضافي.",
@@ -208,7 +230,7 @@ SA = {
         cta_p="موارد ومهارات تدير الموارد البشرية والتوظيف والرواتب ومنصات قوى ومدد والتأمينات. احجز HR Health Check مجانًا.",
         cta_btn="احجز فحصك المجاني",
         sources_h="المصادر",
-        disclaimer="هذا الدليل للتوعية العامة وليس استشارة قانونية. الأحكام كما نُشرت حتى أكتوبر 2026. راجع النص الرسمي على موقع هيئة الخبراء أو وزارة الموارد البشرية أو استشر محاميًا مرخصًا قبل اتخاذ أي قرار.",
+        disclaimer="هذا الدليل للتوعية العامة وليس استشارة قانونية. الأحكام كما نُشرت حتى 2026. راجع النص الرسمي على موقع هيئة الخبراء أو وزارة الموارد البشرية أو استشر محاميًا مرخصًا قبل اتخاذ أي قرار.",
     ),
     "en": dict(
         title="Employer guide to Saudi Labour Law after the 2025 amendments",
@@ -244,8 +266,15 @@ SA = {
                 "Wage Protection (Mudad): monthly wage file, covering only the previous month since March 2025.",
             ]),
         ],
+        updates_h="2026 updates",
+        updates=[
+            "Qiwa contract documentation: the required compliance rate is 85% from 30 April 2026 and 90% from 30 June 2026, measured as documented contracts over all the establishment's contracts. Falling short can restrict ministry services.",
+            "Since 15 April 2026, Nitaqat counts only Saudi employees whose contracts are documented electronically on Qiwa.",
+            "Engineering Saudization of 30% across 46 engineering professions, for establishments with 5 or more engineers, from 30 June 2026, with Saudi Council of Engineers accreditation.",
+        ],
         checklist_h="What to do now",
         checklist=[
+            "Document every contract on Qiwa and keep the compliance rate at 90% or above.",
             "Update contract templates: probation, term for non-Saudis and the new notice periods.",
             "Revise the leave policy: 12-week maternity, 3-day birth leave, sibling bereavement.",
             "Check end-of-service and overtime calculations.",
@@ -255,12 +284,15 @@ SA = {
         cta_p="Talent360 runs HR, hiring, payroll, Qiwa, Mudad and GOSI for you. Book a free HR Health Check.",
         cta_btn="Book your free check",
         sources_h="Sources",
-        disclaimer="This guide is general information, not legal advice. Rules are as published up to October 2026. Check the official text on the Bureau of Experts or HRSD websites, or consult a licensed lawyer, before acting.",
+        disclaimer="This guide is general information, not legal advice. Rules are as published up to 2026. Check the official text on the Bureau of Experts or HRSD websites, or consult a licensed lawyer, before acting.",
     ),
     "sources": [
         ("Rödl & Partner: Saudi labour law 2025, the most important amendments", "https://www.roedl.com/en/insights/saudi-arabia-labor-law-amendments-impact/"),
         ("Teamed: Employment law in Saudi Arabia, 2026 guide for employers", "https://www.teamed.global/gulf-employment-law/saudi-arabia"),
         ("Saudipedia: نظام العمل في السعودية", "https://saudipedia.com/نظام-العمل-في-السعودية"),
+        ("SPA: HR Ministry updates Qiwa compliance rules for employment contracts", "https://www.spa.gov.sa/en/N2557886"),
+        ("KPMG: Saudi Arabia, Qiwa contract documentation (2026)", "https://kpmg.com/xx/en/our-insights/gms-flash-alert/2026/flash-alert-2026-116.html"),
+        ("SPA: Engineering Saudization rate raised to 30% in the private sector", "https://www.spa.gov.sa/en/N2624646"),
     ],
 }
 
@@ -293,6 +325,9 @@ td.k { font-weight: 700; color: #0E183C; width: 28%%; }
 .tag { display: inline-block; font-size: 8pt; font-weight: 700; padding: 1px 8px; border-radius: 99px; white-space: nowrap; }
 .tag.law { background: #E3F6F3; color: #168C7C; }
 .tag.market { background: #EEF1F7; color: #46536F; }
+.upd { background: #FFF7E6; border: 1px solid #F2D9A6; border-radius: 14px; padding: 10px 18px 12px; margin-top: 16px; break-inside: avoid; }
+.upd h2 { margin-top: 4px; border: 0; padding: 0; color: #8A5A00; }
+.upd li::marker { color: #C98A00; }
 .check { background: #E3F6F3; border-radius: 14px; padding: 12px 18px 12px; margin-top: 18px; break-inside: avoid; }
 .check h2 { margin-top: 4px; border: 0; padding: 0; }
 .check li::marker { content: "✓  "; color: #168C7C; font-weight: 800; }
@@ -319,18 +354,21 @@ def render(data, lang, benefits=False):
                        % (E(k), E(d), "law" if t in ("قانوني", "law") else "market", E(L["stat_type"][t])) for k, d, t in L["benefits"])
         ben = '<h2>%s</h2><table><thead><tr><th>%s</th><th>%s</th><th>%s</th></tr></thead><tbody>%s</tbody></table>' % (
             E(L["benefits_h"]), E(L["col_benefit"]), E(L["col_detail"]), E(L["col_type"]), rows)
+    upd = ""
+    if L.get("updates"):
+        upd = '<div class="upd"><h2>%s</h2><ul>%s</ul></div>' % (E(L["updates_h"]), "".join("<li>%s</li>" % E(i) for i in L["updates"]))
     src = "".join('<li>%s: <a href="%s">%s</a></li>' % (E(t), E(u), E(u)) for t, u in data["sources"])
     return """<!doctype html><html lang="%s" dir="%s"><head><meta charset="utf-8"><title>%s</title>
 <link href="https://fonts.googleapis.com/css2?family=%s&display=swap" rel="stylesheet"><style>%s</style></head><body>
 <header class="cover"><div class="brand"><div class="mm"><img class="mark" src="%s" alt="موارد ومهارات"><span class="by" dir="ltr">by <img src="%s" alt="Talent360"></span></div><span class="edition">%s</span></div>
 <h1>%s</h1><p class="sub">%s</p><p class="intro">%s</p></header>
-<main><div class="cols">%s</div>%s
+<main>%s<div class="cols">%s</div>%s
 <div class="check"><h2>%s</h2><ul>%s</ul></div>
 <div class="cta"><div><h3>%s</h3><p>%s</p></div><a href="%s">%s</a></div>
 <div class="src"><h2>%s</h2><ul>%s</ul><p class="disc">%s</p></div></main></body></html>""" % (
         lang, "rtl" if rtl else "ltr", E(L["title"]), fonts, CSS % font,
         img64("mawared-mark-white.png"), img64("talent360-wordmark-white.png"), E(EDITION[lang]),
-        E(L["title"]), E(L["sub"]), E(L["intro"]), secs, ben,
+        E(L["title"]), E(L["sub"]), E(L["intro"]), upd, secs, ben,
         E(L["checklist_h"]), "".join("<li>%s</li>" % E(i) for i in L["checklist"]),
         E(L["cta_h"]), E(L["cta_p"]), BOOK[lang], E(L["cta_btn"]),
         E(L["sources_h"]), src, E(L["disclaimer"]))
