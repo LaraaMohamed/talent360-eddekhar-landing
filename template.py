@@ -171,7 +171,9 @@ def _render(lang, mode):
 <meta property="og:title" content="{e(L['title'])}"><meta property="og:description" content="{e(L['description'])}">
 <meta property="og:url" content="{url}"><meta property="og:image" content="{BASE}assets/img/cover-1600.webp">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="{A}img/brand/talent360-logo.png">
+<link rel="icon" type="image/png" sizes="32x32" href="{A}img/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="{A}img/brand/favicon-48.png">
+<link rel="apple-touch-icon" href="{A}img/brand/apple-touch-icon.png">
 <meta name="color-scheme" content="light">
 <link rel="preload" as="image" href="{hero_img}" imagesrcset="{A}img/hero-top-900.webp 900w, {hero_img} 1600w" imagesizes="100vw" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
